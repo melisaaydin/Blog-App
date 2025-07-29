@@ -1,0 +1,60 @@
+@model List<Tag>
+
+<style>
+    .tags-form {
+        background: #ffffff;
+        border-radius: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .tags-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 1rem;
+    }
+
+    .tag-btn {
+        font-size: 0.85rem;
+        font-weight: 500;
+        padding: 0.5rem 0.5rem;
+        border-radius: 0.5rem;
+        transition: all 0.2s ease;
+        border: 1px solid #e2e8f0;
+        color: #374151;
+    }
+
+    .tag-btn:hover {
+        background-color: #7f143f;
+        color: #ffffff;
+        border-color: #7f143f;
+        transform: translateY(-1px);
+    }
+
+    .no-tags {
+        font-size: 0.9rem;
+        color: #6b7280;
+    }
+</style>
+
+<div class="tags-form">
+    <h5 class="tags-title">Tags</h5>
+    <div class="card-body p-0">
+        <ul class="list-inline d-flex flex-wrap gap-2 ">
+            @if (Model?.Any() ?? false)
+            {
+                @foreach (var tag in Model)
+                {
+                    <li class="list-inline-item mb-2">
+                        <a class="tag-btn" href="/posts/tag/@tag.Url" aria-label="Tag: @(tag.Text ?? "Tag")">@(tag.Text ??
+                                                "Tag")</a>
+                    </li>
+                }
+            }
+            else
+            {
+                <p class="no-tags">No tags found.</p>
+            }
+        </ul>
+    </div>
+</div>

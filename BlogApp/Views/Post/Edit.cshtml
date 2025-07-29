@@ -1,0 +1,330 @@
+@model BlogApp.Models.PostCreateViewModel
+@using System.Linq
+
+<style>
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background-color: #f8fafc;
+    }
+    .login-card {
+        max-width: 1000px;
+        width: 100%;
+        padding: 2rem;
+        background: linear-gradient(145deg, #ffffff, #f1f5f9);
+        border-radius: 1rem;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin: 2rem auto;
+    }
+    .login-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+    }
+    .form-control {
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .form-control:focus {
+        border-color: #6b7280;
+        box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.2);
+        outline: none;
+    }
+    .form-label {
+        font-weight: 600;
+        color: #1f2937;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    .btn-primary {
+        background-color: #7f143f;
+        border-color: #7f143f;
+        border-radius: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        font-size: 1rem;
+        color: white;
+        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        width: 100%;
+        max-width: 200px;
+        display: block;
+        margin: 1.5rem auto;
+        position: relative;
+        overflow: hidden;
+    }
+    .btn-primary:hover {
+        background-color: #9c194e;
+        border-color: #9c194e;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(156, 25, 78, 0.3);
+    }
+    .btn-primary.loading::after {
+        content: '';
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #fff;
+        border-radius: 50%;
+        border-top-color: transparent;
+        animation: spin 0.6s linear infinite;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    .text-danger {
+        font-size: 0.85rem;
+        color: #dc2626;
+        bottom: 0.25rem;
+        margin-bottom: 0.25rem;
+        font-weight: 500;
+    }
+    .form-check-input {
+        width: 1.25rem;
+        height: 1.25rem;
+        border-radius: 0.25rem;
+        border: 1px solid #d1d5db;
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+    .form-check-input:checked {
+        background-color: #7f143f;
+        border-color: #7f143f;
+    }
+    .form-check-label {
+        font-size: 0.95rem;
+        color: #374151;
+        margin-left: 0.5rem;
+        cursor: pointer;
+    }
+    .form-check {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.75rem;
+    }
+    .tag-section {
+        background: #f8fafc;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #e5e7eb;
+    }
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 1rem;
+    }
+    .preview-img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 0.5rem;
+        margin-top: 1rem;
+        display: @(string.IsNullOrEmpty(Model?.Image) ? "none" : "block");
+    }
+    .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    .info-text {
+        font-size: 0.9rem;
+        color: #374151;
+        bottom: 0.5rem;
+    }
+    .no-tags {
+        font-size: 0.95rem;
+        color: #6b7280;
+        margin-bottom: 0.75rem;
+    }
+</style>
+
+<div class="d-flex justify-content-center align-items-center min-vh-100">
+    <div class="login-card">
+        <h1 class="text-2xl font-bold text-center text-gray-900 mb-6">Edit Post</h1>
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <p>@error.ErrorMessage</p>
+                }
+            </div>
+        }
+        <form asp-action="Edit" asp-controller="Post" method="post" enctype="multipart/form-data" class="space-y-6" id="editPostForm">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="All" class="text-danger text-center font-medium mb-4"></div>
+            <input type="hidden" asp-for="PostId" id="PostId" />
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="mb-4">
+                        <label for="Title" class="form-label">Post Title</label>
+                        <input asp-for="Title" class="form-control w-full" id="Title" placeholder="Enter the post title" title="Enter a concise and descriptive title" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                    <div class="mb-4">
+                        <label for="Description" class="form-label">Description</label>
+                        <input asp-for="Description" class="form-control w-full" id="Description" placeholder="Write a brief description" title="Provide a short summary of the post" />
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <div class="mb-4">
+                        <label for="Url" class="form-label">URL Slug</label>
+                        <input asp-for="Url" class="form-control w-full" id="Url" placeholder="Enter a unique URL slug (e.g., my-post)" title="Use a unique, SEO-friendly URL" />
+                        <span asp-validation-for="Url" class="text-danger"></span>
+                    </div>
+                    <div class="mb-4">
+                        <label for="Content" class="form-label">Content</label>
+                        <textarea asp-for="Content" class="form-control w-full" id="Content" placeholder="Write your post content" style="height: 250px;"></textarea>
+                        <span asp-validation-for="Content" class="text-danger"></span>
+                    </div>
+                    @if (User.FindFirstValue(System.Security.Claims.ClaimTypes.Role) == "admin")
+                    {
+                        <div class="form-check mb-4">
+                            <input asp-for="IsActive" class="form-check-input" id="IsActive" />
+                            <label for="IsActive" class="form-check-label">Publish Post</label>
+                        </div>
+                    }
+                </div>
+                <div class="col-md-4">
+                    <div class="tag-section">
+                        <h3 class="section-title">Tags</h3>
+                        @if (ViewBag.Tags != null && ViewBag.Tags.Count > 0)
+                        {
+                            @foreach (var tag in ViewBag.Tags  as List<Tag>)
+                            {
+                                <div class="form-check">
+                                    <input class="form-check-input" name="SelectedTagIds" type="checkbox" value="@tag.TagId" id="tag_@tag.TagId"
+                                            @(Model.SelectedTagIds.Contains(tag.TagId.ToString()) ? "checked" : "")/>
+                                    <label for="tag_@tag.TagId" class="form-check-label">@tag.Text</label>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="no-tags">No tags available.</p>
+                        }
+                    </div>
+                    <div class="tag-section mt-4">
+                        <h3 class="section-title">Select Image</h3>
+                        <div class="mb-4">
+                            <label for="imageFile" class="form-label">Select Image</label>
+                            <input type="file" name="imageFile" id="imageFile" class="form-control w-full" accept="image/*" />
+                            @if (!string.IsNullOrEmpty(Model?.Image))
+                            {
+                                <img id="imagePreview" class="preview-img" src="/img/@Model.Image" alt="Image preview" />
+                            }
+                            else
+                            {
+                                <img id="imagePreview" class="preview-img" alt="Image preview" style="display: none" />
+                            }
+                            <span class="text-danger" id="imageFileError"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" id="saveButton">Save Post</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/8.0.0/tinymce.min.js" integrity="sha512-12CoCMNbCiAvjn0NaAmNaZGh45r1R6LoyEyYbm9JNVNUFuQD/NuvGAV9eynsmEA3MBfnFtwkqqdmjXPK4AqGzQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        $(document).ready(function () {
+            $("#editPostForm").validate({
+                ignore: "#imageFile" 
+            });
+
+            $("#editPostForm").on("submit", function (e) {
+                tinymce.triggerSave();
+                const content = $("#Content").val().trim();
+                const selectedTags = $('input[name="SelectedTagIds"]:checked').map(function () {
+                    return this.value;
+                }).get();
+                console.log("Form Submission - PostId:", $("#PostId").val());
+                console.log("Form Submission - Title:", $("#Title").val());
+                console.log("Form Submission - Selected Tag IDs:", selectedTags);
+                console.log("Form Submission - Content:", content);
+                if (!content) {
+                    e.preventDefault();
+                    alert("Content is required.");
+                    return;
+                }
+                const saveButton = $("#saveButton");
+                saveButton.addClass("loading");
+                saveButton.prop("disabled", true);
+                saveButton.text("Saving...");
+            });
+
+            $('input[name="SelectedTagIds"]').on("change", function () {
+                const selectedTags = $('input[name="SelectedTagIds"]:checked').map(function () {
+                    return this.value;
+                }).get();
+                console.log("Current Selected Tag IDs:", selectedTags);
+            });
+        });
+
+        tinymce.init({
+            selector: '#Content',
+            license_key: 'gpl',
+            plugins: 'lists link image table code preview',
+            toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | link image | code preview',
+            menubar: false,
+            statusbar: true,
+            height: 400,
+            skin: 'oxide',
+            images_upload_url: '/Post/UploadImage',
+            images_upload_handler: async function (blobInfo, success, failure) {
+                const formData = new FormData();
+                formData.append('file', blobInfo.blob(), blobInfo.filename());
+                try {
+                    const response = await fetch('/Post/UploadImage', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        success(result.location);
+                    } else {
+                        failure('Image upload failed: ' + (result.message || 'Unknown error'));
+                    }
+                } catch (error) {
+                    failure('Image upload error: ' + error.message);
+                }
+            },
+            event_root: 'body',
+            setup: function (editor) {
+                editor.on('init', function () {
+                    console.log('TinyMCE initialized for Content');
+                });
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const imageFile = document.getElementById('imageFile');
+            const imagePreview = document.getElementById('imagePreview');
+            imageFile.addEventListener('change', function () {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        imagePreview.src = e.target.result;
+                        imagePreview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    imagePreview.src = '@(Model != null && !string.IsNullOrEmpty(Model.Image) ? $"/img/{Model.Image}" : "")';
+                    imagePreview.style.display = '@(Model != null && !string.IsNullOrEmpty(Model.Image) ? "block" : "none")';
+                }
+            });
+        });
+    </script>
+}

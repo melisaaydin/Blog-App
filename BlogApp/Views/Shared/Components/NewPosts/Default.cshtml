@@ -1,0 +1,27 @@
+@model List<Post>
+
+<div class="card border-0">
+    <h5 class="card-title fw-bold text-dark">New Posts</h5>
+    <div class="card-body p-0">
+        @if (Model?.Any() ?? false)
+        {
+            @foreach (var post in Model)
+            {
+                <div class=" transition-hover p-2">
+                    <h6 class="mb-1">
+                        <a href="/posts/details/@post.Url" class="text-decoration-none text-dark fw-bold">@(post.Title
+                                                ?? "Untitled")</a>
+                    </h6>
+                    <p class="text-muted small mb-0">
+                        @(string.IsNullOrEmpty(post.Description) ? "No description" : post.Description.Length > 50 ?
+                                        post.Description.Substring(0, 50) + "..." : post.Description)
+                    </p>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-muted small">No new posts found.</p>
+        }
+    </div>
+</div>

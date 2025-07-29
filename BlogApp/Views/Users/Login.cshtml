@@ -1,0 +1,94 @@
+@model LoginViewModel
+<style>
+    .login-card {
+        max-width: 400px;
+        width: 100%;
+        padding: 2.5rem;
+        background: transparent;
+        border-radius: 1.25rem;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-top: 100px;
+    }
+
+    .login-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+    }
+
+    .form-control {
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        padding: 0.75rem 1rem;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #7f143f;
+        box-shadow: 0 0 0 0.2rem rgba(127, 20, 63, 0.25);
+        outline: none;
+    }
+
+    .btn-primary {
+        background-color: #7f143f;
+        border-color: #7f143f;
+        border-radius: 0.5rem;
+        padding: 0.75rem;
+        font-weight: 600;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        width: 80%;
+        display: block;
+        margin: 0 auto;
+    }
+
+    .btn-primary:hover {
+        background-color: #9c194e;
+        border-color: #9c194e;
+        transform: translateY(-2px);
+    }
+
+    .text-danger {
+        font-size: 0.875rem;
+        color: #dc3545;
+        margin-top: 0.25rem;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: #374151;
+    }
+
+    .signup-link {
+        color: #7f143f;
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+
+    .signup-link:hover {
+        color: #9c194e;
+
+    }
+</style>
+
+<div class="d-flex justify-content-center align-items-center min-h-screen">
+    <div class="login-card">
+        <h1 class="text-3xl font-bold text-center text-gray-900 mb-8">Welcome Back</h1>
+        <form action="Login" method="post" class="space-y-5">
+            <div asp-validation-summary="ModelOnly" class="text-danger text-center font-medium"></div>
+            <div class="mb-4">
+                <label asp-for="Email" class="form-label block text-sm mb-2"></label>
+                <input asp-for="Email" class="form-control w-full" placeholder="Enter your email">
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="mb-4">
+                <label asp-for="Password" class="form-label block text-sm mb-2"></label>
+                <input asp-for="Password" class="form-control w-full" placeholder="Enter your password">
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+            <p class="text-center text-sm text-gray-600 mt-6">
+                Don't have an account? <a href="/users/register" class="signup-link">Sign up</a>
+            </p>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,388 @@
+@using System.Web
+@model BlogApp.Models.PostsViewModel
+@{
+    ViewData["Title"] = string.IsNullOrEmpty(Model.Tag) ? "Latest Posts | MyBlog" : $"Posts tagged '{Model.Tag}' | MyBlog";
+    ViewData["Description"] = ViewBag.MetaDescription ?? "Discover the latest posts on technology, lifestyle, and more at MyBlog.";
+}
+
+@section Head {
+    <meta name="description" content="@ViewBag.MetaDescription" />
+    <link rel="canonical" href="https://myblog.com@(ViewBag.CanonicalUrl)" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script type="application/ld+json">
+    {
+        "@@context": "https://schema.org",
+        "@@type": "Blog",
+        "name": "MyBlog",
+        "description": "@ViewBag.MetaDescription",
+        "url": "https://myblog.com@(ViewBag.CanonicalUrl)",
+        "blogPost": [
+            @{
+                var posts = Model.Posts.ToList();
+                for (int i = 0; i < posts.Count; i++)
+                {
+                    var post = posts[i];
+                    var isLast = i == posts.Count - 1;
+                    @Html.Raw($"{{ '@@type': 'BlogPosting', 'headline': '{post.Title?.Replace("'", "\\'") ?? "Untitled"}', 'image': '/img/{(post.Image ?? "default.jpg")}', 'datePublished': '{post.PublishedOn:yyyy-MM-dd}', 'author': {{ '@@type': 'Person', 'name': '{post.User?.Name?.Replace("'", "\\'") ?? "Anonymous"}' }}, 'url': '/posts/details/{post.Url}' }}{(isLast ? "" : ",")}")
+                }
+            }
+        ]
+    }
+    </script>
+}
+
+<style>
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background-color: #f9fafb;
+        color: #1f2937;
+        line-height: 1.6;
+    }
+
+    .header {
+        margin-bottom: 2.5rem;
+    }
+
+    .header h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #7f143f;
+    }
+
+    .search-bar {
+        margin-bottom: 2.5rem;
+    }
+
+    .search-bar input {
+        width: 100%;
+        max-width: 500px;
+        padding: 0.875rem 1.25rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.75rem;
+        font-size: 1rem;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .search-bar input:focus {
+        border-color: #7f143f;
+        box-shadow: 0 0 0 3px rgba(127, 20, 63, 0.15);
+        outline: none;
+    }
+
+    .blog-list {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .blog-card {
+        background: #ffffff;
+        border-radius: 1rem;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .blog-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+    }
+
+    .blog-card img {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .blog-card-content {
+        padding: 2rem;
+    }
+
+    .blog-card-content h3 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+    }
+
+    .blog-card-content h3 a {
+        color: #111827;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+
+    .blog-card-content h3 a:hover {
+        color: #7f143f;
+    }
+
+    .blog-card-content p {
+        color: #6b7280;
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+
+    .blog-card-tags {
+        margin-bottom: 1.5rem;
+    }
+
+    .blog-card-tags a {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        background-color: #f3f4f6;
+        color: #374151;
+        text-decoration: none;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+        transition: all 0.2s ease;
+    }
+
+    .blog-card-tags a:hover {
+        background-color: #7f143f;
+        color: #ffffff;
+        transform: translateY(-2px);
+    }
+
+    .blog-card-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .btn-primary {
+        background-color: #7f143f;
+        border-color: #7f143f;
+        border-radius: 0.75rem;
+        padding: 0.75rem 1.5rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #ffffff;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #9c194e;
+        border-color: #9c194e;
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(127, 20, 63, 0.3);
+    }
+
+    .share-btn {
+        cursor: pointer;
+        font-size: 1.5rem;
+        color: #7f143f;
+        transition: color 0.2s ease, transform 0.2s ease;
+    }
+
+    .share-btn:hover {
+        color: #9c194e;
+        transform: scale(1.1);
+    }
+
+    .popover-body {
+        display: flex;
+        gap: 1.25rem;
+        padding: 1rem;
+    }
+
+    .share-icon {
+        color: #7f143f;
+        font-size: 1.75rem;
+        text-decoration: none;
+        transition: transform 0.2s ease;
+    }
+
+    .share-icon:hover {
+        transform: scale(1.2);
+    }
+
+    .sidebar {
+        background: #ffffff;
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2.5rem;
+        position: sticky;
+        top: 2rem;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 0.75rem;
+        margin-top: 3rem;
+        margin-bottom: 2rem;
+    }
+
+    .pagination a {
+        padding: 0.75rem 1.25rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.75rem;
+        text-decoration: none;
+        color: #1f2937;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .pagination a:hover {
+        background-color: #f1f5f9;
+        border-color: #7f143f;
+    }
+
+    .pagination .active {
+        background-color: #7f143f;
+        color: #ffffff;
+        border-color: #7f143f;
+    }
+
+    .alert {
+        padding: 1rem 1.5rem;
+        border-radius: 0.75rem;
+        margin-bottom: 2rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .alert-info {
+        background-color: #e0f2fe;
+        color: #0e7490;
+    }
+
+    @@media (max-width: 991px) {
+        .header h1 {
+            font-size: 2rem;
+        }
+
+        .blog-card img {
+            height: 250px;
+        }
+
+        .sidebar {
+            margin-top: 2rem;
+        }
+    }
+
+    @@media (max-width: 767px) {
+        .blog-card-content {
+            padding: 1.5rem;
+        }
+
+        .blog-card-content h3 {
+            font-size: 1.5rem;
+        }
+
+        .blog-card-content p {
+            font-size: 0.95rem;
+        }
+
+        .search-bar input {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="header">
+                <h1>@(string.IsNullOrEmpty(Model.Tag) ? "Latest Posts" : $"Posts tagged '{Model.Tag}'")</h1>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search posts..." />
+            </div>
+            @if (Model?.Posts?.Any() ?? false)
+            {
+                <div class="blog-list" id="blogGrid">
+                    @foreach (var post in Model.Posts)
+                    {
+                        <div class="blog-card" data-post-id="@post.PostId" data-title="@(post.Title?.ToLower() ?? "")">
+                            <img src="/img/@(post.Image ?? "default.jpg")" alt="@(post.Title ?? "Post Image")" loading="lazy">
+                            <div class="blog-card-content">
+                                <h3><a href="/posts/details/@post.Url">@(post.Title ?? "Untitled")</a></h3>
+                                <p>@(string.IsNullOrEmpty(post.Description) ? "No description available." : post.Description.Length > 200 ? post.Description.Substring(0, 200) + "..." : post.Description)</p>
+                                <div class="blog-card-tags">
+                                    @foreach (var tag in post.Tags ?? new List<BlogApp.Entity.Tag>())
+                                    {
+                                        <a href="/posts/tag/@tag.Url" class="tag-badge">@tag.Text</a>
+                                    }
+                                </div>
+                                <div class="blog-card-actions">
+                                    <a href="/posts/details/@post.Url" class="btn btn-primary">Read More</a>
+                                    <i class="bi bi-share-fill share-btn" 
+                                       data-bs-toggle="popover" 
+                                       data-bs-html="true" 
+                                       data-bs-content="
+                                           <a href='https://twitter.com/intent/tweet?url=https://myblog.com/posts/details/@post.Url&text=@(HttpUtility.JavaScriptStringEncode(post.Title ?? "Check out this post!"))' target='_blank' class='share-icon share-twitter' aria-label='Share on Twitter'><i class='bi bi-twitter'></i></a>
+                                           <a href='https://www.facebook.com/sharer/sharer.php?u=https://myblog.com/posts/details/@post.Url' target='_blank' class='share-icon share-facebook' aria-label='Share on Facebook'><i class='bi bi-facebook'></i></a>
+                                           <a href='https://www.linkedin.com/sharing/share-offsite/?url=https://myblog.com/posts/details/@post.Url' target='_blank' class='share-icon share-linkedin' aria-label='Share on LinkedIn'><i class='bi bi-linkedin'></i></a>"
+                                       aria-label="Share this post"></i>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                @if (Model.TotalPages > 1)
+                {
+                    <div class="pagination">
+                        @if (Model.CurrentPage > 1)
+                        {
+                            <a href="@(string.IsNullOrEmpty(Model.Tag) ? $"/post?page={Model.CurrentPage - 1}" : $"/posts/tag/{Model.Tag}?page={Model.CurrentPage - 1}")">«</a>
+                        }
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <a href="@(string.IsNullOrEmpty(Model.Tag) ? $"/post?page={i}" : $"/posts/tag/{Model.Tag}?page={i}")" class="@(i == Model.CurrentPage ? "active" : "")">@i</a>
+                        }
+                        @if (Model.CurrentPage < Model.TotalPages)
+                        {
+                            <a href="@(string.IsNullOrEmpty(Model.Tag) ? $"/post?page={Model.CurrentPage + 1}" : $"/posts/tag/{Model.Tag}?page={Model.CurrentPage + 1}")">»</a>
+                        }
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    No posts found.
+                </div>
+            }
+        </div>
+        <div class="col-lg-4">
+            <div class="sidebar">
+                <vc:tags-menu></vc:tags-menu>
+            </div>
+            <div class="sidebar">
+                <vc:new-posts></vc:new-posts>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+            popoverTriggerList.forEach(popoverTriggerEl => {
+                new bootstrap.Popover(popoverTriggerEl, {
+                    trigger: 'click',
+                    placement: 'top'
+                });
+            });
+            const searchInput = document.getElementById('searchInput');
+            const blogGrid = document.getElementById('blogGrid');
+            searchInput.addEventListener('input', function () {
+                const searchTerm = this.value.toLowerCase();
+                const cards = blogGrid.querySelectorAll('.blog-card');
+                cards.forEach(card => {
+                    const title = card.getAttribute('data-title');
+                    card.style.display = title.includes(searchTerm) ? '' : 'none';
+                });
+            });
+        });
+    </script>
+}

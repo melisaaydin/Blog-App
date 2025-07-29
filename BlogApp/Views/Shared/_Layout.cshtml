@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/lib/bootstrap-icons/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <title> Mls Blog</title>
+</head>
+
+<body>
+    @Html.AntiForgeryToken()
+    <nav class="navbar navbar-expand-lg bg-white shadow-sm">
+        <div class="container">
+            <a href="/post" class="navbar-brand">
+                <img style="height: 40px;" src="/img/mlsblog.png" alt="">
+            </a>
+            <ul class="navbar-nav ms-auto">
+                @if (User.Identity!.IsAuthenticated)
+                {
+                    <li class="nav-item">
+                        <a href="/post/list" class="nav-link">Posts</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">@User.Identity.Name</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/users/logout" class="nav-link">Log Out</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item">
+                        <a href="/users/login" class="nav-link">Log In</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/users/register" class="nav-link">Sign Up</a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </nav>
+    <div class="container mt-3">
+        @RenderBody()
+    </div>
+    @RenderSection("Scripts", required: false)
+    @RenderSection("Head", required: false)
+</body>
+
+</html>
