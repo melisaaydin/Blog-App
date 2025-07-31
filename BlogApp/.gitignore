@@ -1,0 +1,48 @@
+# Build klasörleri
+bin/
+obj/
+
+# Kullanıcı ve sistem dosyaları
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# SQLite veritabanı dosyaları
+*.db
+*.db-shm
+*.db-wal
+
+# Derleme çıktıları
+*.dll
+*.exe
+*.pdb
+*.cache
+
+# Paketler
+*.nupkg
+*.snupkg
+*.nuspec
+
+# VS Code ayarları (isteğe bağlı)
+.vscode/
+
+# Rider ayarları
+.idea/
+
+# log dosyaları
+*.log
+
+# Dotnet kaynak link dosyaları
+*.sourcelink.json
+
+# Test sonuçları
+TestResults/
+
+# Publish klasörü
+publish/
+
+# Diğer geçici dosyalar
+*.tmp
+*.bak
+*.swp

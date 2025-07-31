@@ -51,7 +51,7 @@ namespace BlogApp.Controllers
 
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "Post");
                 }
 
                 ModelState.AddModelError("", "Invalid email or password");

@@ -42,7 +42,7 @@ namespace BlogApp.Data.Concrete.EfCore
             if (adminUser == null)
             {
                 logger.LogInformation("Admin user not found, creating new one...");
-                adminUser = new User { UserName = "melisaaydin", Name = "Melisa Aydin", Email = "melisaaydin@gmail.com", EmailConfirmed = true };
+                adminUser = new User { UserName = "melisaaydin", Name = "Melisa Aydın", Email = "melisaaydin@gmail.com", EmailConfirmed = true };
                 var result = await userManager.CreateAsync(adminUser, "Password123!");
                 if (result.Succeeded)
                 {
