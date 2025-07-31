@@ -132,5 +132,10 @@ namespace BlogApp.Data.Concrete
                 _logger.LogWarning($"Post not found for deletion, ID: {id}");
             }
         }
+        public async Task UpdatePost(Post post)
+        {
+            _context.Update(post);
+            await _context.SaveChangesAsync();
+        }
     }
 }
