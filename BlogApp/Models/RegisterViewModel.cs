@@ -4,31 +4,28 @@ namespace BlogApp.Models
 {
     public class RegisterViewModel
     {
-        [Required]
-        [Display(Name = "User Name")]
+        [Required(ErrorMessage = "Username is required.")]
+        [Display(Name = "Username")]
         public string? UserName { get; set; }
 
-        [Required]
-        [Display(Name = "Name Surname")]
+        [Required(ErrorMessage = "Full name is required.")]
+        [Display(Name = "Full Name")]
         public string? Name { get; set; }
 
-        [Required]
-        [EmailAddress]
-        [Display(Name = "Email Address")]
+        [Required(ErrorMessage = "Email is required.")]
+        [EmailAddress(ErrorMessage = "Please enter a valid email address.")]
+        [Display(Name = "Email")]
         public string? Email { get; set; }
 
-        [Required]
-        [StringLength(10, ErrorMessage = "Please specify a maximum of 10 and minimum {2} characters for the {0}.", MinimumLength = 6)]
+        [Required(ErrorMessage = "Password is required.")]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string? Password { get; set; }
 
-        [Required]
-        [StringLength(10, ErrorMessage = "Please specify a maximum of 10 and minimum {2} characters for the {0}.", MinimumLength = 6)]
+        [Required(ErrorMessage = "Password confirmation is required.")]
         [DataType(DataType.Password)]
-        [Compare(nameof(Password), ErrorMessage = "Paswords do not match.")]
-        [Display(Name = "Password Repeat")]
+        [Compare(nameof(Password), ErrorMessage = "The passwords do not match.")]
+        [Display(Name = "Confirm Password")]
         public string? ConfirmPassword { get; set; }
-
     }
 }

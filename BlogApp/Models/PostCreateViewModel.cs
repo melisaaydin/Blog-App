@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using BlogApp.Entity;
 
 namespace BlogApp.Models
 {
@@ -7,27 +6,21 @@ namespace BlogApp.Models
     {
         public int PostId { get; set; }
 
-        [Required]
-        [Display(Name = "Title")]
+        [Required(ErrorMessage = "Title is required.")]
         public string? Title { get; set; }
 
-        [Required]
-        [Display(Name = "Description")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
-        [Required]
-        [Display(Name = "Content")]
-        public string Content { get; set; }
+        [Required(ErrorMessage = "Content is required.")]
+        public string? Content { get; set; }
 
+        [Required(ErrorMessage = "Url is required.")]
+        public string? Url { get; set; }
 
-        [Required]
-        [Display(Name = "Url")]
-        public string Url { get; set; }
-
-        public string Image { get; set; }
+        public string? Image { get; set; }
 
         public bool IsActive { get; set; }
 
-        public string[] SelectedTagIds { get; set; } = new string[0];
+        public string[]? SelectedTagIds { get; set; }
     }
 }

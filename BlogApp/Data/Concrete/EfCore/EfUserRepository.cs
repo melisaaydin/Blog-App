@@ -13,10 +13,6 @@ namespace BlogApp.Data.Concrete
             _context = context;
         }
         public IQueryable<User> Users => _context.Users;
-        public void CreateUser(User user)
-        {
-            _context.Users.Add(user);
-            _context.SaveChanges();
-        }
+
     }
 }

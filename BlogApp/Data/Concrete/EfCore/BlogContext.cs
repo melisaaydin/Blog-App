@@ -1,22 +1,24 @@
 using BlogApp.Entity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlogApp.Data.Concrete.EfCore
 {
-    public class BlogContext : DbContext
+    public class BlogContext : IdentityDbContext<User>
     {
-        public BlogContext(DbContextOptions<BlogContext> options) : base(options)
-        {
-        }
+
 
         public DbSet<Post> Posts { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Tag> Tags { get; set; }
-        public DbSet<User> Users { get; set; }
 
-
+        public BlogContext(DbContextOptions<BlogContext> options) : base(options)
+        {
+        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Comment>()
                 .HasOne(c => c.Post)
                 .WithMany(p => p.Comments)
@@ -45,4 +47,5 @@ namespace BlogApp.Data.Concrete.EfCore
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }
+
 }
