@@ -81,7 +81,6 @@ namespace BlogApp.Controllers
         {
             if (string.IsNullOrEmpty(url))
             {
-                _logger.LogWarning("Details action failed: URL is null or empty.");
                 return NotFound();
             }
 
@@ -94,10 +93,17 @@ namespace BlogApp.Controllers
 
             if (post == null)
             {
-                _logger.LogWarning($"Post not found for URL: {url}");
                 return NotFound();
             }
+            var sessionKey = $"viewed_post_{post.PostId}";
+            if (HttpContext.Session.GetString(sessionKey) == null)
+            {
 
+                post.ViewCount++;
+                await _postRepository.UpdatePost(post);
+                HttpContext.Session.SetString(sessionKey, "true");
+            }
+            await _postRepository.UpdatePost(post);
             // Set default avatar for users without images
             if (post.User != null)
             {
@@ -114,7 +120,6 @@ namespace BlogApp.Controllers
                 }
             }
 
-            _logger.LogInformation($"Details action loaded for Post URL: {url}, PostId: {post.PostId}, Tags Count: {(post.Tags?.Count ?? 0)}");
             return View(post);
         }
 

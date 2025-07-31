@@ -157,10 +157,11 @@
                 }
                 <div class="profile-stats">
                     <div class="stat-item">
-                        <span class="count">@Model.Posts.Count</span> Posts
+                        <span class="count">@Model.Posts.Where(p => p.IsActive).Count()</span> Posts
                     </div>
                     <div class="stat-item">
-                        <span class="count">@Model.Comments.Count</span> Comments
+                        <span class="count"> @Model.Comments.Count(c => Model.Posts.Any(p => p.IsActive && p.PostId ==
+                                                        c.PostId))</span> Comments
                     </div>
                 </div>
             </div>
