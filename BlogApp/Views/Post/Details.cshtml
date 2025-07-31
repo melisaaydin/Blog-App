@@ -1,9 +1,9 @@
 @model BlogApp.Entity.Post
 
 @{
-    ViewData["Title"] = Model.Title;
-    ViewData["Description"] = Model.Description ?? $"Read the latest insights and updates on {Model.Title} at MyBlog.";
-    ViewData["CanonicalUrl"] = $"/post/details/{Model.Url}";
+    ViewData["Title"] = Model?.Title ?? "Post Details";
+    ViewData["Description"] = Model?.Description ?? "Read the latest insights and updates at MyBlog.";
+    ViewData["CanonicalUrl"] = Model != null ? $"/post/details/{Model.Url}" : "/post";
 }
 
 <style>
@@ -58,7 +58,6 @@
         object-fit: cover;
         border-radius: 1rem;
         margin-bottom: 2rem;
-
     }
 
     .post-meta {
@@ -140,7 +139,6 @@
     }
 
     .comment:hover {
-
         border-radius: 0.5rem;
     }
 
@@ -332,80 +330,88 @@
 <div class="container my-5">
     <div class="row">
         <div class="col-lg-8">
-            <div class="post-container">
-                <h1 class="post-title">@Model.Title</h1>
-                <div class="tags mb-4">
-                    @if (Model.Tags != null && Model.Tags.Any())
-                    {
-                        foreach (var tag in Model.Tags)
+            @if (Model == null)
+            {
+                <div class="alert alert-danger">Post not found.</div>
+            }
+            else
+            {
+                <div class="post-container">
+                    <h1 class="post-title">@(Model.Title ?? "Untitled")</h1>
+                    <div class="tags mb-4">
+                        @if (Model.Tags != null && Model.Tags.Any())
                         {
-                            var colorClass = tag.Color.HasValue ? tag.Color.Value.ToString().ToLower() : "primary";
-                            <a href="/posts/tag/@tag.Url" class="tag-badge bg-@colorClass bg-opacity-10 text-@colorClass"
-                                aria-label="Tag: @tag.Text">@tag.Text</a>
+                            foreach (var tag in Model.Tags)
+                            {
+                                var colorClass = tag.Color.HasValue ? tag.Color.Value.ToString().ToLower() : "primary";
+                                <a href="/posts/tag/@tag.Url" class="tag-badge bg-@colorClass bg-opacity-10 text-@colorClass"
+                                    aria-label="Tag: @tag.Text">@tag.Text</a>
+                            }
                         }
+                        else
+                        {
+                            <p class="text-muted">No tags available for this post.</p>
+                        }
+                    </div>
+                    <img src="/img/@(Model.Image ?? "default.jpg")" class="post-image" alt="@(Model.Title ?? "Post Image")"
+                        loading="lazy" />
+                    <div class="post-meta">
+                        <span><i class="bi bi-calendar"></i> @(Model.PublishedOn.ToString("MMMM dd, yyyy"))</span>
+                        <span><i class="bi bi-person-circle"></i> <a
+                                href="/profile/@(Model.User?.UserName ?? "unknown")">@(Model.User?.Name ??
+                                                            "Anonymous")</a></span>
+                    </div>
+                    <hr class="my-4">
+                    <div class="post-content">@Html.Raw(Model.Content ?? "")</div>
+                </div>
+                <div class="comment-section">
+                    <h4 class="comment-count"><span id="commentCount">@(Model.Comments?.Count() ?? 0)</span> Comments</h4>
+                    <div id="comments">
+                        @foreach (var comment in Model.Comments ?? Enumerable.Empty<Comment>())
+                        {
+                            <div class="comment">
+                                <img src="/img/@(comment.User?.Image ?? "default-avatar-icon.png")" class="comment-avatar"
+                                    alt="@(comment.User?.Name ?? "Anonymous")'s avatar" loading="lazy" />
+                                <div class="comment-content">
+                                    <div class="comment-header">
+                                        <h6 class="comment-author">
+                                            <a href="/profile/@(comment.User?.UserName ?? "unknown")">@(comment.User?.Name ??
+                                                                                        "Anonymous")</a>
+                                        </h6>
+                                        <small class="comment-date">@comment.PublishedOn.ToString("MMMM dd, yyyy HH:mm")</small>
+                                    </div>
+                                    <p class="comment-text">@(comment.Text ?? "")</p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <div class="comment-form">
+                            <h4 class="mb-4">Add a Comment</h4>
+                            <div id="commentAlert" class="alert" style="display: none;"></div>
+                            <form id="commentForm" action="/Post/AddComment" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" id="PostId" name="PostId" value="@(Model.PostId)" />
+                                <div class="mb-4">
+                                    <label for="Text" class="form-label">Your Comment</label>
+                                    <textarea name="Text" id="Text" rows="5" class="form-control"
+                                placeholder="Write your comment here..." required></textarea>
+                                    <span class="text-danger" id="commentError"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <button type="submit" class="btn btn-primary" id="btnSubmitComment">Submit Comment</button>
+                                </div>
+                            </form>
+                        </div>
                     }
                     else
                     {
-                        <p class="text-muted">No tags available for this post.</p>
+                        <p class="text-muted">Please <a href="/users/login" class="text-primary fw-bold">log in</a> to post a
+                            comment.</p>
                     }
                 </div>
-                <img src="/img/@(Model.Image ?? "default.jpg")" class="post-image" alt="@Model.Title" loading="lazy" />
-                <div class="post-meta">
-                    <span><i class="bi bi-calendar"></i> @Model.PublishedOn.ToString("MMMM dd, yyyy")</span>
-                    <span><i class="bi bi-person-circle"></i> <a
-                            href="/profile/@(Model.User?.UserName ?? "unknown")">@(Model.User?.Name ??
-                                                        "Anonymous")</a></span>
-                </div>
-                <hr class="my-4">
-                <div class="post-content">@Html.Raw(Model.Content ?? "")</div>
-            </div>
-            <div class="comment-section">
-                <h4 class="comment-count"><span id="commentCount">@(Model.Comments?.Count() ?? 0)</span> Comments</h4>
-                <div id="comments">
-                    @foreach (var comment in Model.Comments ?? Enumerable.Empty<Comment>())
-                    {
-                        <div class="comment">
-                            <img src="/img/@(comment.User?.Image ?? "default.jpg")" class="comment-avatar"
-                                alt="@(comment.User?.Name ?? "Anonymous")'s avatar" loading="lazy" />
-                            <div class="comment-content">
-                                <div class="comment-header">
-                                    <h6 class="comment-author">
-                                        <a href="/profile/@(comment.User?.UserName ?? "unknown")">@(comment.User?.Name ??
-                                                                                    "Anonymous")</a>
-                                    </h6>
-                                    <small class="comment-date">@comment.PublishedOn.ToString("MMMM dd, yyyy HH:mm")</small>
-                                </div>
-                                <p class="comment-text">@comment.Text</p>
-                            </div>
-                        </div>
-                    }
-                </div>
-                @if (User.Identity!.IsAuthenticated)
-                {
-                    <div class="comment-form">
-                        <h4 class="mb-4">Add a Comment</h4>
-                        <div id="commentAlert" class="alert" style="display: none;"></div>
-                        <form id="commentForm" action="/Post/AddComment" method="post">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" id="PostId" name="PostId" value="@Model.PostId" />
-                            <div class="mb-4">
-                                <label for="Text" class="form-label">Your Comment</label>
-                                <textarea name="Text" id="Text" rows="5" class="form-control"
-                                placeholder="Write your comment here..." required></textarea>
-                                <span class="text-danger" id="commentError"></span>
-                            </div>
-                            <div class="mb-3">
-                                <button type="submit" class="btn btn-primary" id="btnSubmitComment">Submit Comment</button>
-                            </div>
-                        </form>
-                    </div>
-                }
-                else
-                {
-                    <p class="text-muted">Please <a href="/users/login" class="text-primary fw-bold">log in</a> to post a
-                        comment.</p>
-                }
-            </div>
+            }
         </div>
         <div class="col-lg-4">
             <div class="sidebar">
@@ -452,28 +458,28 @@
                         } else {
                             const date = new Date(response.publishedOn);
                             $("#comments").append(`
-                                                                                                                    <div class="comment">
-                                                                                                                        <img src="/img/${response.avatar || "default.jpg"}" 
-                                                                                                                             class="comment-avatar" 
-                                                                                                                             alt="${response.username}'s avatar" 
-                                                                                                                             loading="lazy" />
-                                                                                                                        <div class="comment-content">
-                                                                                                                            <div class="comment-header">
-                                                                                                                                <h6 class="comment-author">
-                                                                                                                                    <a href="/profile/${response.username}">${response.username}</a>
-                                                                                                                                </h6>
-                                                                                                                                <small class="comment-date">${date.toLocaleString("en-US", {
+                                        <div class="comment">
+                                            <img src="/img/${response.avatar || "default-avatar-icon.png"}" 
+                                                 class="comment-avatar" 
+                                                 alt="${response.username}'s avatar" 
+                                                 loading="lazy" />
+                                            <div class="comment-content">
+                                                <div class="comment-header">
+                                                    <h6 class="comment-author">
+                                                        <a href="/profile/${response.username}">${response.username}</a>
+                                                    </h6>
+                                                    <small class="comment-date">${date.toLocaleString("en-US", {
                                 year: "numeric",
                                 month: "long",
                                 day: "numeric",
                                 hour: "2-digit",
                                 minute: "2-digit"
                             })}</small>
-                                                                                                                            </div>
-                                                                                                                            <p class="comment-text">${response.text}</p>
-                                                                                                                        </div>
-                                                                                                                    </div>
-                                                                                                                `);
+                                                </div>
+                                                <p class="comment-text">${response.text}</p>
+                                            </div>
+                                        </div>
+                                    `);
                             $("#Text").val("");
                             $("#commentAlert").removeClass("alert-danger").addClass("alert-success show")
                                 .text("Comment added successfully!").show().delay(3000).fadeOut();

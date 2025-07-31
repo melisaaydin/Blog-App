@@ -1,36 +1,250 @@
 @model User
+@using System.Globalization
 
-<div class="row">
-    <div class="col-md-2">
-        <div class="bg-white p-2">
-            <img src="/img/@Model.Image" class="img-fluid" alt="">
+@{
+    ViewData["Title"] = $"{Model.Name}'s Profile";
+}
+
+<style>
+    body {
+        background-color: #f4f7f6;
+    }
+
+    .profile-card {
+        background-color: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        padding: 2.5rem;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .profile-header {
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #eef2f5;
+        padding-bottom: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 5px solid #ffffff;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        margin-right: 2rem;
+    }
+
+    .profile-info h2 {
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 0.25rem;
+    }
+
+    .profile-info p {
+        color: #7f8c8d;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    .profile-stats {
+        display: flex;
+        gap: 2rem;
+        margin-top: 1rem;
+    }
+
+    .stat-item {
+        text-align: center;
+        font-size: 1rem;
+        color: #34495e;
+    }
+
+    .stat-item .count {
+        display: block;
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #7f143f;
+    }
+
+    /* Tab Styles */
+    .nav-tabs {
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .nav-tabs .nav-link {
+        border: none;
+        border-bottom: 2px solid transparent;
+        color: #495057;
+        font-weight: 600;
+        padding: 0.75rem 1.25rem;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .nav-tabs .nav-link.active,
+    .nav-tabs .nav-link:hover {
+        color: #7f143f;
+        border-bottom-color: #7f143f;
+        background-color: transparent;
+    }
+
+    .tab-content {
+        padding-top: 2rem;
+    }
+
+    /* List Item Styles */
+    .activity-list .list-group-item {
+        border-radius: 10px;
+        margin-bottom: 1rem;
+        border: 1px solid #eef2f5;
+        padding: 1.25rem;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .activity-list .list-group-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07);
+        border-left: 4px solid #7f143f;
+    }
+
+    .post-link {
+        font-weight: 600;
+        color: #2c3e50;
+        text-decoration: none;
+        font-size: 1.1rem;
+    }
+
+    .post-link:hover {
+        color: #7f143f;
+    }
+
+    .item-meta {
+        font-size: 0.85rem;
+        color: #95a5a6;
+        margin-top: 0.5rem;
+    }
+
+    .comment-text {
+        font-style: italic;
+        color: #34495e;
+        margin-bottom: 0.75rem;
+    }
+
+    .comment-post-link {
+        font-weight: 500;
+        color: #7f8c8d;
+    }
+</style>
+
+<div class="container">
+    <div class="profile-card">
+
+        <div class="profile-header">
+            <img src="/img/@(Model.Image ?? "default-avatar.png")" class="profile-avatar" alt="@Model.Name">
+
+            <div class="profile-info">
+
+                <h2>@Model.Name</h2>
+                <p>@@@Model.UserName</p>
+                @if (User.Identity?.Name == Model.UserName)
+                {
+                    <div class="ms-auto">
+                        <a href="/users/editprofile" class="btn btn-outline-secondary">
+                            <i class="bi bi-pencil-square"></i> Edit Profile
+                        </a>
+                    </div>
+                }
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <span class="count">@Model.Posts.Count</span> Posts
+                    </div>
+                    <div class="stat-item">
+                        <span class="count">@Model.Comments.Count</span> Comments
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="col-md-10">
-        <div class="bg-white p-4">
-            <h5>@Model.Name</h5>
-            <hr>
-            <div id="posts">
-                <h5 class="my-4">Published Posts</h5>
-                <ul class="list-group">
-                    @foreach (var post in @Model.Posts)
-                    {
-                        <li class="list-group-item"><i class="bi bi-caret-right-fill"></i> <a
-                                href="/posts/details/@post.Url">@post.Title</a></li>
-                    }
-                </ul>
+
+        <ul class="nav nav-tabs" id="profileTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="posts-tab" data-bs-toggle="tab" data-bs-target="#posts"
+                    type="button" role="tab" aria-controls="posts" aria-selected="true">
+                    <i class="bi bi-file-earmark-post"></i> Published Posts
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="comments-tab" data-bs-toggle="tab" data-bs-target="#comments" type="button"
+                    role="tab" aria-controls="comments" aria-selected="false">
+                    <i class="bi bi-chat-dots"></i> Comments
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="profileTabsContent">
+
+            <div class="tab-pane fade show active" id="posts" role="tabpanel" aria-labelledby="posts-tab">
+                @if (Model.Posts.Any())
+                {
+                    <ul class="list-group activity-list">
+                        @foreach (var post in Model.Posts.Where(p => p.IsActive).OrderByDescending(p => p.PublishedOn))
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="bi bi-caret-right-fill me-2" style="color: #7f143f;"></i>
+                                    <a class="post-link" href="/posts/details/@post.Url">@post.Title</a>
+                                </div>
+                                <span class="item-meta">@post.PublishedOn.ToString("dd MMMM yyyy", new
+                                                                CultureInfo("en-US"))</span>
+                    </li>
+                                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-muted">This user has not published any posts yet.</p>
+                }
             </div>
-            <div id="comments">
-                <h5 class="my-4">Comments</h5>
-                <ul class="list-group">
-                    @foreach (var comment in @Model.Comments)
-                    {
-                        <li class="list-group-item"><i class="bi bi-chat-right-text-fill"></i> @comment.Text
-                            <i><u> <a href="/posts/details/@comment.Post.Url">[@comment.Post.Title]</a></u></i>
-                        </li>
-                    }
-                </ul>
+
+            <div class="tab-pane fade" id="comments" role="tabpanel" aria-labelledby="comments-tab">
+                @if (Model.Comments.Any())
+                {
+                    <ul class="list-group activity-list">
+                        @foreach (var comment in Model.Comments.Where(c => c.Post != null &&
+                                            c.Post.IsActive).OrderByDescending(c => c.PublishedOn))
+                        {
+                            <li class="list-group-item">
+                                <p class="comment-text">"@comment.Text"</p>
+                                <div class="item-meta text-end">
+                                    commented on <a class="comment-post-link"
+                                        href="/posts/details/@comment.Post.Url"><strong>@comment.Post.Title</strong></a>
+                                    on @comment.PublishedOn.ToString("dd MMMM yyyy", new CultureInfo("en-US"))
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-muted">This user has not made any comments yet.</p>
+                }
             </div>
+
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        // Bootstrap 5 tab functionality
+        var triggerTabList = [].slice.call(document.querySelectorAll('#profileTabs button'))
+        triggerTabList.forEach(function (triggerEl) {
+            var tabTrigger = new bootstrap.Tab(triggerEl)
+
+            triggerEl.addEventListener('click', function (event) {
+                event.preventDefault()
+                tabTrigger.show()
+            })
+        })
+    </script>
+}

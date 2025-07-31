@@ -162,7 +162,7 @@
                         <textarea asp-for="Content" class="form-control w-full" id="Content" style="height: 200px;"></textarea>
                         <span asp-validation-for="Content" class="text-danger"></span>
                     </div>
-                    @if (User.FindFirstValue(System.Security.Claims.ClaimTypes.Role) == "admin")
+                    @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Admin"))
                     {
                         <div class="form-check mb-4">
                             <input asp-for="IsActive" class="form-check-input" id="IsActive" />
@@ -173,13 +173,13 @@
                 <div class="col-md-4">
                     <div class="tag-section">
                         <h3 class="section-title">Tags</h3>
-                        @if (ViewBag.Tags != null && ViewBag.Tags.Count > 0)
+                        @if (ViewBag.Tags is List<BlogApp.Entity.Tag> tags && tags.Any())
                         {
-                            @foreach (var tag in ViewBag.Tags)
+                            @foreach (var tag in tags)
                             {
                                 <div class="form-check mb-2">
-                                    <input class="form-check-input" name="selectedTags" type="checkbox" value="@tag.TagId" id="tag_@tag.TagId"
-                                           @(Model != null && Model.SelectedTagIds != null && Model.SelectedTagIds.Any(id => id == tag.TagId.ToString()) ? "checked" : "") />
+                                    <input class="form-check-input" name="SelectedTagIds" type="checkbox" value="@tag.TagId" id="tag_@tag.TagId"
+                                           @(Model?.SelectedTagIds?.Contains(tag.TagId.ToString()) == true ? "checked" : "") />
                                     <label for="tag_@tag.TagId" class="form-check-label">@tag.Text</label>
                                 </div>
                             }
@@ -280,10 +280,18 @@
             imageFile.addEventListener('change', function () {
                 const file = this.files[0];
                 if (file) {
+                    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif'];
+                    if (!allowedTypes.includes(file.type)) {
+                        document.getElementById('imageFileError').textContent = 'Invalid image format. Only PNG, JPG, JPEG, and GIF are allowed.';
+                        this.value = '';
+                        document.getElementById('imagePreview').style.display = 'none';
+                        return;
+                    }
+                    document.getElementById('imageFileError').textContent = '';
                     const reader = new FileReader();
                     reader.onload = function (e) {
-                        imagePreview.src = e.target.result;
-                        imagePreview.style.display = 'block';
+                        document.getElementById('imagePreview').src = e.target.result;
+                        document.getElementById('imagePreview').style.display = 'block';
                     };
                     reader.readAsDataURL(file);
                 } else {

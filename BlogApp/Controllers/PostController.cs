@@ -1,15 +1,16 @@
+using System;
+using System.IO;
+using System.Linq;
 using System.Security.Claims;
-using System.Text.Json;
+using System.Threading.Tasks;
 using BlogApp.Data.Abstract;
 using BlogApp.Entity;
 using BlogApp.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.IO;
-using System.Threading.Tasks;
-using System.Linq;
 
 namespace BlogApp.Controllers
 {
@@ -19,20 +20,28 @@ namespace BlogApp.Controllers
         private readonly ICommentRepository _commentRepository;
         private readonly ITagRepository _tagRepository;
         private readonly ILogger<PostController> _logger;
-
-        public PostController(IPostRepository postRepository, ICommentRepository commentRepository, ITagRepository tagRepository, ILogger<PostController> logger)
+        private readonly UserManager<User> _userManager;
+        public PostController(
+            IPostRepository postRepository,
+            ICommentRepository commentRepository,
+            ITagRepository tagRepository,
+            ILogger<PostController> logger,
+            UserManager<User> userManager)
         {
             _postRepository = postRepository;
             _commentRepository = commentRepository;
             _tagRepository = tagRepository;
             _logger = logger;
+            _userManager = userManager;
         }
 
+        // GET: /post or /posts/tag/{tag}
         public async Task<IActionResult> Index(string? tag, int page = 1)
         {
             const int postsPerPage = 4;
             var postsQuery = _postRepository.Posts
                 .Include(p => p.Tags)
+                .Include(p => p.User)
                 .Where(p => p.IsActive)
                 .AsQueryable();
 
@@ -47,19 +56,6 @@ namespace BlogApp.Controllers
                 .Skip((page - 1) * postsPerPage)
                 .Take(postsPerPage)
                 .ToListAsync();
-
-            if (totalPosts == 0)
-            {
-                _logger.LogInformation("No active posts found for Index action.");
-                ViewBag.Message = "No published posts found. Try creating a new post.";
-                return View(new PostsViewModel
-                {
-                    Posts = new List<Post>(),
-                    Tag = tag,
-                    CurrentPage = page,
-                    TotalPages = 0
-                });
-            }
 
             var model = new PostsViewModel
             {
@@ -80,19 +76,20 @@ namespace BlogApp.Controllers
             return View(model);
         }
 
+        // GET: /posts/details/{url}
         public async Task<IActionResult> Details(string? url)
         {
             if (string.IsNullOrEmpty(url))
             {
-                _logger.LogWarning("Details action failed. URL is null or empty.");
+                _logger.LogWarning("Details action failed: URL is null or empty.");
                 return NotFound();
             }
 
             var post = await _postRepository.Posts
-                .Include(x => x.User)
+                .Include(p => p.User)
                 .Include(p => p.Tags)
                 .Include(p => p.Comments)
-                .ThenInclude(p => p.User)
+                .ThenInclude(c => c.User)
                 .FirstOrDefaultAsync(p => p.IsActive && p.Url == url);
 
             if (post == null)
@@ -101,175 +98,152 @@ namespace BlogApp.Controllers
                 return NotFound();
             }
 
-            _logger.LogInformation($"Details action loaded for Post URL: {url}, PostId: {post.PostId}, Tags Count: {post.Tags?.Count ?? 0}");
+            // Set default avatar for users without images
+            if (post.User != null)
+            {
+                post.User.Image ??= "default-avatar-icon.png";
+            }
+            if (post.Comments != null)
+            {
+                foreach (var comment in post.Comments)
+                {
+                    if (comment.User != null)
+                    {
+                        comment.User.Image ??= "default-avatar-icon.png";
+                    }
+                }
+            }
+
+            _logger.LogInformation($"Details action loaded for Post URL: {url}, PostId: {post.PostId}, Tags Count: {(post.Tags?.Count ?? 0)}");
             return View(post);
         }
 
+        // POST: /Post/AddComment
         [HttpPost]
-        public JsonResult AddComment(int PostId, string? Text)
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<JsonResult> AddComment(int PostId, string? Text)
         {
-            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(Text))
             {
-                _logger.LogWarning("AddComment action failed. User is not authenticated.");
-                return Json(new { error = "User could not be authenticated." });
+                return Json(new { success = false, message = "Comment text cannot be empty or user not authenticated." });
             }
 
-            if (string.IsNullOrEmpty(Text))
+            var currentUser = await _userManager.FindByIdAsync(userId);
+            if (currentUser == null)
             {
-                _logger.LogWarning($"AddComment action failed for PostId: {PostId}. Comment text is empty.");
-                return Json(new { error = "Comment text is required." });
+                return Json(new { success = false, message = "User not found." });
             }
 
-            var username = User.FindFirstValue(ClaimTypes.Name) ?? "Anonymous";
-            var avatar = User.FindFirstValue(ClaimTypes.UserData) ?? "default.jpg";
-
-            var entity = new Comment
+            var comment = new Comment
             {
                 PostId = PostId,
                 Text = Text,
                 PublishedOn = DateTime.Now,
                 UserId = userId
             };
-
-            try
+            await _commentRepository.CreateComment(comment);
+            return Json(new
             {
-                _commentRepository.CreateComment(entity);
-                _logger.LogInformation($"Comment added for PostId: {PostId} by UserId: {userId}");
-                return Json(new
-                {
-                    username,
-                    text = entity.Text,
-                    publishedOn = entity.PublishedOn,
-                    avatar
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Failed to add comment for PostId: {PostId}, UserId: {userId}");
-                return Json(new { error = "An error occurred while adding the comment." });
-            }
+                success = true,
+                username = currentUser.UserName,
+                name = currentUser.Name,
+                text = comment.Text,
+                publishedOn = comment.PublishedOn.ToString("MMMM dd, yyyy HH:mm"),
+                avatar = currentUser.Image ?? "default-avatar.png"
+            });
         }
 
+        // GET: /post/create
         [Authorize]
         public async Task<IActionResult> Create()
         {
             var tags = await _tagRepository.Tags.ToListAsync();
             ViewBag.Tags = tags ?? new List<Tag>();
-            _logger.LogInformation($"Create view loaded. Tags count: {tags?.Count ?? 0}");
+            _logger.LogInformation($"Create view loaded. Tags count: {(tags?.Count ?? 0)}");
             return View(new PostCreateViewModel());
         }
 
+        // POST: /post/create
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(PostCreateViewModel model, IFormFile? imageFile, string[]? selectedTags)
+        [HttpPost]
+        public async Task<IActionResult> Create(PostCreateViewModel model, IFormFile? imageFile)
         {
-            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
-            {
-                _logger.LogWarning("Create POST action failed. UserId is null or invalid.");
-                return Unauthorized();
-            }
-
-            _logger.LogInformation($"Create POST action started. UserId: {userId}, Title: {model.Title}, SelectedTagIds: {string.Join(",", selectedTags ?? Array.Empty<string>())}");
-
-            if (ModelState.ContainsKey("Image"))
-            {
-                ModelState["Image"].Errors.Clear();
-                ModelState["Image"].ValidationState = Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Valid;
-            }
-
             if (!ModelState.IsValid)
             {
-                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-                _logger.LogWarning($"Create POST action failed due to invalid model state. UserId: {userId}. Errors: {string.Join(", ", errors)}");
-                ViewBag.Tags = await _tagRepository.Tags.ToListAsync() ?? new List<Tag>();
+                // Model geçerli değilse, tag listesini tekrar yükleyip formu geri göster
+                ViewBag.Tags = await _tagRepository.Tags.ToListAsync();
                 return View(model);
             }
 
-            var existingPost = await _postRepository.Posts.FirstOrDefaultAsync(p => p.Url == model.Url);
-            if (existingPost != null)
-            {
-                ModelState.AddModelError("Url", "This URL is already in use.");
-                ViewBag.Tags = await _tagRepository.Tags.ToListAsync() ?? new List<Tag>();
-                return View(model);
-            }
-
-            string? imageName = null;
-            if (imageFile != null && imageFile.Length > 0)
-            {
-                var fileName = Path.GetFileNameWithoutExtension(imageFile.FileName);
-                var extension = Path.GetExtension(imageFile.FileName);
-                imageName = $"{fileName}_{Guid.NewGuid()}{extension}";
-                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", imageName);
-                try
-                {
-                    using (var stream = new FileStream(path, FileMode.Create))
-                    {
-                        await imageFile.CopyToAsync(stream);
-                    }
-                    _logger.LogInformation($"New image saved: {path}");
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, $"Failed to save image for UserId: {userId}");
-                    ModelState.AddModelError("imageFile", "An error occurred while uploading the image.");
-                    ViewBag.Tags = await _tagRepository.Tags.ToListAsync() ?? new List<Tag>();
-                    return View(model);
-                }
-            }
-
-            var post = new Post
+            // 1. Yeni Post nesnesini ViewModel'den gelen bilgilerle oluştur
+            var newPost = new Post
             {
                 Title = model.Title,
                 Description = model.Description,
                 Content = model.Content,
                 Url = model.Url,
-                Image = imageName ?? "default.jpg",
-                UserId = userId,
                 PublishedOn = DateTime.Now,
-                IsActive = User.FindFirstValue(ClaimTypes.Role) == "admin" ? model.IsActive : false
+                IsActive = model.IsActive, // EKSİK OLAN KISIM BURASIYDI!
+                                           // O an giriş yapmış olan kullanıcının kimliğini (ID) ata
+                UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)
             };
 
-            int[] tagIds = selectedTags?.Select(s => int.TryParse(s, out int id) ? id : 0).Where(id => id != 0).ToArray() ?? Array.Empty<int>();
-            _logger.LogInformation($"SelectedTagIds from form: {string.Join(",", selectedTags ?? Array.Empty<string>())}, Converted Tag IDs: {string.Join(",", tagIds)}");
-
-            try
+            // 2. Resim dosyası seçilmişse işle ve ismini Post nesnesine ata
+            if (imageFile != null)
             {
-                await _postRepository.CreatePost(post, tagIds);
-                _logger.LogInformation($"Post created by user {userId}. PostId: {post.PostId}, Tags: {string.Join(",", tagIds)}");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Post creation failed. UserId: {userId}, Tags: {string.Join(",", tagIds)}");
-                ModelState.AddModelError("", "An error occurred while creating the post.");
-                ViewBag.Tags = await _tagRepository.Tags.ToListAsync() ?? new List<Tag>();
-                return View(model);
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
+                var extension = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
+                if (!allowedExtensions.Contains(extension))
+                {
+                    ModelState.AddModelError("", "Invalid image format. Only JPG, JPEG, and PNG are allowed.");
+                    ViewBag.Tags = await _tagRepository.Tags.ToListAsync();
+                    return View(model);
+                }
+
+                var randomFileName = $"{Guid.NewGuid()}{extension}";
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", randomFileName);
+
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    await imageFile.CopyToAsync(stream);
+                }
+                newPost.Image = randomFileName;
             }
 
-            Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
-            Response.Headers["Pragma"] = "no-cache";
-            Response.Headers["Expires"] = "0";
-            return RedirectToAction("List");
+            // 3. Gelen string[] tag ID'lerini int[] dizisine çevir
+            var selectedTagIds = model.SelectedTagIds?.Select(int.Parse).ToArray() ?? Array.Empty<int>();
+
+            // 4. Repository'deki doğru metodu çağırarak hem post'u hem de tag'leri kaydet
+            await _postRepository.CreatePost(newPost, selectedTagIds);
+
+            // TempData ile başarılı mesajı gönder (isteğe bağlı ama güzel bir özellik)
+            TempData["message"] = "Post has been created successfully.";
+
+            return RedirectToAction("List", "Post");
         }
 
+        // GET: /post/list
         [Authorize]
         public async Task<IActionResult> List(string? search, string? status, int page = 1)
         {
-            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!int.TryParse(userIdStr, out int userId))
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
             {
-                _logger.LogWarning("List action failed. UserId is null or invalid.");
+                _logger.LogWarning("List action failed: UserId is null or invalid.");
                 return Unauthorized();
             }
 
             const int postsPerPage = 6;
             var postsQuery = _postRepository.Posts
                 .Include(p => p.Tags)
+                .Include(p => p.User)
                 .AsQueryable();
 
-            if (!User.IsInRole("admin"))
+            if (!User.IsInRole("Admin"))
             {
                 postsQuery = postsQuery.Where(p => p.UserId == userId);
             }
@@ -294,6 +268,15 @@ namespace BlogApp.Controllers
                 .Take(postsPerPage)
                 .ToListAsync();
 
+            // Set default avatar for users without images
+            foreach (var post in posts)
+            {
+                if (post.User != null)
+                {
+                    post.User.Image ??= "default-avatar-icon.png";
+                }
+            }
+
             var model = new PostsViewModel
             {
                 Posts = posts,
@@ -308,35 +291,38 @@ namespace BlogApp.Controllers
             return View(model);
         }
 
+        // GET: /post/edit/{url}
         [Authorize]
         public async Task<IActionResult> Edit(string? url)
         {
             if (string.IsNullOrEmpty(url))
             {
-                _logger.LogWarning("Edit GET action failed. URL is null or empty.");
+                _logger.LogWarning("Edit GET action failed: URL is null or empty.");
                 return NotFound();
             }
 
             var post = await _postRepository.Posts
                 .Include(p => p.Tags)
+                .Include(p => p.User)
                 .FirstOrDefaultAsync(p => p.Url == url);
+
             if (post == null)
             {
                 _logger.LogWarning($"Post not found for URL: {url}");
                 return NotFound();
             }
 
-            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!int.TryParse(userIdStr, out int userId))
-            {
-                _logger.LogWarning($"Edit GET action failed. UserId is null or invalid.");
-                return Unauthorized();
-            }
-
-            if (post.UserId != userId && !User.IsInRole("admin"))
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId) || (post.UserId != userId && !User.IsInRole("Admin")))
             {
                 _logger.LogWarning($"Unauthorized access to edit post with URL: {url} by UserId: {userId}");
                 return Unauthorized();
+            }
+
+            // Set default avatar if user image is not set
+            if (post.User != null)
+            {
+                post.User.Image ??= "default-avatar-icon.png";
             }
 
             var tags = await _tagRepository.Tags.ToListAsync();
@@ -344,177 +330,119 @@ namespace BlogApp.Controllers
             var model = new PostCreateViewModel
             {
                 PostId = post.PostId,
-                Title = post.Title ?? string.Empty,
+                Title = post.Title,
                 Description = post.Description,
-                Content = post.Content ?? string.Empty,
-                Url = post.Url ?? string.Empty,
+                Content = post.Content,
+                Url = post.Url,
                 Image = post.Image,
                 IsActive = post.IsActive,
                 SelectedTagIds = post.Tags?.Select(t => t.TagId.ToString()).ToArray() ?? Array.Empty<string>()
             };
 
-            _logger.LogInformation($"Edit view loaded for Post URL: {url}, PostId: {post.PostId}, UserId: {userId}, SelectedTagIds: {string.Join(",", model.SelectedTagIds)}, Tags count: {tags?.Count ?? 0}");
+            _logger.LogInformation($"Edit view loaded for Post URL: {url}, PostId: {post.PostId}, UserId: {userId}, SelectedTagIds: {string.Join(",", model.SelectedTagIds)}, Tags count: {(tags?.Count ?? 0)}");
             return View(model);
         }
 
+        // POST: /post/edit
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(PostCreateViewModel model, IFormFile? imageFile)
         {
-            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
-            {
-                _logger.LogWarning("Edit POST action failed. UserId is null or invalid.");
-                return Unauthorized();
-            }
-
-            if (ModelState.ContainsKey("Image"))
-            {
-                ModelState["Image"].Errors.Clear();
-                ModelState["Image"].ValidationState = Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Valid;
-            }
-
             if (!ModelState.IsValid)
             {
-                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-                _logger.LogWarning($"Edit POST action failed due to invalid model state. UserId: {userId}, PostId: {model.PostId}. Errors: {string.Join(", ", errors)}");
-                ViewBag.Tags = await _tagRepository.Tags.ToListAsync() ?? new List<Tag>();
+                // Eğer model geçerli değilse, tag listesini tekrar doldurup view'ı geri döndür
+                ViewBag.Tags = await _tagRepository.Tags.ToListAsync();
                 return View(model);
             }
 
-            var existingPost = await _postRepository.Posts.FirstOrDefaultAsync(p => p.Url == model.Url && p.PostId != model.PostId);
-            if (existingPost != null)
+            // 1. Veritabanından güncellenecek olan post'u bul
+            var entityToUpdate = await _postRepository.Posts.Include(p => p.Tags).FirstOrDefaultAsync(p => p.PostId == model.PostId);
+
+            if (entityToUpdate == null)
             {
-                _logger.LogWarning($"Edit POST action failed. URL '{model.Url}' is already in use by PostId: {existingPost.PostId}");
-                ModelState.AddModelError("Url", "This URL is already in use.");
-                ViewBag.Tags = await _tagRepository.Tags.ToListAsync() ?? new List<Tag>();
-                return View(model);
+                return NotFound(); // Post bulunamazsa hata ver
             }
 
-            var role = User.FindFirstValue(ClaimTypes.Role);
-            var postQuery = _postRepository.Posts
-                .Include(x => x.Tags)
-                .Where(x => x.PostId == model.PostId);
+            // 2. ViewModel'den gelen tüm bilgileri entity'e tek tek aktar
+            entityToUpdate.Title = model.Title;
+            entityToUpdate.Description = model.Description;
+            entityToUpdate.Content = model.Content;
+            entityToUpdate.Url = model.Url;
+            entityToUpdate.IsActive = model.IsActive; // EKSİK OLAN EN ÖNEMLİ KISIM BURASIYDI!
 
-            if (string.IsNullOrEmpty(role) || role != "admin")
+            // 3. Resim dosyası seçilmişse işle
+            if (imageFile != null)
             {
-                postQuery = postQuery.Where(x => x.UserId == userId);
-                _logger.LogInformation($"Non-admin user {userId} is editing their own post {model.PostId}");
-            }
-
-            var post = await postQuery.FirstOrDefaultAsync();
-            if (post == null)
-            {
-                _logger.LogWarning($"Post not found for ID: {model.PostId}, UserId: {userId}, Role: {role}");
-                return NotFound();
-            }
-
-            string? imageName = post.Image;
-            if (imageFile != null && imageFile.Length > 0)
-            {
-                if (!string.IsNullOrEmpty(post.Image) && post.Image != "default.jpg")
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
+                var extension = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
+                if (!allowedExtensions.Contains(extension))
                 {
-                    var oldImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", post.Image);
-                    if (System.IO.File.Exists(oldImagePath))
-                    {
-                        try
-                        {
-                            System.IO.File.Delete(oldImagePath);
-                            _logger.LogInformation($"Old image deleted: {oldImagePath}");
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.LogWarning($"Failed to delete old image: {post.Image}. Error: {ex.Message}");
-                        }
-                    }
-                }
-
-                var fileName = Path.GetFileNameWithoutExtension(imageFile.FileName);
-                var extension = Path.GetExtension(imageFile.FileName);
-                imageName = $"{fileName}_{Guid.NewGuid()}{extension}";
-                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", imageName);
-                try
-                {
-                    using (var stream = new FileStream(path, FileMode.Create))
-                    {
-                        await imageFile.CopyToAsync(stream);
-                    }
-                    _logger.LogInformation($"New image saved: {path}");
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, $"Failed to save image for PostId: {model.PostId}, UserId: {userId}");
-                    ModelState.AddModelError("imageFile", "An error occurred while uploading the image.");
-                    ViewBag.Tags = await _tagRepository.Tags.ToListAsync() ?? new List<Tag>();
+                    ModelState.AddModelError("", "Invalid image format. Only JPG, JPEG, and PNG are allowed.");
+                    ViewBag.Tags = await _tagRepository.Tags.ToListAsync();
                     return View(model);
                 }
+
+                var randomFileName = $"{Guid.NewGuid()}{extension}";
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", randomFileName);
+
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    await imageFile.CopyToAsync(stream);
+                }
+                entityToUpdate.Image = randomFileName;
             }
 
-            post.Title = model.Title;
-            post.Description = model.Description;
-            post.Content = model.Content;
-            post.Url = model.Url;
-            post.Image = imageName ?? post.Image;
-            if (role == "admin")
-            {
-                post.IsActive = model.IsActive;
-            }
+            var selectedTagIds = model.SelectedTagIds?.Select(int.Parse).ToArray() ?? Array.Empty<int>();
 
-            int[] tagIds = model.SelectedTagIds?
-                .Select(s => int.TryParse(s, out int id) ? id : 0)
-                .Where(id => id != 0)
-                .ToArray() ?? Array.Empty<int>();
+            await _postRepository.EditPost(entityToUpdate, selectedTagIds);
 
-            try
-            {
-                await _postRepository.EditPost(post, tagIds);
-                _logger.LogInformation($"Post {model.PostId} successfully updated by UserId: {userId}. Tags: {string.Join(",", tagIds)}");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Failed to update Post {model.PostId} with tags: {string.Join(",", tagIds)}");
-                ModelState.AddModelError("", "An error occurred while updating the post and tags.");
-                ViewBag.Tags = await _tagRepository.Tags.ToListAsync() ?? new List<Tag>();
-                return View(model);
-            }
-
-            Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
-            Response.Headers["Pragma"] = "no-cache";
-            Response.Headers["Expires"] = "0";
-            return RedirectToAction("List");
+            return RedirectToAction("List", "Post");
         }
 
+        [Authorize]
         [HttpPost]
         [Route("post/uploadimage")]
         public async Task<IActionResult> UploadImage(IFormFile? file)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                _logger.LogWarning("UploadImage action failed: User is not authenticated.");
+                return Json(new { success = false, message = "User could not be authenticated." });
+            }
+
             if (file == null || file.Length == 0)
             {
-                _logger.LogWarning("UploadImage action failed. No file uploaded.");
+                _logger.LogWarning("UploadImage action failed: No file uploaded.");
                 return Json(new { success = false, message = "No file uploaded." });
+            }
+
+            if (!IsValidImage(file))
+            {
+                _logger.LogWarning("UploadImage action failed: Invalid image format.");
+                return Json(new { success = false, message = "Invalid image format. Only PNG, JPG, JPEG, and GIF are allowed." });
             }
 
             try
             {
-                var fileName = Path.GetFileNameWithoutExtension(file.FileName);
-                var extension = Path.GetExtension(file.FileName);
-                var newFileName = $"{fileName}_{Guid.NewGuid()}{extension}";
-                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", newFileName);
-                using (var stream = new FileStream(path, FileMode.Create))
+                var imageName = await SaveImageAsync(file, userId);
+                if (imageName == null)
                 {
-                    await file.CopyToAsync(stream);
+                    _logger.LogError("UploadImage action failed: Image saving returned null.");
+                    return Json(new { success = false, message = "An error occurred while uploading the image." });
                 }
-                _logger.LogInformation($"Image uploaded successfully: {newFileName}");
-                return Json(new { success = true, location = $"/img/{newFileName}" });
+                _logger.LogInformation($"Image uploaded successfully by UserId: {userId}, Image: {imageName}");
+                return Json(new { success = true, location = $"/img/{imageName}" });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to upload image.");
-                return Json(new { success = false, message = "An error occurred while uploading the image: " + ex.Message });
+                _logger.LogError(ex, $"Failed to upload image by UserId: {userId}");
+                return Json(new { success = false, message = $"An error occurred while uploading the image: {ex.Message}" });
             }
         }
 
+        // POST: /post/delete
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -522,29 +450,35 @@ namespace BlogApp.Controllers
         {
             if (request == null || request.Id <= 0)
             {
-                _logger.LogWarning("Delete action failed. Invalid post ID.");
+                _logger.LogWarning("Delete action failed: Invalid post ID.");
                 return Json(new { success = false, message = "Invalid post ID." });
             }
 
-            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!int.TryParse(userIdStr, out int userId))
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
             {
-                _logger.LogWarning("Delete action failed. UserId is null or invalid.");
+                _logger.LogWarning("Delete action failed: UserId is null or invalid.");
                 return Json(new { success = false, message = "User could not be authenticated." });
             }
 
             var post = await _postRepository.Posts
-                .Where(p => p.PostId == request.Id && (p.UserId == userId || User.IsInRole("admin")))
+                .Where(p => p.PostId == request.Id && (p.UserId == userId || User.IsInRole("Admin")))
                 .FirstOrDefaultAsync();
 
             if (post == null)
             {
-                _logger.LogWarning($"Delete action failed. Post not found or unauthorized for PostId: {request.Id}, UserId: {userId}");
+                _logger.LogWarning($"Delete action failed: Post not found or unauthorized for PostId: {request.Id}, UserId: {userId}");
                 return Json(new { success = false, message = "Post not found or you do not have permission to delete it." });
             }
 
             try
             {
+                // Delete associated image if it exists and is not default
+                if (!string.IsNullOrEmpty(post.Image) && post.Image != "default.jpg")
+                {
+                    await DeleteImageAsync(post.Image, userId);
+                }
+
                 await _postRepository.DeletePost(request.Id);
                 _logger.LogInformation($"Post {request.Id} deleted by UserId: {userId}");
                 return Json(new { success = true, message = "Post deleted successfully." });
@@ -553,6 +487,59 @@ namespace BlogApp.Controllers
             {
                 _logger.LogError(ex, $"Failed to delete Post {request.Id} by UserId: {userId}");
                 return Json(new { success = false, message = "An error occurred while deleting the post." });
+            }
+        }
+
+        private bool IsValidImage(IFormFile file)
+        {
+            var allowedExtensions = new[] { ".png", ".jpg", ".jpeg", ".gif" };
+            var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+            return allowedExtensions.Contains(extension);
+        }
+
+        private async Task<string?> SaveImageAsync(IFormFile file, string userId)
+        {
+            try
+            {
+                var fileName = Path.GetFileNameWithoutExtension(file.FileName);
+                var extension = Path.GetExtension(file.FileName);
+                var newFileName = $"{fileName}_{Guid.NewGuid()}{extension}";
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", newFileName);
+
+                var directory = Path.GetDirectoryName(path);
+                if (directory != null && !Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+                _logger.LogInformation($"Image saved: {newFileName} by UserId: {userId}");
+                return newFileName;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to save image for UserId: {userId}");
+                return null;
+            }
+        }
+
+        private async Task DeleteImageAsync(string imageName, string userId)
+        {
+            try
+            {
+                var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", imageName);
+                if (System.IO.File.Exists(imagePath))
+                {
+                    await Task.Run(() => System.IO.File.Delete(imagePath));
+                    _logger.LogInformation($"Image deleted: {imageName} by UserId: {userId}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, $"Failed to delete image: {imageName} by UserId: {userId}");
             }
         }
 
