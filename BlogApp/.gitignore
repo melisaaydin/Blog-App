@@ -24,7 +24,6 @@ obj/
 *.snupkg
 *.nuspec
 
-# VS Code ayarları (isteğe bağlı)
 .vscode/
 
 # Rider ayarları

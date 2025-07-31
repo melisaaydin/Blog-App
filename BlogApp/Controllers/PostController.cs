@@ -21,18 +21,21 @@ namespace BlogApp.Controllers
         private readonly ITagRepository _tagRepository;
         private readonly ILogger<PostController> _logger;
         private readonly UserManager<User> _userManager;
+        private readonly INotificationService _notificationService;
         public PostController(
             IPostRepository postRepository,
             ICommentRepository commentRepository,
             ITagRepository tagRepository,
             ILogger<PostController> logger,
-            UserManager<User> userManager)
+            UserManager<User> userManager, INotificationService notificationService)
         {
             _postRepository = postRepository;
             _commentRepository = commentRepository;
             _tagRepository = tagRepository;
             _logger = logger;
             _userManager = userManager;
+            _notificationService = notificationService;
+
         }
 
         // GET: /post or /posts/tag/{tag}
@@ -140,6 +143,11 @@ namespace BlogApp.Controllers
             {
                 return Json(new { success = false, message = "User not found." });
             }
+            var post = await _postRepository.Posts.FirstOrDefaultAsync(p => p.PostId == PostId);
+            if (post == null)
+            {
+                return Json(new { success = false, message = "Post not found." });
+            }
 
             var comment = new Comment
             {
@@ -149,6 +157,12 @@ namespace BlogApp.Controllers
                 UserId = userId
             };
             await _commentRepository.CreateComment(comment);
+            if (post.UserId != userId)
+            {
+                var message = $"{currentUser.Name ?? currentUser.UserName} commented on your post: \"{post.Title}\"";
+                var link = $"/posts/details/{post.Url}";
+                await _notificationService.CreateNotificationAsync(post.UserId, message, link);
+            }
             return Json(new
             {
                 success = true,

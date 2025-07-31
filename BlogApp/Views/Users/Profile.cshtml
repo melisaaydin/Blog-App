@@ -68,7 +68,6 @@
         color: #7f143f;
     }
 
-    /* Tab Styles */
     .nav-tabs {
         border-bottom: 2px solid #dee2e6;
     }
@@ -93,7 +92,6 @@
         padding-top: 2rem;
     }
 
-    /* List Item Styles */
     .activity-list .list-group-item {
         border-radius: 10px;
         margin-bottom: 1rem;
@@ -142,102 +140,123 @@
 
         <div class="profile-header">
             <img src="/img/@(Model.Image ?? "default-avatar.png")" class="profile-avatar" alt="@Model.Name">
-
             <div class="profile-info">
-
                 <h2>@Model.Name</h2>
                 <p>@@@Model.UserName</p>
-                @if (User.Identity?.Name == Model.UserName)
-                {
-                    <div class="ms-auto">
-                        <a href="/users/editprofile" class="btn btn-outline-secondary">
-                            <i class="bi bi-pencil-square"></i> Edit Profile
-                        </a>
-                    </div>
-                }
                 <div class="profile-stats">
                     <div class="stat-item">
-                        <span class="count">@Model.Posts.Where(p => p.IsActive).Count()</span> Posts
+                        <span class="count">@Model.Posts.Count(p => p.IsActive)</span> Posts
                     </div>
                     <div class="stat-item">
-                        <span class="count"> @Model.Comments.Count(c => Model.Posts.Any(p => p.IsActive && p.PostId ==
-                                                        c.PostId))</span> Comments
+                        <span class="count">@Model.Followers.Count</span> Followers
+                    </div>
+                    <div class="stat-item">
+                        <span class="count">@Model.Following.Count</span> Following
                     </div>
                 </div>
             </div>
-        </div>
 
-        <ul class="nav nav-tabs" id="profileTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="posts-tab" data-bs-toggle="tab" data-bs-target="#posts"
-                    type="button" role="tab" aria-controls="posts" aria-selected="true">
-                    <i class="bi bi-file-earmark-post"></i> Published Posts
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="comments-tab" data-bs-toggle="tab" data-bs-target="#comments" type="button"
-                    role="tab" aria-controls="comments" aria-selected="false">
-                    <i class="bi bi-chat-dots"></i> Comments
-                </button>
-            </li>
-        </ul>
-
-        <div class="tab-content" id="profileTabsContent">
-
-            <div class="tab-pane fade show active" id="posts" role="tabpanel" aria-labelledby="posts-tab">
-                @if (Model.Posts.Any())
+            <div class="ms-auto d-flex align-items-center">
+                @if (User.Identity?.IsAuthenticated == true)
                 {
-                    <ul class="list-group activity-list">
-                        @foreach (var post in Model.Posts.Where(p => p.IsActive).OrderByDescending(p => p.PublishedOn))
+                    if (User.FindFirstValue(ClaimTypes.NameIdentifier) == Model.Id)
+                    {
+                        <a href="/users/editprofile" class="btn btn-outline-secondary">
+                            <i class="bi bi-pencil-square"></i> Edit Profile
+                        </a>
+                    }
+                    else
+                    {
+                        var isFollowing = Model.Followers.Any(f => f.FollowerId ==
+                        User.FindFirstValue(ClaimTypes.NameIdentifier));
+                        if (isFollowing)
                         {
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <i class="bi bi-caret-right-fill me-2" style="color: #7f143f;"></i>
-                                    <a class="post-link" href="/posts/details/@post.Url">@post.Title</a>
-                                </div>
-                                <span class="item-meta">@post.PublishedOn.ToString("dd MMMM yyyy", new
-                                                                CultureInfo("en-US"))</span>
-                    </li>
-                                        }
-                    </ul>
-                }
-                else
-                {
-                    <p class="text-muted">This user has not published any posts yet.</p>
-                }
-            </div>
-
-            <div class="tab-pane fade" id="comments" role="tabpanel" aria-labelledby="comments-tab">
-                @if (Model.Comments.Any())
-                {
-                    <ul class="list-group activity-list">
-                        @foreach (var comment in Model.Comments.Where(c => c.Post != null &&
-                                            c.Post.IsActive).OrderByDescending(c => c.PublishedOn))
-                        {
-                            <li class="list-group-item">
-                                <p class="comment-text">"@comment.Text"</p>
-                                <div class="item-meta text-end">
-                                    commented on <a class="comment-post-link"
-                                        href="/posts/details/@comment.Post.Url"><strong>@comment.Post.Title</strong></a>
-                                    on @comment.PublishedOn.ToString("dd MMMM yyyy", new CultureInfo("en-US"))
-                                </div>
-                            </li>
+                            <button id="followBtn" class="btn btn-danger" data-action="unfollow" data-username="@Model.UserName">
+                                <i class="bi bi-person-dash-fill"></i> Unfollow
+                            </button>
                         }
-                    </ul>
-                }
-                else
-                {
-                    <p class="text-muted">This user has not made any comments yet.</p>
+                        else
+                        {
+                            <button id="followBtn" class="btn btn-primary" data-action="follow" data-username="@Model.UserName">
+                                <i class="bi bi-person-plus-fill"></i> Follow
+                            </button>
+                        }
+                    }
                 }
             </div>
-
         </div>
     </div>
+
+    <ul class="nav nav-tabs" id="profileTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="posts-tab" data-bs-toggle="tab" data-bs-target="#posts" type="button"
+                role="tab" aria-controls="posts" aria-selected="true">
+                <i class="bi bi-file-earmark-post"></i> Published Posts
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="comments-tab" data-bs-toggle="tab" data-bs-target="#comments" type="button"
+                role="tab" aria-controls="comments" aria-selected="false">
+                <i class="bi bi-chat-dots"></i> Comments
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="profileTabsContent">
+
+        <div class="tab-pane fade show active" id="posts" role="tabpanel" aria-labelledby="posts-tab">
+            @if (Model.Posts.Any())
+            {
+                <ul class="list-group activity-list">
+                    @foreach (var post in Model.Posts.Where(p => p.IsActive).OrderByDescending(p => p.PublishedOn))
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="bi bi-caret-right-fill me-2" style="color: #7f143f;"></i>
+                                <a class="post-link" href="/posts/details/@post.Url">@post.Title</a>
+                            </div>
+                            <span class="item-meta">@post.PublishedOn.ToString("dd MMMM yyyy", new
+                                                        CultureInfo("en-US"))</span>
+                </li>
+                                }
+                </ul>
+            }
+            else
+            {
+                <p class="text-muted">This user has not published any posts yet.</p>
+            }
+        </div>
+
+        <div class="tab-pane fade" id="comments" role="tabpanel" aria-labelledby="comments-tab">
+            @if (Model.Comments.Any())
+            {
+                <ul class="list-group activity-list">
+                    @foreach (var comment in Model.Comments.Where(c => c.Post != null &&
+                                    c.Post.IsActive).OrderByDescending(c => c.PublishedOn))
+                    {
+                        <li class="list-group-item">
+                            <p class="comment-text">"@comment.Text"</p>
+                            <div class="item-meta text-end">
+                                commented on <a class="comment-post-link"
+                                    href="/posts/details/@comment.Post.Url"><strong>@comment.Post.Title</strong></a>
+                                on @comment.PublishedOn.ToString("dd MMMM yyyy", new CultureInfo("en-US"))
+                            </div>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p class="text-muted">This user has not made any comments yet.</p>
+            }
+        </div>
+
+    </div>
+</div>
 </div>
 
 @section Scripts {
     <script>
-        // Bootstrap 5 tab functionality
         var triggerTabList = [].slice.call(document.querySelectorAll('#profileTabs button'))
         triggerTabList.forEach(function (triggerEl) {
             var tabTrigger = new bootstrap.Tab(triggerEl)
@@ -247,5 +266,48 @@
                 tabTrigger.show()
             })
         })
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#followBtn').on('click', function () {
+                const button = $(this);
+                const action = button.data('action');
+                const username = button.data('username');
+                const url = action === 'follow' ? '/Users/Follow' : '/Users/Unfollow';
+                const token = $('input[name="__RequestVerificationToken"]').val();
+
+                button.prop('disabled', true);
+
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: {
+                        username: username,
+                        __RequestVerificationToken: token
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            $('.stat-item .count').eq(1).text(response.followerCount);
+
+                            if (action === 'follow') {
+                                button.data('action', 'unfollow').text(' Unfollow').removeClass('btn-primary').addClass('btn-danger');
+                                button.prepend('<i class="bi bi-person-dash-fill"></i>');
+                            } else {
+                                button.data('action', 'follow').text(' Follow').removeClass('btn-danger').addClass('btn-primary');
+                                button.prepend('<i class="bi bi-person-plus-fill"></i>');
+                            }
+                        } else {
+                            alert(response.message || 'An error occurred.');
+                        }
+                    },
+                    error: function () {
+                        alert('An unexpected error occurred. Please try again.');
+                    },
+                    complete: function () {
+                        button.prop('disabled', false);
+                    }
+                });
+            });
+        });
     </script>
 }

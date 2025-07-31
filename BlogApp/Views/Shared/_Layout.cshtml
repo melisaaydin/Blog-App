@@ -22,6 +22,8 @@
                     <li class="nav-item">
                         <a href="/post/list" class="nav-link">Posts</a>
                     </li>
+                    @await Component.InvokeAsync("Notifications")
+
                     <li class="nav-item">
                         <a href="/profile/@User.Identity.Name" class="nav-link">@User.Identity.Name</a>
                     </li>
