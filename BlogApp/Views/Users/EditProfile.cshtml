@@ -1,0 +1,78 @@
+@model ProfileEditViewModel
+
+@{
+    ViewData["Title"] = "Edit Profile";
+}
+
+<style>
+    .edit-profile-card {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2.5rem;
+        background: #fff;
+        border-radius: 1rem;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+    .profile-image-preview {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #eef2f5;
+    }
+</style>
+
+<div class="edit-profile-card">
+    <h2 class="text-center mb-4">Edit Your Profile</h2>
+    <form asp-action="EditProfile" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+        
+        <div class="text-center mb-4">
+            <img id="imagePreview" src="/img/@(Model.Image ?? "default-avatar.png")" alt="Profile Preview" class="profile-image-preview" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ImageFile" class="form-label"></label>
+            <input asp-for="ImageFile" class="form-control">
+            <span asp-validation-for="ImageFile" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label"></label>
+            <input asp-for="Name" class="form-control">
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="UserName" class="form-label"></label>
+            <input asp-for="UserName" class="form-control">
+            <span asp-validation-for="UserName" class="text-danger"></span>
+        </div>
+        
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label"></label>
+            <input asp-for="Email" class="form-control">
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="d-grid">
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById("ImageFile").addEventListener("change", function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById("imagePreview").src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+}
