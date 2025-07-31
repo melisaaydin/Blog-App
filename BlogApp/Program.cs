@@ -12,7 +12,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 builder.Services.AddDbContext<BlogContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("sql_connection");
@@ -58,7 +63,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseStaticFiles();
 app.UseRouting();
-
+app.UseSession();
 // Authentication ve Authorization middleware'lerini doğru sırada ekleyin
 app.UseAuthentication();
 app.UseAuthorization();
