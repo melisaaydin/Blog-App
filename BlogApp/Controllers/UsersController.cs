@@ -252,6 +252,7 @@ namespace BlogApp.Controllers
         }
         [Authorize]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Follow(string username)
         {
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -284,6 +285,7 @@ namespace BlogApp.Controllers
 
         [Authorize]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Unfollow(string username)
         {
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
