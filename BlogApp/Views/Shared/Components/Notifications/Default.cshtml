@@ -1,36 +1,40 @@
 @model List<Notification>
 
 <li class="nav-item dropdown">
-    <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <a class="nav-link position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
         <i class="bi bi-bell-fill"></i>
         @{
             var unreadCount = Model.Count(n => !n.IsRead);
-            if (unreadCount > 0)
-            {
-                <span class="position-absolute top-2 start-80 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6em;">
-                    @unreadCount
-                </span>
-            }
         }
+        <span id="notification-badge"
+              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger @(unreadCount == 0 ? "d-none" : "")"
+              style="font-size: 0.6em; --bs-badge-padding-x: 0.5em; --bs-badge-padding-y: 0.5em;">
+            @unreadCount
+        </span>
     </a>
-    <ul class="dropdown-menu dropdown-menu-end" style="width: 350px;">
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" style="width: 350px; max-height: 400px; overflow-y: auto;">
+        <li class="px-3 py-2">
+            <h6 class="mb-0">Notifications</h6>
+        </li>
+        <li><hr class="dropdown-divider"></li>
+        
         @if(Model.Any())
         {
             foreach(var notification in Model)
             {
                 <li>
-                    <a class="dropdown-item" href="@notification.LinkUrl" style="white-space: normal; background-color: @(notification.IsRead ? "transparent" : "#f8f9fa")">
-                        @notification.Message
-                        <small class="d-block text-muted">@notification.CreatedAt.ToString("g")</small>
+                    <a class="dropdown-item py-2" href="@notification.LinkUrl" style="white-space: normal; background-color: @(notification.IsRead ? "transparent" : "#f8f9fa")">
+                        <small>@notification.Message</small>
+                        <small class="d-block text-muted mt-1">@notification.CreatedAt.ToString("MMM dd, HH:mm")</small>
                     </a>
                 </li>
             }
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item text-center" href="#">View All Notifications</a></li>
+            <li><a class="dropdown-item text-center text-primary" href="#">View All Notifications</a></li>
         }
         else
         {
-            <li><p class="dropdown-item text-center text-muted">No new notifications.</p></li>
+            <li><p class="dropdown-item text-center text-muted py-4">No new notifications.</p></li>
         }
     </ul>
 </li>
