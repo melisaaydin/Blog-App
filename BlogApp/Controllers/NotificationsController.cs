@@ -17,6 +17,20 @@ namespace BlogApp.Controllers
         {
             _context = context;
         }
+        [Authorize]
+        public async Task<IActionResult> Index()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+            var notifications = await _context.Notifications
+            .Where(n => n.UserId == userId)
+            .OrderByDescending(n => n.CreatedAt)
+            .ToListAsync();
+            return View(notifications);
+        }
 
         [HttpPost]
         public async Task<IActionResult> MarkAllAsRead()

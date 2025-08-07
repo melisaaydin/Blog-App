@@ -84,8 +84,18 @@ app.MapControllerRoute(
     defaults: new { controller = "Users", action = "Profile" }
 );
 app.MapControllerRoute(
+    name: "admin_post_status_edit",
+    pattern: "Admin/EditPostStatus/{url}",
+    defaults: new { controller = "Admin", action = "EditPostStatus" }
+);
+app.MapControllerRoute(
+    name: "message_chat",
+    pattern: "Message/Chat/{username}",
+    defaults: new { controller = "Message", action = "Chat" }
+);
+app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}"
+    pattern: "{controller=Post}/{action=Index}/{id?}"
 );
 
 app.Run();

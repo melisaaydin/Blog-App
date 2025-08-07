@@ -1,0 +1,66 @@
+@model List<Notification>
+@using System.Globalization
+
+@{
+    ViewData["Title"] = "All Notifications";
+}
+
+<style>
+    .notification-list-item {
+        border-left: 4px solid #eef2f5;
+        transition: all 0.2s ease;
+    }
+
+    .notification-list-item.unread {
+        border-left-color: #7f143f;
+        background-color: #f8f9fa;
+    }
+
+    .notification-list-item:hover {
+        background-color: #f1f5f9;
+    }
+
+    .notification-link {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .notification-message {
+        color: #2c3e50;
+        font-weight: 500;
+    }
+
+    .notification-date {
+        font-size: 0.85em;
+        color: #6c757d;
+    }
+</style>
+
+<div class="container my-5">
+    <h1 class="mb-4">Your Notifications</h1>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <ul class="list-group list-group-flush">
+                    @foreach (var notification in Model)
+                    {
+                        <li class="list-group-item p-3 notification-list-item @(notification.IsRead ? "" : "unread")">
+                            <a href="@notification.LinkUrl" class="notification-link d-block">
+                                <p class="mb-1 notification-message">@notification.Message</p>
+                                <small class="notification-date">
+                                    @notification.CreatedAt.ToString("MMMM dd, yyyy 'at' HH:mm", CultureInfo.InvariantCulture)
+                                </small>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p class="text-center text-muted p-4">You have no notifications yet.</p>
+            }
+        </div>
+    </div>
+</div>
