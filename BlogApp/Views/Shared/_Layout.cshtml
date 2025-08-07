@@ -15,7 +15,7 @@
     <header>
         <nav class="navbar navbar-expand-lg bg-white border-bottom shadow-sm">
             <div class="container">
-                <a href="/" class="navbar-brand">
+                <a href="/post" class="navbar-brand">
                     <img style="height: 40px;" src="/img/mlsblog.png" alt="Mls Blog Logo">
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
@@ -30,7 +30,15 @@
                         @if (User.Identity!.IsAuthenticated)
                         {
                             <li class="nav-item">
-                                <a href="/post/list" class="nav-link">My Posts</a>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <a href="/post/list" class="nav-link">Manage Posts</a>
+                                }
+                                else
+                                {
+                                    <a href="/post/list" class="nav-link">My Posts</a>
+                                }
+
                             </li>
                         }
                     </ul>
@@ -55,6 +63,20 @@
                                             <i class="bi bi-gear-fill me-2"></i> Edit Profile
                                         </a>
                                     </li>
+                                    <li><a href="/Message/Index"
+                                            class="dropdown-item d-flex justify-content-between align-items-center">
+                                            <span><i class="bi bi-envelope-fill me-2"></i> Messages</span>
+                                            @await Component.InvokeAsync("UnreadMessageCount")
+                                        </a></li>
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <li>
+                                            <hr class="dropdown-divider">
+                                        </li>
+                                        <li><a class="dropdown-item" href="/Admin/UserList"><i
+                                                    class="bi bi-people-fill me-2"></i> Admin Panel</a></li>
+                                    }
+
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
@@ -91,10 +113,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // AntiForgeryToken'ı AJAX istekleri için global olarak ayarlayalım
-            // Bu, her AJAX isteğinde token'ı elle ekleme zahmetinden kurtarır.
-            // Ama şimdilik basit tutmak için token'ı formlardan alıyoruz.
-
             var notificationLink = document.getElementById('notificationDropdown');
 
             if (notificationLink) {
@@ -105,8 +123,6 @@
                         fetch('/Notifications/MarkAllAsRead', {
                             method: 'POST',
                             headers: {
-                                // ValidateAntiForgeryToken kullanıyorsak token göndermeliyiz.
-                                // Şimdilik NotificationsController'da bu attribute'u eklemedik.
                                 'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
                             }
                         }).then(response => {

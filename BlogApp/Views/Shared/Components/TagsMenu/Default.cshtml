@@ -46,7 +46,8 @@
                 @foreach (var tag in Model)
                 {
                     <li class="list-inline-item mb-2">
-                        <a class="tag-btn" href="/posts/tag/@tag.Url" aria-label="Tag: @(tag.Text ?? "Tag")">@(tag.Text ??
+                        <a style="text-decoration: none;" class="tag-btn" href="/posts/tag/@tag.Url"
+                            aria-label="Tag: @(tag.Text ?? "Tag")">@(tag.Text ??
                                                 "Tag")</a>
                     </li>
                 }

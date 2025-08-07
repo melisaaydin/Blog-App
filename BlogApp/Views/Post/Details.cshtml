@@ -361,6 +361,24 @@
                                 href="/profile/@(Model.User?.UserName ?? "unknown")">@(Model.User?.Name ??
                                                             "Anonymous")</a></span>
                         <span><i class="bi bi-eye-fill"></i> @Model.ViewCount Views</span>
+                          @if(User.Identity?.IsAuthenticated == true)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var isLikedByCurrentUser = Model.Likes.Any(l => l.UserId == userId);
+        
+        <span class="like-section ms-3">
+            <button id="likeBtn" class="btn btn-link text-danger p-0" data-post-id="@Model.PostId">
+                <i class="bi @(isLikedByCurrentUser ? "bi-heart-fill" : "bi-heart")"></i>
+            </button>
+            <span id="likeCount" class="ms-1">@Model.Likes.Count</span>
+        </span>
+    }  else
+    {
+         <span class="like-section ms-3">
+            <i class="bi bi-heart"></i>
+            <span id="likeCount" class="ms-1">@Model.Likes.Count</span>
+        </span>
+    }
                     </div>
                     <hr class="my-4">
                     <div class="post-content">@Html.Raw(Model.Content ?? "")</div>
@@ -503,4 +521,38 @@
             });
         });
     </script>
+    <script>
+    $(document).ready(function() {
+        $('#likeBtn').on('click', function() {
+            const button = $(this);
+            const postId = button.data('post-id');
+            const token = $('input[name="__RequestVerificationToken"]').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '/Post/ToggleLike',
+                data: {
+                    postId: postId,
+                    __RequestVerificationToken: token
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $('#likeCount').text(response.likeCount);
+                        const icon = button.find('i');
+                        if (response.isLiked) {
+                            icon.removeClass('bi-heart').addClass('bi-heart-fill');
+                        } else {
+                            icon.removeClass('bi-heart-fill').addClass('bi-heart');
+                        }
+                    } else {
+                        alert(response.message || 'An error occurred.');
+                    }
+                },
+                error: function() {
+                    alert('An unexpected error occurred. Please try again.');
+                }
+            });
+        });
+    });
+</script>
 }

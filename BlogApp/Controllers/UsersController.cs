@@ -275,6 +275,7 @@ namespace BlogApp.Controllers
             var follow = new Follow { FollowerId = currentUserId, FollowingId = userToFollow.Id };
             _context.Follows.Add(follow);
             await _context.SaveChangesAsync();
+
             var message = $"{currentUser.Name ?? currentUser.UserName} started following you.";
             var link = $"/profile/{currentUser.UserName}";
             await _notificationService.CreateNotificationAsync(userToFollow.Id, message, link);

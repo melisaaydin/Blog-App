@@ -13,13 +13,37 @@ namespace BlogApp.Data.Concrete.EfCore
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Follow> Follows { get; set; }
         public DbSet<Notification> Notifications { get; set; }
-
+        public DbSet<Like> Likes { get; set; }
+        public DbSet<Message> Messages { get; set; }
         public BlogContext(DbContextOptions<BlogContext> options) : base(options)
         {
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Message>()
+      .HasOne(m => m.Sender)
+      .WithMany(u => u.SentMessages)
+      .HasForeignKey(m => m.SenderId)
+      .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Message>()
+                .HasOne(m => m.Receiver)
+                .WithMany(u => u.ReceivedMessages)
+                .HasForeignKey(m => m.ReceiverId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Like>()
+      .HasKey(l => new { l.PostId, l.UserId });
+
+            modelBuilder.Entity<Like>()
+                .HasOne(l => l.Post)
+                .WithMany(p => p.Likes)
+                .HasForeignKey(l => l.PostId);
+
+            modelBuilder.Entity<Like>()
+                .HasOne(l => l.User)
+                .WithMany(u => u.Likes)
+                .HasForeignKey(l => l.UserId);
             modelBuilder.Entity<Follow>()
                   .HasKey(f => new { f.FollowerId, f.FollowingId });
 

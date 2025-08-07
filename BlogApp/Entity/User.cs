@@ -11,5 +11,8 @@ namespace BlogApp.Entity
         public List<Follow> Followers { get; set; } = new();
         public List<Follow> Following { get; set; } = new();
         public List<Notification> Notifications { get; set; } = new();
+        public List<Like> Likes { get; set; } = new List<Like>();
+        public List<Message> SentMessages { get; set; } = new List<Message>();
+        public List<Message> ReceivedMessages { get; set; } = new List<Message>();
     }
 }
