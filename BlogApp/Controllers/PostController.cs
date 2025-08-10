@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using BlogApp.Data.Abstract;
+using BlogApp.Data.Concrete.EfCore;
 using BlogApp.Entity;
 using BlogApp.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -21,18 +22,22 @@ namespace BlogApp.Controllers
         private readonly ITagRepository _tagRepository;
         private readonly ILogger<PostController> _logger;
         private readonly UserManager<User> _userManager;
+        private readonly INotificationService _notificationService;
+        private readonly BlogContext _context;
         public PostController(
             IPostRepository postRepository,
             ICommentRepository commentRepository,
             ITagRepository tagRepository,
             ILogger<PostController> logger,
-            UserManager<User> userManager)
+            UserManager<User> userManager, INotificationService notificationService, BlogContext context)
         {
             _postRepository = postRepository;
             _commentRepository = commentRepository;
             _tagRepository = tagRepository;
             _logger = logger;
             _userManager = userManager;
+            _notificationService = notificationService;
+            _context = context;
         }
 
         // GET: /post or /posts/tag/{tag}
@@ -81,23 +86,30 @@ namespace BlogApp.Controllers
         {
             if (string.IsNullOrEmpty(url))
             {
-                _logger.LogWarning("Details action failed: URL is null or empty.");
                 return NotFound();
             }
 
             var post = await _postRepository.Posts
                 .Include(p => p.User)
                 .Include(p => p.Tags)
+                .Include(p => p.Likes)
                 .Include(p => p.Comments)
                 .ThenInclude(c => c.User)
                 .FirstOrDefaultAsync(p => p.IsActive && p.Url == url);
 
             if (post == null)
             {
-                _logger.LogWarning($"Post not found for URL: {url}");
                 return NotFound();
             }
+            var sessionKey = $"viewed_post_{post.PostId}";
+            if (HttpContext.Session.GetString(sessionKey) == null)
+            {
 
+                post.ViewCount++;
+                await _postRepository.UpdatePost(post);
+                HttpContext.Session.SetString(sessionKey, "true");
+            }
+            await _postRepository.UpdatePost(post);
             // Set default avatar for users without images
             if (post.User != null)
             {
@@ -114,7 +126,6 @@ namespace BlogApp.Controllers
                 }
             }
 
-            _logger.LogInformation($"Details action loaded for Post URL: {url}, PostId: {post.PostId}, Tags Count: {(post.Tags?.Count ?? 0)}");
             return View(post);
         }
 
@@ -135,6 +146,11 @@ namespace BlogApp.Controllers
             {
                 return Json(new { success = false, message = "User not found." });
             }
+            var post = await _postRepository.Posts.FirstOrDefaultAsync(p => p.PostId == PostId);
+            if (post == null)
+            {
+                return Json(new { success = false, message = "Post not found." });
+            }
 
             var comment = new Comment
             {
@@ -144,6 +160,12 @@ namespace BlogApp.Controllers
                 UserId = userId
             };
             await _commentRepository.CreateComment(comment);
+            if (post.UserId != userId)
+            {
+                var message = $"{currentUser.Name ?? currentUser.UserName} commented on your post: \"{post.Title}\"";
+                var link = $"/posts/details/{post.Url}";
+                await _notificationService.CreateNotificationAsync(post.UserId, message, link);
+            }
             return Json(new
             {
                 success = true,
@@ -174,12 +196,10 @@ namespace BlogApp.Controllers
         {
             if (!ModelState.IsValid)
             {
-                // Model geçerli değilse, tag listesini tekrar yükleyip formu geri göster
                 ViewBag.Tags = await _tagRepository.Tags.ToListAsync();
                 return View(model);
             }
 
-            // 1. Yeni Post nesnesini ViewModel'den gelen bilgilerle oluştur
             var newPost = new Post
             {
                 Title = model.Title,
@@ -187,12 +207,10 @@ namespace BlogApp.Controllers
                 Content = model.Content,
                 Url = model.Url,
                 PublishedOn = DateTime.Now,
-                IsActive = model.IsActive, // EKSİK OLAN KISIM BURASIYDI!
-                                           // O an giriş yapmış olan kullanıcının kimliğini (ID) ata
+                IsActive = model.IsActive,
                 UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)
             };
 
-            // 2. Resim dosyası seçilmişse işle ve ismini Post nesnesine ata
             if (imageFile != null)
             {
                 var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
@@ -214,13 +232,23 @@ namespace BlogApp.Controllers
                 newPost.Image = randomFileName;
             }
 
-            // 3. Gelen string[] tag ID'lerini int[] dizisine çevir
+
             var selectedTagIds = model.SelectedTagIds?.Select(int.Parse).ToArray() ?? Array.Empty<int>();
 
-            // 4. Repository'deki doğru metodu çağırarak hem post'u hem de tag'leri kaydet
             await _postRepository.CreatePost(newPost, selectedTagIds);
 
-            // TempData ile başarılı mesajı gönder (isteğe bağlı ama güzel bir özellik)
+            var admins = await _userManager.GetUsersInRoleAsync("Admin");
+            var postCreator = await _userManager.FindByIdAsync(newPost.UserId);
+            foreach (var admin in admins)
+            {
+                if (admin.Id == newPost.UserId)
+                {
+                    var message = $"{postCreator?.Name ?? "A user"} created a new post: \"{newPost.Title}\"";
+                    var link = "/post/list";
+                    await _notificationService.CreateNotificationAsync(admin.Id, message, link);
+                }
+            }
+
             TempData["message"] = "Post has been created successfully.";
 
             return RedirectToAction("List", "Post");
@@ -351,27 +379,23 @@ namespace BlogApp.Controllers
         {
             if (!ModelState.IsValid)
             {
-                // Eğer model geçerli değilse, tag listesini tekrar doldurup view'ı geri döndür
                 ViewBag.Tags = await _tagRepository.Tags.ToListAsync();
                 return View(model);
             }
 
-            // 1. Veritabanından güncellenecek olan post'u bul
             var entityToUpdate = await _postRepository.Posts.Include(p => p.Tags).FirstOrDefaultAsync(p => p.PostId == model.PostId);
 
             if (entityToUpdate == null)
             {
-                return NotFound(); // Post bulunamazsa hata ver
+                return NotFound();
             }
 
-            // 2. ViewModel'den gelen tüm bilgileri entity'e tek tek aktar
             entityToUpdate.Title = model.Title;
             entityToUpdate.Description = model.Description;
             entityToUpdate.Content = model.Content;
             entityToUpdate.Url = model.Url;
-            entityToUpdate.IsActive = model.IsActive; // EKSİK OLAN EN ÖNEMLİ KISIM BURASIYDI!
+            entityToUpdate.IsActive = model.IsActive;
 
-            // 3. Resim dosyası seçilmişse işle
             if (imageFile != null)
             {
                 var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
@@ -546,6 +570,47 @@ namespace BlogApp.Controllers
         public class DeletePostRequest
         {
             public int Id { get; set; }
+        }
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleLike(int postId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Json(new { success = false, message = "User not found." });
+            }
+            var existingLike = await _context.Likes
+                .FirstOrDefaultAsync(l => l.PostId == postId && l.UserId == userId);
+
+            bool isLiked;
+
+            if (existingLike != null)
+            {
+                _context.Likes.Remove(existingLike);
+                isLiked = false;
+            }
+            else
+            {
+                var newLike = new Like { PostId = postId, UserId = userId };
+                _context.Likes.Add(newLike);
+                isLiked = true;
+
+                var post = await _context.Posts.FindAsync(postId);
+                if (post != null && post.UserId != userId)
+                {
+                    var currentUser = await _userManager.FindByIdAsync(userId);
+                    var message = $"{currentUser?.Name ?? "Someone"} liked your post: \"{post.Title}\"";
+                    var link = $"/posts/details/{post.Url}";
+                    await _notificationService.CreateNotificationAsync(post.UserId, message, link);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            var likeCount = await _context.Likes.CountAsync(l => l.PostId == postId);
+
+            return Json(new { success = true, isLiked, likeCount });
         }
     }
 }

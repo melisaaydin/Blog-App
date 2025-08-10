@@ -10,9 +10,14 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
 
+builder.Services.AddControllersWithViews();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 builder.Services.AddDbContext<BlogContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("sql_connection");
@@ -32,24 +37,19 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 .AddDefaultUI()
 .AddDefaultTokenProviders();
 
-// Repositories
 builder.Services.AddScoped<IPostRepository, EfPostRepository>();
 builder.Services.AddScoped<ITagRepository, EfTagRepository>();
 builder.Services.AddScoped<ICommentRepository, EfCommentRepository>();
 builder.Services.AddScoped<IUserRepository, EfUserRepository>();
+builder.Services.AddScoped<INotificationService, EfNotificationService>();
 
-// Email Sender
-// Bu kısmı kendi IEmailSender implementasyonunuza göre ayarlayın.
-// Sizin kodunuzdaki gibi EmailSender sınıfı varsa bu satır doğrudur.
 builder.Services.AddScoped<IEmailSender, EmailSender>();
 
 
 var app = builder.Build();
 
-// Veritabanını ve test verilerini doldur
 await SeedDatabaseAsync(app);
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -58,12 +58,11 @@ if (!app.Environment.IsDevelopment())
 
 app.UseStaticFiles();
 app.UseRouting();
+app.UseSession();
 
-// Authentication ve Authorization middleware'lerini doğru sırada ekleyin
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Route tanımlamaları
 app.MapControllerRoute(
     name: "post_details",
     pattern: "posts/details/{url}",
@@ -85,21 +84,29 @@ app.MapControllerRoute(
     defaults: new { controller = "Users", action = "Profile" }
 );
 app.MapControllerRoute(
+    name: "admin_post_status_edit",
+    pattern: "Admin/EditPostStatus/{url}",
+    defaults: new { controller = "Admin", action = "EditPostStatus" }
+);
+app.MapControllerRoute(
+    name: "message_chat",
+    pattern: "Message/Chat/{username}",
+    defaults: new { controller = "Message", action = "Chat" }
+);
+app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}"
+    pattern: "{controller=Post}/{action=Index}/{id?}"
 );
 
 app.Run();
 
 
-// Seeding işlemini yapan tek metod
 static async Task SeedDatabaseAsync(IApplicationBuilder app)
 {
     using var scope = app.ApplicationServices.CreateScope();
     var services = scope.ServiceProvider;
     try
     {
-        // Tüm seeding işlemini sadece bu sınıf yapacak
         await SeedData.FillTheTestInfo(app);
     }
     catch (Exception ex)
@@ -109,8 +116,6 @@ static async Task SeedDatabaseAsync(IApplicationBuilder app)
     }
 }
 
-
-// IEmailSender implementasyonu (Sizdeki kod)
 public class EmailSender : IEmailSender
 {
     private readonly IConfiguration _config;

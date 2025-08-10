@@ -231,7 +231,14 @@
                             @(item.IsActive ? "Active" : "Inactive")
                         </span>
                         <div class="blog-card-actions">
-                            <a href="/post/edit/@item.Url" class="btn btn-sm btn-primary">Edit</a>
+                  @if (User.IsInRole("Admin") && item.UserId != User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier))
+    {
+<a href="/Admin/EditPostStatus/@item.Url" class="btn btn-sm btn-warning">Manage Status</a>
+    }
+    else
+    {
+        <a href="/post/edit/@item.Url" class="btn btn-sm btn-primary">Edit</a>
+    }
                             <button type="button" class="btn btn-sm btn-danger delete-btn" data-bs-toggle="modal"
                                 data-bs-target="#deleteModal" data-post-id="@item.PostId"
                                 data-post-title="@item.Title">Delete</button>
@@ -300,7 +307,6 @@
 </div>
 
 @section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const deleteModal = document.getElementById('deleteModal');

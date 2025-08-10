@@ -1,5 +1,6 @@
 @model User
 @using System.Globalization
+@using System.Security.Claims
 
 @{
     ViewData["Title"] = $"{Model.Name}'s Profile";
@@ -68,7 +69,6 @@
         color: #7f143f;
     }
 
-    /* Tab Styles */
     .nav-tabs {
         border-bottom: 2px solid #dee2e6;
     }
@@ -93,7 +93,6 @@
         padding-top: 2rem;
     }
 
-    /* List Item Styles */
     .activity-list .list-group-item {
         border-radius: 10px;
         margin-bottom: 1rem;
@@ -139,30 +138,52 @@
 
 <div class="container">
     <div class="profile-card">
-
+        @Html.AntiForgeryToken()
         <div class="profile-header">
             <img src="/img/@(Model.Image ?? "default-avatar.png")" class="profile-avatar" alt="@Model.Name">
-
             <div class="profile-info">
-
                 <h2>@Model.Name</h2>
                 <p>@@@Model.UserName</p>
-                @if (User.Identity?.Name == Model.UserName)
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <span class="count">@Model.Posts.Count(p => p.IsActive)</span> Posts
+                    </div>
+                    <div class="stat-item">
+                        <span class="count">@Model.Followers.Count</span> Followers
+                    </div>
+                    <div class="stat-item">
+                        <span class="count">@Model.Following.Count</span> Following
+                    </div>
+                </div>
+            </div>
+
+            <div class="ms-auto d-flex align-items-center">
+                @if (User.Identity?.IsAuthenticated == true)
                 {
-                    <div class="ms-auto">
+                    if (User.FindFirstValue(ClaimTypes.NameIdentifier) == Model.Id)
+                    {
                         <a href="/users/editprofile" class="btn btn-outline-secondary">
                             <i class="bi bi-pencil-square"></i> Edit Profile
                         </a>
-                    </div>
+                    }
+                    else
+                    {
+                        var isFollowing = Model.Followers.Any(f => f.FollowerId ==
+                        User.FindFirstValue(ClaimTypes.NameIdentifier));
+                        if (isFollowing)
+                        {
+                            <button id="followBtn" class="btn btn-danger" data-action="unfollow" data-username="@Model.UserName">
+                                <i class="bi bi-person-dash-fill"></i> Unfollow
+                            </button>
+                        }
+                        else
+                        {
+                            <button id="followBtn" class="btn btn-primary" data-action="follow" data-username="@Model.UserName">
+                                <i class="bi bi-person-plus-fill"></i> Follow
+                            </button>
+                        }
+                    }
                 }
-                <div class="profile-stats">
-                    <div class="stat-item">
-                        <span class="count">@Model.Posts.Count</span> Posts
-                    </div>
-                    <div class="stat-item">
-                        <span class="count">@Model.Comments.Count</span> Comments
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -182,9 +203,8 @@
         </ul>
 
         <div class="tab-content" id="profileTabsContent">
-
             <div class="tab-pane fade show active" id="posts" role="tabpanel" aria-labelledby="posts-tab">
-                @if (Model.Posts.Any())
+                @if (Model.Posts.Any(p => p.IsActive))
                 {
                     <ul class="list-group activity-list">
                         @foreach (var post in Model.Posts.Where(p => p.IsActive).OrderByDescending(p => p.PublishedOn))
@@ -205,9 +225,8 @@
                     <p class="text-muted">This user has not published any posts yet.</p>
                 }
             </div>
-
             <div class="tab-pane fade" id="comments" role="tabpanel" aria-labelledby="comments-tab">
-                @if (Model.Comments.Any())
+                @if (Model.Comments.Any(c => c.Post != null && c.Post.IsActive))
                 {
                     <ul class="list-group activity-list">
                         @foreach (var comment in Model.Comments.Where(c => c.Post != null &&
@@ -226,25 +245,77 @@
                 }
                 else
                 {
-                    <p class="text-muted">This user has not made any comments yet.</p>
+                    <p class="text-muted">This user has not made any comments on active posts yet.</p>
                 }
             </div>
-
         </div>
     </div>
 </div>
 
 @section Scripts {
     <script>
-        // Bootstrap 5 tab functionality
         var triggerTabList = [].slice.call(document.querySelectorAll('#profileTabs button'))
         triggerTabList.forEach(function (triggerEl) {
             var tabTrigger = new bootstrap.Tab(triggerEl)
-
             triggerEl.addEventListener('click', function (event) {
                 event.preventDefault()
                 tabTrigger.show()
             })
         })
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#followBtn').on('click', function () {
+                const button = $(this);
+                const action = button.data('action');
+                const username = button.data('username');
+                const url = action === 'follow' ? '/Users/Follow' : '/Users/Unfollow';
+                const token = $('input[name="__RequestVerificationToken"]').val();
+
+                button.prop('disabled', true);
+
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: {
+                        username: username,
+                        __RequestVerificationToken: token
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            $('.stat-item .count').eq(1).text(response.followerCount);
+
+                            if (action === 'follow') {
+                                button.data('action', 'unfollow')
+                                    .text(' Unfollow')
+                                    .removeClass('btn-primary')
+                                    .addClass('btn-danger');
+                                button.prepend('<i class="bi bi-person-dash-fill"></i>');
+
+                                let badge = $('#notification-badge');
+                                if (badge.length) {
+                                    let currentCount = parseInt(badge.text()) || 0;
+                                    badge.text(currentCount + 1).removeClass('d-none');
+                                }
+                            } else {
+                                button.data('action', 'follow')
+                                    .text(' Follow')
+                                    .removeClass('btn-danger')
+                                    .addClass('btn-primary');
+                                button.prepend('<i class="bi bi-person-plus-fill"></i>');
+                            }
+                        } else {
+                            alert(response.message || 'An error occurred.');
+                        }
+                    },
+                    error: function () {
+                        alert('An unexpected error occurred. Please try again.');
+                    },
+                    complete: function () {
+                        button.prop('disabled', false);
+                    }
+                });
+            });
+        });
     </script>
 }

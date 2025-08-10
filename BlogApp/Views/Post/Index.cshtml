@@ -274,6 +274,7 @@
                                 </div>
                                 <div class="blog-card-actions">
                                     <a href="/posts/details/@post.Url" class="btn btn-primary">Read More</a>
+                                     <span class="text-muted ms-auto"><i class="bi bi-eye"></i> @post.ViewCount</span>
                                     <i class="bi bi-share-fill share-btn" 
                                        data-bs-toggle="popover" 
                                        data-bs-html="true" 
@@ -324,7 +325,6 @@
 </div>
 
 @section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');

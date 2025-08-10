@@ -10,5 +10,6 @@ namespace BlogApp.Data.Abstract
         void EditPost(Post post);
         Task EditPost(Post post, int[] tagIds);
         Task DeletePost(int id);
+        Task UpdatePost(Post post);
     }
 }

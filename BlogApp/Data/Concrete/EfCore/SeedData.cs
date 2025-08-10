@@ -1,10 +1,6 @@
 using BlogApp.Entity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BlogApp.Data.Concrete.EfCore
 {
@@ -37,12 +33,12 @@ namespace BlogApp.Data.Concrete.EfCore
                 }
             }
 
-            // 3. Find or Create Users (with detailed error logging)
+            // 3. Find or Create Users
             User? adminUser = await userManager.FindByEmailAsync("melisaaydin@gmail.com");
             if (adminUser == null)
             {
                 logger.LogInformation("Admin user not found, creating new one...");
-                adminUser = new User { UserName = "melisaaydin", Name = "Melisa Aydin", Email = "melisaaydin@gmail.com", EmailConfirmed = true };
+                adminUser = new User { UserName = "melisaaydin", Name = "Melisa Aydın", Email = "melisaaydin@gmail.com", EmailConfirmed = true };
                 var result = await userManager.CreateAsync(adminUser, "Password123!");
                 if (result.Succeeded)
                 {
@@ -51,7 +47,6 @@ namespace BlogApp.Data.Concrete.EfCore
                 }
                 else
                 {
-                    // HATA DETAYINI YAZDIR
                     logger.LogError("Admin user creation failed: {Errors}", string.Join(", ", result.Errors.Select(e => e.Description)));
                     adminUser = null;
                 }
@@ -69,8 +64,6 @@ namespace BlogApp.Data.Concrete.EfCore
                 }
                 else
                 {
-                    // HATA DETAYINI YAZDIR
-                    logger.LogError("Normal user creation failed: {Errors}", string.Join(", ", result.Errors.Select(e => e.Description)));
                     normalUser = null;
                 }
             }

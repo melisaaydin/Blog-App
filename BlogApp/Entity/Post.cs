@@ -17,9 +17,11 @@ namespace BlogApp.Entity
         public string? Image { get; set; }
         public bool IsActive { get; set; }
         public DateTime PublishedOn { get; set; }
+        public int ViewCount { get; set; }
         public string UserId { get; set; } = string.Empty;
         public User? User { get; set; }
         public List<Comment> Comments { get; set; } = new List<Comment>();
         public List<Tag> Tags { get; set; } = new List<Tag>();
+        public List<Like> Likes { get; set; } = new List<Like>();
     }
 }
