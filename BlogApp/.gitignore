@@ -1,47 +1,18 @@
-# Build klasörleri
-bin/
-obj/
+# C# build artifacts
+[Bb]in/
+[Oo]bj/
 
-# Kullanıcı ve sistem dosyaları
-*.user
+# Visual Studio files
+.vs/
 *.suo
-*.userosscache
-*.sln.docstates
+*.user
 
-# SQLite veritabanı dosyaları
+# SQLite files
 *.db
+*.db-journal
 *.db-shm
 *.db-wal
 
-# Derleme çıktıları
-*.dll
-*.exe
-*.pdb
-*.cache
-
-# Paketler
-*.nupkg
-*.snupkg
-*.nuspec
-
-.vscode/
-
-# Rider ayarları
-.idea/
-
-# log dosyaları
-*.log
-
-# Dotnet kaynak link dosyaları
-*.sourcelink.json
-
-# Test sonuçları
-TestResults/
-
-# Publish klasörü
-publish/
-
-# Diğer geçici dosyalar
-*.tmp
-*.bak
-*.swp
+# Build results
+[Dd]ebug/
+[Rr]elease/
