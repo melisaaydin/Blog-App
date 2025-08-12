@@ -113,7 +113,7 @@ namespace BlogApp.Controllers
             // Set default avatar for users without images
             if (post.User != null)
             {
-                post.User.Image ??= "default-avatar-icon.png";
+                post.User.Image ??= "default-avatar.jpg";
             }
             if (post.Comments != null)
             {
@@ -121,7 +121,7 @@ namespace BlogApp.Controllers
                 {
                     if (comment.User != null)
                     {
-                        comment.User.Image ??= "default-avatar-icon.png";
+                        comment.User.Image ??= "default-avatar.jpg";
                     }
                 }
             }
@@ -173,7 +173,7 @@ namespace BlogApp.Controllers
                 name = currentUser.Name,
                 text = comment.Text,
                 publishedOn = comment.PublishedOn.ToString("MMMM dd, yyyy HH:mm"),
-                avatar = currentUser.Image ?? "default-avatar.png"
+                avatar = currentUser.Image ?? "default-avatar.jpg"
             });
         }
 
@@ -301,7 +301,7 @@ namespace BlogApp.Controllers
             {
                 if (post.User != null)
                 {
-                    post.User.Image ??= "default-avatar-icon.png";
+                    post.User.Image ??= "default-avatar.jpg";
                 }
             }
 
@@ -350,7 +350,7 @@ namespace BlogApp.Controllers
             // Set default avatar if user image is not set
             if (post.User != null)
             {
-                post.User.Image ??= "default-avatar-icon.png";
+                post.User.Image ??= "default-avatar-icon.jpg";
             }
 
             var tags = await _tagRepository.Tags.ToListAsync();

@@ -74,6 +74,7 @@
     <div class="login-card">
         <h1 class="text-3xl font-bold text-center text-gray-900 mb-8">Welcome</h1>
         <form action="Register" method="post" class="space-y-5">
+            @Html.AntiForgeryToken()
             <div asp-validation-summary="All" class="text-danger text-center font-medium"></div>
             <div class="mb-4">
                 <label asp-for="UserName" class="form-label block text-sm mb-2"></label>

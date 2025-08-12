@@ -30,13 +30,16 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequireDigit = false;
     options.User.RequireUniqueEmail = true;
-    options.SignIn.RequireConfirmedAccount = false;
+    options.SignIn.RequireConfirmedAccount = true;
 
 })
 .AddEntityFrameworkStores<BlogContext>()
 .AddDefaultUI()
 .AddDefaultTokenProviders();
-
+builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
+{
+    options.TokenLifespan = TimeSpan.FromHours(3);
+});
 builder.Services.AddScoped<IPostRepository, EfPostRepository>();
 builder.Services.AddScoped<ITagRepository, EfTagRepository>();
 builder.Services.AddScoped<ICommentRepository, EfCommentRepository>();
@@ -75,7 +78,7 @@ app.MapControllerRoute(
 );
 app.MapControllerRoute(
     name: "post_by_tag",
-    pattern: "posts/tag/{tag}",
+    pattern: "posts/tag/{url}",
     defaults: new { controller = "Post", action = "Index" }
 );
 app.MapControllerRoute(

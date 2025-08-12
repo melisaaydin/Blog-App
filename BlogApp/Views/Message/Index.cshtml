@@ -86,13 +86,22 @@
                     <div class="list-group list-group-flush">
                         @foreach (var contact in Model.Contacts)
                         {
-                            <a href="#"
-                                class="list-group-item list-group-item-action d-flex align-items-center p-3 conversation-link"
-                                data-username="@contact.UserName">
-                                <img src="/img/@(contact.Image ?? "default-avatar.png")" alt="avatar"
-                                    class="rounded-circle me-3" style="width: 50px; height: 50px;">
-                                <h6 class="mb-0">@contact.Name</h6>
-                            </a>
+
+                            @foreach (var contact in Model.Contacts)
+                            {
+                                <a href="#"
+                                    class="list-group-item list-group-item-action d-flex align-items-center p-3 conversation-link"
+                                    data-username="@contact.UserName">
+                                    <img src="/img/@(contact.Image ?? "default-avatar.jpg")" alt="avatar"
+                                        class="rounded-circle me-3" style="width: 40px; height: 40px;">
+                                    <span>@contact.Name</span>
+                                </a>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-center text-muted p-4">You have no mutual followers to start a new chat.</p>
+
                         }
                     </div>
                 </div>

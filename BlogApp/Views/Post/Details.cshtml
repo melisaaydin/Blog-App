@@ -76,7 +76,7 @@
     }
 
     .post-meta a {
-        color: #7f143f;
+      
         text-decoration: none;
         font-weight: 600;
         transition: color 0.2s ease;
@@ -389,7 +389,7 @@
                         @foreach (var comment in Model.Comments ?? Enumerable.Empty<Comment>())
                         {
                             <div class="comment">
-                                <img src="/img/@(comment.User?.Image ?? "default-avatar-icon.png")" class="comment-avatar"
+                                <img src="/img/@(comment.User?.Image ?? "default-avatar.jpg")" class="comment-avatar"
                                     alt="@(comment.User?.Name ?? "Anonymous")'s avatar" loading="lazy" />
                                 <div class="comment-content">
                                     <div class="comment-header">
@@ -478,7 +478,7 @@
                             const date = new Date(response.publishedOn);
                             $("#comments").append(`
                                             <div class="comment">
-                                                <img src="/img/${response.avatar || "default-avatar-icon.png"}" 
+                                                <img src="/img/${response.avatar || "default-avatar.jpg"}" 
                                                      class="comment-avatar" 
                                                      alt="${response.username}'s avatar" 
                                                      loading="lazy" />
