@@ -40,35 +40,44 @@ namespace BlogApp.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByEmailAsync(model.Email!);
-
-                if (user == null)
+                if (user != null)
                 {
-                    ModelState.AddModelError("", "Invalid email or password");
-                    return View(model);
+                    if (!await _userManager.IsEmailConfirmedAsync(user))
+                    {
+                        ModelState.AddModelError("", "Please confirm your email before you can log in.");
+                        return View(model);
+                    }
+
+                    var result = await _signInManager.PasswordSignInAsync(user, model.Password!, model.RememberMe, lockoutOnFailure: false);
+                    if (result.Succeeded)
+                    {
+                        return RedirectToAction("Index", "Post");
+                    }
                 }
-
-                var result = await _signInManager.PasswordSignInAsync(user, model.Password!, isPersistent: true, lockoutOnFailure: false);
-
-                if (result.Succeeded)
-                {
-                    return RedirectToAction("Index", "Post");
-                }
-
-                ModelState.AddModelError("", "Invalid email or password");
+                ModelState.AddModelError("", "Invalid email or password.");
             }
             return View(model);
         }
-
         public IActionResult Register()
         {
             return View();
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Login");
+        }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
@@ -78,25 +87,30 @@ namespace BlogApp.Controllers
                     UserName = model.UserName,
                     Email = model.Email,
                     Name = model.Name,
-                    Image = "2.jpg"
+                    Image = "default-avatar.jpg"
                 };
 
                 var result = await _userManager.CreateAsync(user, model.Password!);
                 if (result.Succeeded)
                 {
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var confirmationLink = Url.Action("ConfirmEmail", "Users", new { userId = user.Id, token }, Request.Scheme);
+                    var callbackUrl = Url.Action("ConfirmEmail", "Users", new { userId = user.Id, token = token }, protocol: Request.Scheme);
+                    var emailBody = $@"
+    <div style='font-family: Arial, sans-serif; font-size: 16px; color: #333;'>
+        <h2 style='color: #7f143f;'>Welcome to BlogApp!</h2>
+        <p>Thank you for registering. Please confirm your account to get started.</p>
+        <p>Click the button below to verify your email address:</p>
+        <a href='{callbackUrl}' style='display: inline-block; padding: 12px 24px; font-size: 16px; color: #fff; background-color: #7f143f; text-decoration: none; border-radius: 5px;'>Confirm Account</a>
+        <p style='margin-top: 20px; font-size: 12px; color: #888;'>
+            If you did not create this account, you can safely ignore this email.
+        </p>
+    </div>";
+                    await _emailSender.SendEmailAsync(
+      model.Email!,
+      "Confirm Your Email",
+      emailBody);
 
-                    if (model.Email != null && confirmationLink != null)
-                    {
-                        await _emailSender.SendEmailAsync(
-                            model.Email,
-                            "Verify Your Email Address",
-                           $"Please <a href='{confirmationLink}'>click here</a> to verify your email address.");
-                    }
-
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Index", "Post");
+                    return RedirectToAction("RegisterConfirmation");
                 }
                 foreach (var error in result.Errors)
                 {
@@ -107,35 +121,37 @@ namespace BlogApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Logout()
-        {
-            await _signInManager.SignOutAsync();
-            return RedirectToAction("Login");
-        }
-        [HttpGet]
-        public IActionResult ConfirmEmail(string userId, string token)
+        public async Task<IActionResult> ConfirmEmail(string? userId, string? token)
         {
             if (userId == null || token == null)
             {
-                return RedirectToAction("Index", "Home");
-            }
-
-            var user = _userManager.FindByIdAsync(userId).Result;
-            if (user == null)
-            {
-                ViewBag.ErrorMessage = "User not found.";
+                TempData["message"] = "Invalid token or user ID.";
                 return View("Error");
             }
 
-            var result = _userManager.ConfirmEmailAsync(user, token).Result;
-            if (result.Succeeded)
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
             {
-                return View("ConfirmEmail");
+                TempData["message"] = "User not found.";
+                return View("Error");
             }
 
-            ViewBag.ErrorMessage = "Email verification failed.";
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            if (result.Succeeded)
+            {
+                TempData["message"] = "Your account has been successfully confirmed. You can now log in.";
+                return RedirectToAction("Login");
+            }
+
+            TempData["message"] = "There was an error confirming your email.";
             return View("Error");
         }
+        [HttpGet]
+        public IActionResult RegisterConfirmation()
+        {
+            return View();
+        }
+
         [HttpGet]
         public IActionResult Profile(string username)
         {
@@ -312,6 +328,111 @@ namespace BlogApp.Controllers
             return Json(new { success = true, followerCount });
         }
 
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+            {
+                return RedirectToAction("ForgotPasswordConfirmation");
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var callbackUrl = Url.Action("ResetPassword", "Users", new { userId = user.Id, token = token }, protocol: Request.Scheme);
+
+            var emailBody = $@"
+    <div style='font-family: Arial, sans-serif; font-size: 16px; color: #333;'>
+        <h2 style='color: #7f143f;'>Reset Your Password</h2>
+        <p>We received a request to reset the password for your account.</p>
+        <p>Click the button below to choose a new password:</p>
+        <a href='{callbackUrl}' style='display: inline-block; padding: 12px 24px; font-size: 16px; color: #fff; background-color: #7f143f; text-decoration: none; border-radius: 5px;'>Reset Password</a>
+        <p style='margin-top: 20px; font-size: 12px; color: #888;'>
+            If you did not request a password reset, you can safely ignore this email. This link is valid for a limited time.
+        </p>
+    </div>";
+
+            await _emailSender.SendEmailAsync(
+                model.Email,
+                "Reset Your Password",
+                emailBody);
+
+            return RedirectToAction("ForgotPasswordConfirmation");
+        }
+        [HttpGet]
+        public IActionResult ForgotPasswordConfirmation()
+        {
+            return View();
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> ResetPassword(string? userId = null, string? token = null)
+        {
+            if (userId == null || token == null)
+            {
+                ModelState.AddModelError("", "Invalid password reset token.");
+                return View("Error");
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var model = new ResetPasswordViewModel
+            {
+                Token = token,
+                Email = user.Email ?? ""
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return RedirectToAction("ResetPasswordConfirmation");
+            }
+
+            var result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
+            if (result.Succeeded)
+            {
+                return RedirectToAction("ResetPasswordConfirmation");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("", error.Description);
+            }
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult ResetPasswordConfirmation()
+        {
+            return View();
+        }
     }
 
 }

@@ -1,3 +1,18 @@
-<h2>Email Verification</h2>
-<p>our email address has been successfully verified.You can now <a asp-action="Login" asp-controller="Users">log in</a>.
-</p>
+@model ConfirmEmailViewModel
+
+<h2>Confirm Your Email</h2>
+<hr />
+<p>We've sent a confirmation code to your email address. Please enter the code below to activate your account.</p>
+
+<form asp-action="ConfirmEmail" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <input type="hidden" asp-for="Email" />
+
+    <div class="mb-3">
+        <label asp-for="Token" class="form-label">Confirmation Code</label>
+        <input asp-for="Token" class="form-control" />
+        <span asp-validation-for="Token" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Verify Account</button>
+</form>
