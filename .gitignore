@@ -1,0 +1,41 @@
+cd "C:\Users\melis\OneDrive\Masaüstü\ASP .NET CORE\BlogApp"
+
+@"
+# C# build artifacts
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio files
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Rider files
+.idea/
+
+# SQLite files
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+
+# User-specific files
+*.secrets.json
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+build/
+Build/
+build-browser/
+publish/
+
+# Other
+*.vspscc
+*.vssscc
+.builds
+"@ | Out-File -Encoding utf8 ".gitignore"
