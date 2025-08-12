@@ -1,41 +1,50 @@
-cd "C:\Users\melis\OneDrive\Masaüstü\ASP .NET CORE\BlogApp"
 
-@"
-# C# build artifacts
-[Bb]in/
-[Oo]bj/
+# Build klasörleri
+bin/
+obj/
 
-# Visual Studio files
-.vs/
-*.suo
+# Kullanıcı ve sistem dosyaları
 *.user
+*.suo
 *.userosscache
 *.sln.docstates
 
-# Rider files
-.idea/
-
-# SQLite files
+# SQLite veritabanı dosyaları
 *.db
-*.db-journal
 *.db-shm
 *.db-wal
 
-# User-specific files
-*.secrets.json
+# Derleme çıktıları
+*.dll
+*.exe
+*.pdb
+*.cache
 
-# Build results
-[Dd]ebug/
-[Rr]elease/
-x64/
-x86/
-build/
-Build/
-build-browser/
+# Paketler
+*.nupkg
+*.snupkg
+*.nuspec
+
+.vscode/
+
+# Rider ayarları
+.idea/
+
+# log dosyaları
+*.log
+
+# Dotnet kaynak link dosyaları
+*.sourcelink.json
+
+# Test sonuçları
+TestResults/
+
+# Publish klasörü
 publish/
 
-# Other
-*.vspscc
-*.vssscc
-.builds
-"@ | Out-File -Encoding utf8 ".gitignore"
+# Diğer geçici dosyalar
+*.tmp
+*.bak
+*.swp
+
+

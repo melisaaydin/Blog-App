@@ -2,13 +2,12 @@
 @using System.Security.Claims
 
 @{
-    Layout = null;
+    Layout = null; 
     var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 }
 
-<div class="card-header bg-white d-flex align-items-center p-3 border-bottom">
-    <img src="/img/@(Model.OtherUser.Image ?? "default-avatar.png")" alt="avatar" class="rounded-circle me-3"
-        style="width: 40px; height: 40px;">
+<div class="d-flex align-items-center p-3 border-bottom bg-white">
+     <img src="/img/@(Model.OtherUser.Image ?? "default-avatar.png")" alt="avatar" class="rounded-circle me-3" style="width: 45px; height: 45px;">
     <h5 class="mb-0">
         <a href="/profile/@Model.OtherUser.UserName" class="text-dark text-decoration-none">
             @Model.OtherUser.Name
@@ -16,19 +15,19 @@
     </h5>
 </div>
 
-<div id="chat-box" class="card-body p-4" style="flex-grow: 1; overflow-y: auto;">
+<div id="chat-box" class="p-4" style="flex-grow: 1; overflow-y: auto; background-color: #e9ecef;">
     @foreach (var msg in Model.Messages)
     {
         var isCurrentUser = msg.SenderId == currentUserId;
         var messageClass = isCurrentUser ? "d-flex flex-row-reverse" : "d-flex flex-row";
-        var bubbleClass = isCurrentUser ? "bg-primary text-white" : "bg-light text-dark";
-
+        var bubbleClass = isCurrentUser ? "bg-primary text-white" : "bg-white text-dark";
+        
         <div class="mb-3 @messageClass">
-            <div>
-                <p class="p-2 px-3 rounded-3 mb-1 @bubbleClass" style="max-width: 400px;">
+            <div style="max-width: 70%;">
+                <p class="p-2 px-3 rounded-3 mb-1 shadow-sm @bubbleClass" style="word-wrap: break-word;">
                     @msg.Content
                 </p>
-                <small class="text-muted d-block @(isCurrentUser ? "text-start" : "text-end")">
+                <small class="text-muted d-block @(isCurrentUser ? "text-start" : "text-end") px-1">
                     @msg.SentAt.ToString("HH:mm")
                 </small>
             </div>
@@ -36,7 +35,7 @@
     }
 </div>
 
-<div class="card-footer bg-white p-3 border-top">
+<div class="p-3 border-top bg-white">
     <form asp-action="Chat" method="post" id="messageForm" autocomplete="off">
         @Html.AntiForgeryToken()
         <input type="hidden" asp-for="OtherUser.UserName" />
@@ -50,25 +49,25 @@
 </div>
 
 <script>
-
     var chatBox = document.getElementById("chat-box");
-    chatBox.scrollTop = chatBox.scrollHeight;
+    if(chatBox){
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
 
-    $('#messageForm').on('submit', function (e) {
+    $('#messageForm').on('submit', function(e) {
         e.preventDefault();
         var form = $(this);
         var url = form.attr('action');
-
+        
         $.ajax({
             type: "POST",
             url: url,
             data: form.serialize(),
-            success: function (data) {
-
+            success: function(data) {
                 $('#chat-content-area').html(data);
             },
-            error: function () {
-                alert('Failed to send message.');
+            error: function() {
+                 alert('Failed to send message.');
             }
         });
     });
