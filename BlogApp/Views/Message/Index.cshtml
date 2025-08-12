@@ -7,15 +7,17 @@
 <style>
     .chat-container {
         display: flex;
-        height: calc(100vh - 120px);
+        height: calc(80vh);
+        max-height: 700px;
     }
 
     .chat-sidebar {
         display: flex;
         flex-direction: column;
         width: 380px;
+        min-width: 300px;
         border: 1px solid #e9ecef;
-        background-color: #fff;
+        background-color: #ffffff;
         border-radius: .5rem;
     }
 
@@ -29,64 +31,62 @@
         border-radius: .5rem;
     }
 
-    .nav-link {
-        color: #7f143f;
-    }
-
-    .nav-link:hover {
-        color: #7f143f;
-    }
-
     .list-group-item.active {
-        background-color: #f8f0f4;
-        border-left: 4px solid #7f143f;
+        background-color: #f8f0f4 !important;
+        border-left: 4px solid #7f143f !important;
         font-weight: 600;
+        border-color: #e9ecef;
+    }
+
+    .nav-pills .nav-link.active {
+        background-color: #7f143f !important;
+        color: #fff !important;
     }
 </style>
 
 <div class="chat-container">
 
     <div class="chat-sidebar">
-        <div class="card-header bg-light">
+        <div class="p-3 border-bottom">
             <ul class="nav nav-pills nav-fill" id="messageTabs" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="chats-tab" data-bs-toggle="tab" data-bs-target="#chats"
+                    <button class="nav-link active" id="chats-tab" data-bs-toggle="tab" data-bs-target="#chats-pane"
                         type="button" role="tab">Chats</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="contacts-tab" data-bs-toggle="tab" data-bs-target="#contacts"
+                    <button class="nav-link" id="contacts-tab" data-bs-toggle="tab" data-bs-target="#contacts-pane"
                         type="button" role="tab">New Chat</button>
                 </li>
             </ul>
         </div>
         <div class="flex-grow-1" style="overflow-y: auto;">
             <div class="tab-content h-100">
-                <div class="tab-pane fade show active h-100" id="chats" role="tabpanel">
+                <div class="tab-pane fade show active h-100" id="chats-pane" role="tabpanel">
                     <div class="list-group list-group-flush">
-                        @if (Model.Conversations.Any())
+                        @foreach (var convo in Model.Conversations)
                         {
-                            @foreach (var convo in Model.Conversations)
-                            {
-                                <a href="#" class="list-group-item list-group-item-action p-3 conversation-link"
-                                    data-username="@convo.OtherUser.UserName">
-                                    <div class="d-flex w-100 justify-content-between">
-                                        <h6 class="mb-1">@convo.OtherUser.Name</h6>
-                                        <small class="text-muted">@convo.LastMessage.SentAt.ToString("HH:mm")</small>
+                            <a href="#" class="list-group-item list-group-item-action p-3 conversation-link"
+                                data-username="@convo.OtherUser.UserName">
+                                <div class="d-flex align-items-center">
+                                    <img src="/img/@(convo.OtherUser.Image ?? "default-avatar.png")" alt="avatar"
+                                        class="rounded-circle me-3" style="width: 50px; height: 50px;">
+                                    <div class="w-100">
+                                        <div class="d-flex justify-content-between">
+                                            <h6 class="mb-1">@convo.OtherUser.Name</h6>
+                                            <small class="text-muted">@convo.LastMessage.SentAt.ToString("HH:mm")</small>
+                                        </div>
+                                        <p class="mb-1 small text-muted text-truncate">@convo.LastMessage.Content</p>
                                     </div>
-                                    <p class="mb-1 small text-muted text-truncate">@convo.LastMessage.Content</p>
-                                </a>
-                            }
-                        }
-                        else
-                        {
-                            <p class="text-center text-muted p-4">You have no active conversations.</p>
+                                </div>
+                            </a>
                         }
                     </div>
                 </div>
-                <div class="tab-pane fade h-100" id="contacts" role="tabpanel">
+                <div class="tab-pane fade h-100" id="contacts-pane" role="tabpanel">
                     <div class="list-group list-group-flush">
-                        @if (Model.Contacts.Any())
+                        @foreach (var contact in Model.Contacts)
                         {
+
                             @foreach (var contact in Model.Contacts)
                             {
                                 <a href="#"
@@ -101,6 +101,7 @@
                         else
                         {
                             <p class="text-center text-muted p-4">You have no mutual followers to start a new chat.</p>
+
                         }
                     </div>
                 </div>
@@ -111,8 +112,8 @@
     <div id="chat-content-area" class="chat-main">
         <div class="d-flex align-items-center justify-content-center h-100 text-center">
             <div>
-                <i class="bi bi-chat-dots" style="font-size: 4rem; color: #ced4da;"></i>
-                <p class="mt-2 text-muted">Select a chat to start messaging.</p>
+                <i class="bi bi-chat-dots" style="font-size: 5rem; color: #ced4da;"></i>
+                <p class="mt-2 text-muted fs-5">Select a chat to start messaging</p>
             </div>
         </div>
     </div>
@@ -121,7 +122,6 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-
             $(document).on('click', '.conversation-link', function (e) {
                 e.preventDefault();
 
@@ -131,7 +131,7 @@
                 $('.conversation-link').removeClass('active');
                 $(this).addClass('active');
 
-                $('#chat-content-area').html('<div class="d-flex justify-content-center align-items-center h-100"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+                $('#chat-content-area').html('<div class="d-flex justify-content-center align-items-center h-100"><div class="spinner-border" style="color:#7f143f;" role="status"><span class="visually-hidden">Loading...</span></div></div>');
 
                 $('#chat-content-area').load(url, function (response, status, xhr) {
                     if (status == "error") {
