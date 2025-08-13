@@ -98,6 +98,16 @@ namespace BlogApp.Controllers
                 .Include(m => m.Receiver)
                 .ToListAsync();
 
+            var unreadMessages = messages
+                .Where(m => m.ReceiverId == currentUserId && !m.IsRead)
+                .ToList();
+
+            if (unreadMessages.Any())
+            {
+                unreadMessages.ForEach(m => m.IsRead = true);
+                await _context.SaveChangesAsync();
+            }
+
             var model = new ChatViewModel
             {
                 OtherUser = otherUser,
@@ -141,6 +151,7 @@ namespace BlogApp.Controllers
                 SenderId = senderId,
                 ReceiverId = receiver.Id,
                 SentAt = DateTime.Now,
+                IsRead = false,
                 ConversationId = conversationId
             };
 

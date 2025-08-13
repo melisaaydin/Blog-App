@@ -45,7 +45,6 @@
 </style>
 
 <div class="chat-container">
-
     <div class="chat-sidebar">
         <div class="p-3 border-bottom">
             <ul class="nav nav-pills nav-fill" id="messageTabs" role="tablist">
@@ -66,16 +65,16 @@
                         @foreach (var convo in Model.Conversations)
                         {
                             <a href="#" class="list-group-item list-group-item-action p-3 conversation-link"
-                                data-username="@convo.OtherUser.UserName">
+                                data-username="@convo.OtherUser?.UserName">
                                 <div class="d-flex align-items-center">
-                                    <img src="/img/@(convo.OtherUser.Image ?? "default-avatar.png")" alt="avatar"
+                                    <img src="/img/@(convo.OtherUser?.Image ?? "default-avatar.jpg")" alt="avatar"
                                         class="rounded-circle me-3" style="width: 50px; height: 50px;">
                                     <div class="w-100">
                                         <div class="d-flex justify-content-between">
-                                            <h6 class="mb-1">@convo.OtherUser.Name</h6>
-                                            <small class="text-muted">@convo.LastMessage.SentAt.ToString("HH:mm")</small>
+                                            <h6 class="mb-1">@convo.OtherUser?.Name</h6>
+                                            <small class="text-muted">@convo.LastMessage?.SentAt.ToString("HH:mm")</small>
                                         </div>
-                                        <p class="mb-1 small text-muted text-truncate">@convo.LastMessage.Content</p>
+                                        <p class="mb-1 small text-muted text-truncate">@convo.LastMessage?.Content</p>
                                     </div>
                                 </div>
                             </a>
@@ -84,9 +83,8 @@
                 </div>
                 <div class="tab-pane fade h-100" id="contacts-pane" role="tabpanel">
                     <div class="list-group list-group-flush">
-                        @foreach (var contact in Model.Contacts)
+                        @if (Model.Contacts.Any())
                         {
-
                             @foreach (var contact in Model.Contacts)
                             {
                                 <a href="#"
@@ -101,7 +99,6 @@
                         else
                         {
                             <p class="text-center text-muted p-4">You have no mutual followers to start a new chat.</p>
-
                         }
                     </div>
                 </div>
@@ -124,7 +121,6 @@
         $(document).ready(function () {
             $(document).on('click', '.conversation-link', function (e) {
                 e.preventDefault();
-
                 var username = $(this).data('username');
                 var url = `/Message/Chat/${username}`;
 
@@ -133,7 +129,7 @@
 
                 $('#chat-content-area').html('<div class="d-flex justify-content-center align-items-center h-100"><div class="spinner-border" style="color:#7f143f;" role="status"><span class="visually-hidden">Loading...</span></div></div>');
 
-                $('#chat-content-area').load(url, function (response, status, xhr) {
+                $('#chat-content-area').load(url, function (response, status) {
                     if (status == "error") {
                         $('#chat-content-area').html('<p class="text-danger text-center p-4">Failed to load chat. Please try again.</p>');
                     }

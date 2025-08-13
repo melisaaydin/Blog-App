@@ -95,6 +95,9 @@ namespace BlogApp.Controllers
                 .Include(p => p.Likes)
                 .Include(p => p.Comments)
                 .ThenInclude(c => c.User)
+                .Include(p => p.Comments)
+                .ThenInclude(c => c.Replies)
+                .ThenInclude(r => r.User)
                 .FirstOrDefaultAsync(p => p.IsActive && p.Url == url);
 
             if (post == null)
@@ -128,7 +131,69 @@ namespace BlogApp.Controllers
 
             return View(post);
         }
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<JsonResult> AddReply(int PostId, int ParentCommentId, string Text)
+        {
+            if (string.IsNullOrWhiteSpace(Text))
+            {
+                return Json(new { success = false, message = "Reply text cannot be empty." });
+            }
 
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Json(new { success = false, message = "User not authenticated." });
+            }
+
+            var currentUser = await _userManager.FindByIdAsync(userId);
+            if (currentUser == null)
+            {
+                return Json(new { success = false, message = "User not found." });
+            }
+
+            var post = await _postRepository.Posts.FirstOrDefaultAsync(p => p.PostId == PostId && p.IsActive);
+            if (post == null)
+            {
+                return Json(new { success = false, message = "Post not found." });
+            }
+
+            var parentComment = await _commentRepository.GetCommentById(ParentCommentId);
+            if (parentComment == null)
+            {
+                return Json(new { success = false, message = "Parent comment not found." });
+            }
+
+            var reply = new Comment
+            {
+                PostId = PostId,
+                Text = Text,
+                PublishedOn = DateTime.Now,
+                UserId = userId,
+                ParentCommentId = ParentCommentId
+            };
+
+            await _commentRepository.CreateComment(reply);
+
+            if (parentComment.UserId != userId)
+            {
+                var message = $"{currentUser.Name ?? currentUser.UserName} replied to your comment on post: \"{post.Title}\"";
+                var link = $"/posts/details/{post.Url}#comment-{ParentCommentId}";
+                await _notificationService.CreateNotificationAsync(parentComment.UserId, message, link);
+            }
+
+            return Json(new
+            {
+                success = true,
+                replyId = reply.CommentId,
+                text = reply.Text,
+                publishedOn = reply.PublishedOn.ToString("o"),
+                name = currentUser.Name ?? currentUser.UserName,
+                username = currentUser.UserName,
+                avatar = currentUser.Image ?? "default-avatar.jpg"
+            });
+        }
         // POST: /Post/AddComment
         [HttpPost]
         [Authorize]

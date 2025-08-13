@@ -14,5 +14,8 @@ namespace BlogApp.Entity
         public Post? Post { get; set; }
         public string UserId { get; set; } = string.Empty;
         public User? User { get; set; }
+        public int? ParentCommentId { get; set; }
+        public Comment? ParentComment { get; set; }
+        public List<Comment> Replies { get; set; } = new List<Comment>();
     }
 }

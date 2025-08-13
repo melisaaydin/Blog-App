@@ -11,25 +11,27 @@
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         color: #1f2937;
         line-height: 1.6;
+        background-color: #f9fafb; /* Daha nötr bir arka plan */
     }
 
     .post-container {
         background: #ffffff;
-        border-radius: 1rem;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-        padding: 2.5rem;
+        border-radius: 0.75rem; /* Daha az yuvarlak */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Daha hafif gölge */
+        padding: 2rem;
         margin-bottom: 2rem;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .post-container:hover {
-        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+        transform: translateY(-2px); /* Daha az dramatik yükselme */
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
     }
 
     .post-title {
-        font-size: 2.5rem;
-        font-weight: 800;
-        color: #111827;
+        font-size: 2.25rem;
+        font-weight: 700;
+        color: #1f2937;
         margin-bottom: 1rem;
         line-height: 1.3;
     }
@@ -39,34 +41,38 @@
         align-items: center;
         font-size: 0.875rem;
         font-weight: 600;
-        padding: 0.5rem 1.25rem;
-        border-radius: 2rem;
+        padding: 0.375rem 1rem;
+        border-radius: 1.5rem;
         margin-right: 0.5rem;
         margin-bottom: 0.75rem;
         text-decoration: none;
         transition: all 0.2s ease;
+        background-color: #f3f4f6; /* Daha soft bir arka plan */
+        border: 1px solid #e5e7eb;
+        color: #374151;
     }
 
     .tag-badge:hover {
-        transform: translateY(-2px);
-        opacity: 0.95;
+        transform: translateY(-1px); /* Daha az hareket */
+        background-color: #e5e7eb;
     }
 
     .post-image {
         width: 100%;
         max-height: 400px;
         object-fit: cover;
-        border-radius: 1rem;
-        margin-bottom: 2rem;
+        border-radius: 0.5rem; /* Daha az yuvarlak */
+        margin-bottom: 1.5rem;
+        border: 1px solid #e5e7eb; /* Hafif çerçeve */
     }
 
     .post-meta {
         display: flex;
         flex-wrap: wrap;
-        gap: 1.5rem;
+        gap: 1.25rem;
         font-size: 0.875rem;
         color: #6b7280;
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
         font-weight: 500;
     }
 
@@ -76,39 +82,38 @@
     }
 
     .post-meta a {
-      
         text-decoration: none;
         font-weight: 600;
+        color: #1f2937;
         transition: color 0.2s ease;
     }
 
     .post-meta a:hover {
         color: #9c194e;
-        text-decoration: underline;
     }
 
     .post-content {
         font-size: 1.125rem;
-        line-height: 1.8;
+        line-height: 1.75;
         color: #374151;
-        margin-bottom: 2.5rem;
+        margin-bottom: 2rem;
     }
 
     .post-content p,
     .post-content ul,
     .post-content ol {
-        margin-bottom: 1.5rem;
+        margin-bottom: 1.25rem;
     }
 
     .post-content h2,
     .post-content h3 {
         font-weight: 700;
         color: #1f2937;
-        margin: 1.5rem 0 1rem;
+        margin: 1.5rem 0 0.75rem;
     }
 
     .post-content h2 {
-        font-size: 1.75rem;
+        font-size: 1.5rem;
     }
 
     .post-content h3 {
@@ -117,28 +122,31 @@
 
     .comment-section {
         background: #ffffff;
-        border-radius: 1rem;
-        padding: 2rem;
-        margin-top: 2.5rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        border-radius: 0.75rem;
+        padding: 1.75rem;
+        margin-top: 2rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e5e7eb;
     }
 
     .comment-count {
-        font-size: 1.5rem;
+        font-size: 1.25rem;
         font-weight: 700;
-        color: #111827;
-        margin-bottom: 2rem;
+        color: #1f2937;
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid #e5e7eb;
+        padding-bottom: 0.5rem;
     }
 
     .comment {
-        background: transparent;
         display: flex;
-        gap: 1.25rem;
-        padding: 1.25rem 0;
+        gap: 1rem;
+        padding: 1rem 0;
         transition: background-color 0.2s ease;
     }
 
     .comment:hover {
+        background-color: #f9fafb; /* Daha soft hover */
         border-radius: 0.5rem;
     }
 
@@ -147,8 +155,8 @@
     }
 
     .comment-avatar {
-        width: 48px;
-        height: 48px;
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
         object-fit: cover;
         border: 2px solid #e5e7eb;
@@ -162,13 +170,13 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 0.75rem;
+        margin-bottom: 0.5rem;
     }
 
     .comment-author {
         font-size: 1rem;
         font-weight: 600;
-        color: #111827;
+        color: #1f2937;
     }
 
     .comment-author a {
@@ -179,11 +187,10 @@
 
     .comment-author a:hover {
         color: #9c194e;
-        text-decoration: underline;
     }
 
     .comment-date {
-        font-size: 0.875rem;
+        font-size: 0.75rem;
         color: #6b7280;
         font-weight: 500;
     }
@@ -194,75 +201,100 @@
         line-height: 1.6;
     }
 
-    .comment-form {
-        background: #ffffff;
-        border-radius: 1rem;
-        padding: 2.5rem;
-        margin-bottom: 2.5rem;
+    .reply-btn {
+        font-size: 0.875rem;
+        padding: 0.25rem 0.75rem;
+        border: 1px solid #7f143f;
+        border-radius: 0.5rem;
+        background-color: #ffffff;
+        color: #7f143f;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .reply-btn:hover {
+        background-color: #7f143f;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 6px rgba(127, 20, 63, 0.1);
+    }
+
+    .reply-btn i {
+        font-size: 0.9rem;
+    }
+
+    .reply-form {
+        background-color: #f9fafb;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        border: 1px solid #e5e7eb;
+        margin-top: 0.75rem;
     }
 
     .form-label {
         font-weight: 600;
-        color: #111827;
+        color: #1f2937;
         font-size: 0.9rem;
-        margin-bottom: 0.75rem;
+        margin-bottom: 0.5rem;
     }
 
     .form-control {
         border: 1px solid #d1d5db;
-        border-radius: 0.75rem;
-        padding: 0.875rem 1.25rem;
+        border-radius: 0.5rem;
+        padding: 0.75rem 1rem;
         font-size: 1rem;
         transition: all 0.2s ease;
     }
 
     .form-control:focus {
         border-color: #7f143f;
-        box-shadow: 0 0 0 4px rgba(127, 20, 63, 0.15);
+        box-shadow: 0 0 0 3px rgba(127, 20, 63, 0.1);
         outline: none;
     }
 
     .btn-primary {
         background-color: #7f143f;
         border-color: #7f143f;
-        border-radius: 0.75rem;
-        padding: 0.875rem 2rem;
+        border-radius: 0.5rem;
+        padding: 0.75rem 1.5rem;
         font-weight: 600;
         font-size: 1rem;
         color: #ffffff;
-        transition: all 0.3s ease;
-        position: relative;
+        transition: all 0.2s ease;
     }
 
     .btn-primary:hover {
         background-color: #9c194e;
         border-color: #9c194e;
-        transform: translateY(-3px);
-        box-shadow: 0 4px 12px rgba(127, 20, 63, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(127, 20, 63, 0.2);
     }
 
     .btn-primary.loading::after {
         content: '';
         position: absolute;
-        width: 24px;
-        height: 24px;
-        border: 3px solid #fff;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #fff;
         border-radius: 50%;
         border-top-color: transparent;
-        animation: spin 0.8s linear infinite;
+        animation: spin 0.7s linear infinite;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
     }
 
     .alert {
-        padding: 1rem 1.5rem;
-        border-radius: 0.75rem;
-        margin-bottom: 1.5rem;
-        font-size: 0.9rem;
+        padding: 0.75rem 1.25rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1.25rem;
+        font-size: 0.875rem;
         font-weight: 500;
         opacity: 0;
-        transition: opacity 0.3s ease;
+        transition: opacity 0.2s ease;
     }
 
     .alert.show {
@@ -272,20 +304,40 @@
     .alert-success {
         background-color: #d1fae5;
         color: #065f46;
+        border: 1px solid #a7f3d0;
     }
 
     .alert-danger {
         background-color: #fee2e2;
         color: #991b1b;
+        border: 1px solid #fecaca;
+    }
+
+    .comment-form {
+        background: #ffffff;
+        border-radius: 0.75rem;
+        padding: 1.75rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e5e7eb;
     }
 
     .sidebar {
         position: sticky;
         top: 2rem;
-        padding: 2rem;
+        padding: 1.5rem;
         background: #ffffff;
-        border-radius: 1rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e5e7eb;
+    }
+
+    .comment.ms-5 {
+        margin-left: 2rem;
+        background-color: #f9fafb;
+        border-radius: 0.5rem;
+        padding: 0.75rem;
+        border: 1px solid #e5e7eb;
     }
 
     @@keyframes spin {
@@ -309,12 +361,11 @@
     }
 
     @@media (max-width: 767px) {
-
         .post-container,
         .comment-form,
         .comment-section,
         .sidebar {
-            padding: 1.5rem;
+            padding: 1.25rem;
         }
 
         .post-title {
@@ -323,6 +374,11 @@
 
         .post-content {
             font-size: 1rem;
+        }
+
+        .comment-avatar {
+            width: 36px;
+            height: 36px;
         }
     }
 </style>
@@ -345,7 +401,7 @@
                             {
                                 var colorClass = tag.Color.HasValue ? tag.Color.Value.ToString().ToLower() : "primary";
                                 <a href="/posts/tag/@tag.Url" class="tag-badge bg-@colorClass bg-opacity-10 text-@colorClass"
-                                    aria-label="Tag: @tag.Text">@tag.Text</a>
+                                   aria-label="Tag: @tag.Text">@tag.Text</a>
                             }
                         }
                         else
@@ -354,33 +410,34 @@
                         }
                     </div>
                     <img src="/img/@(Model.Image ?? "default.jpg")" class="post-image" alt="@(Model.Title ?? "Post Image")"
-                        loading="lazy" />
+                         loading="lazy" />
                     <div class="post-meta">
                         <span><i class="bi bi-calendar"></i> @(Model.PublishedOn.ToString("MMMM dd, yyyy"))</span>
                         <span><i class="bi bi-person-circle"></i> <a
                                 href="/profile/@(Model.User?.UserName ?? "unknown")">@(Model.User?.Name ??
                                                             "Anonymous")</a></span>
                         <span><i class="bi bi-eye-fill"></i> @Model.ViewCount Views</span>
-                          @if(User.Identity?.IsAuthenticated == true)
-    {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var isLikedByCurrentUser = Model.Likes.Any(l => l.UserId == userId);
-        
-        <span class="like-section ms-3">
-            <button id="likeBtn" class="btn btn-link text-danger p-0" data-post-id="@Model.PostId">
-                <i class="bi @(isLikedByCurrentUser ? "bi-heart-fill" : "bi-heart")"></i>
-            </button>
-            <span id="likeCount" class="ms-1">@Model.Likes.Count</span>
-        </span>
-    }  else
-    {
-         <span class="like-section ms-3">
-            <i class="bi bi-heart"></i>
-            <span id="likeCount" class="ms-1">@Model.Likes.Count</span>
-        </span>
-    }
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                            var isLikedByCurrentUser = Model.Likes.Any(l => l.UserId == userId);
+
+                            <span class="like-section ms-3">
+                                <button id="likeBtn" class="btn btn-link text-danger p-0" data-post-id="@Model.PostId">
+                                    <i class="bi @(isLikedByCurrentUser ? "bi-heart-fill" : "bi-heart")"></i>
+                                </button>
+                                <span id="likeCount" class="ms-1">@Model.Likes.Count</span>
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="like-section ms-3">
+                                <i class="bi bi-heart"></i>
+                                <span id="likeCount" class="ms-1">@Model.Likes.Count</span>
+                            </span>
+                        }
                     </div>
-                    <hr class="my-4">
+                    <hr class="my-4" style="border-color: #e5e7eb;">
                     <div class="post-content">@Html.Raw(Model.Content ?? "")</div>
                 </div>
                 <div class="comment-section">
@@ -390,16 +447,57 @@
                         {
                             <div class="comment">
                                 <img src="/img/@(comment.User?.Image ?? "default-avatar.jpg")" class="comment-avatar"
-                                    alt="@(comment.User?.Name ?? "Anonymous")'s avatar" loading="lazy" />
+                                     alt="@(comment.User?.Name ?? "Anonymous")'s avatar" loading="lazy" />
                                 <div class="comment-content">
                                     <div class="comment-header">
                                         <h6 class="comment-author">
                                             <a href="/profile/@(comment.User?.UserName ?? "unknown")">@(comment.User?.Name ??
-                                                                                        "Anonymous")</a>
+                                                    "Anonymous")</a>
                                         </h6>
                                         <small class="comment-date">@comment.PublishedOn.ToString("MMMM dd, yyyy HH:mm")</small>
                                     </div>
                                     <p class="comment-text">@(comment.Text ?? "")</p>
+                                    @if (User.Identity?.IsAuthenticated == true)
+                                    {
+                                        <button class="btn btn-outline-primary btn-sm reply-btn mt-2" data-comment-id="@comment.CommentId">
+                                            <i class="bi bi-reply-fill"></i> Reply
+                                        </button>
+                                        <div class="reply-form mt-3" id="reply-form-@comment.CommentId" style="display: none;">
+                                            <form id="replyForm-@comment.CommentId" action="/Post/AddReply" method="post">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="PostId" value="@Model.PostId" />
+                                                <input type="hidden" name="ParentCommentId" value="@comment.CommentId" />
+                                                <div class="mb-4">
+                                                    <label for="ReplyText-@comment.CommentId" class="form-label">Your Reply</label>
+                                                    <textarea name="Text" id="ReplyText-@comment.CommentId" rows="3" class="form-control"
+                                                              placeholder="Write your reply here..." required></textarea>
+                                                    <span class="text-danger" id="replyError-@comment.CommentId"></span>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary" id="btnSubmitReply-@comment.CommentId">Submit Reply</button>
+                                            </form>
+                                        </div>
+                                    }
+                                    <!-- Display Replies -->
+                                    @if (comment.Replies?.Any() ?? false)
+                                    {
+                                        foreach (var reply in comment.Replies)
+                                        {
+                                            <div class="comment ms-5">
+                                                <img src="/img/@(reply.User?.Image ?? "default-avatar.jpg")" class="comment-avatar"
+                                                     alt="@(reply.User?.Name ?? "Anonymous")'s avatar" loading="lazy" />
+                                                <div class="comment-content">
+                                                    <div class="comment-header">
+                                                        <h6 class="comment-author">
+                                                            <a href="/profile/@(reply.User?.UserName ?? "unknown")">@(reply.User?.Name ??
+                                                                    "Anonymous")</a>
+                                                        </h6>
+                                                        <small class="comment-date">@reply.PublishedOn.ToString("MMMM dd, yyyy HH:mm")</small>
+                                                    </div>
+                                                    <p class="comment-text">@(reply.Text ?? "")</p>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
                                 </div>
                             </div>
                         }
@@ -415,7 +513,7 @@
                                 <div class="mb-4">
                                     <label for="Text" class="form-label">Your Comment</label>
                                     <textarea name="Text" id="Text" rows="5" class="form-control"
-                                placeholder="Write your comment here..." required></textarea>
+                                              placeholder="Write your comment here..." required></textarea>
                                     <span class="text-danger" id="commentError"></span>
                                 </div>
                                 <div class="mb-3">
@@ -426,8 +524,7 @@
                     }
                     else
                     {
-                        <p class="text-muted">Please <a href="/users/login" class="text-primary fw-bold">log in</a> to post a
-                            comment.</p>
+                        <p class="text-muted">Please <a href="/users/login" class="text-primary fw-bold">log in</a> to post a comment or reply.</p>
                     }
                 </div>
             }
@@ -442,9 +539,10 @@
 
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script>
         $(document).ready(function () {
+      
             $("#commentForm").on("submit", function (e) {
                 e.preventDefault();
 
@@ -452,10 +550,82 @@
                 const text = $("#Text").val().trim();
                 const $button = $("#btnSubmitComment");
                 const $alert = $("#commentAlert");
+                const $errorSpan = $("#commentError");
 
                 if (!text) {
-                    $alert.removeClass("alert-success").addClass("alert-danger show")
-                        .text("Comment cannot be empty.").show();
+                    $errorSpan.text("Comment cannot be empty.").show();
+                    return;
+                }
+
+                $button.addClass("loading").prop("disabled", true).text("Submitting...");
+                $.ajax({
+                    type: "POST",
+                    url: "/Post/AddComment",
+                    data: $(this).serialize(),
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.success) {
+                            const date = new Date(response.publishedOn);
+                            $("#comments").append(`
+                                <div class="comment">
+                                    <img src="/img/${response.avatar}" class="comment-avatar" alt="${response.username}'s avatar" loading="lazy" />
+                                    <div class="comment-content">
+                                        <div class="comment-header">
+                                            <h6 class="comment-author">
+                                                <a href="/profile/${response.username}">${response.name}</a>
+                                            </h6>
+                                            <small class="comment-date">${date.toLocaleString("en-US", {
+                                                year: "numeric",
+                                                month: "long",
+                                                day: "numeric",
+                                                hour: "2-digit",
+                                                minute: "2-digit"
+                                            })}</small>
+                                        </div>
+                                        <p class="comment-text">${response.text}</p>
+                                    </div>
+                                </div>
+                            `);
+                            $("#Text").val("");
+                            $alert.removeClass("alert-danger").addClass("alert-success show")
+                                .text("Comment added successfully!").show().delay(3000).fadeOut();
+                            $("#commentCount").text(parseInt($("#commentCount").text()) + 1);
+                        } else {
+                            $alert.removeClass("alert-success").addClass("alert-danger show")
+                                .text(response.message || "An error occurred.").show();
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        $alert.removeClass("alert-success").addClass("alert-danger show")
+                            .text("An error occurred while adding the comment: " + (xhr.responseJSON?.message || error)).show();
+                    },
+                    complete: function () {
+                        $button.removeClass("loading").prop("disabled", false).text("Submit Comment");
+                        $errorSpan.hide();
+                    }
+                });
+            });
+
+            $(".reply-btn").on("click", function () {
+                const commentId = $(this).data("comment-id");
+                const $replyForm = $("#reply-form-" + commentId);
+                $replyForm.toggle();
+            });
+
+            $("[id^='replyForm-']").on("submit", function (e) {
+                e.preventDefault();
+
+                const form = $(this);
+                const commentId = form.attr("id").split("-")[1];
+                const $button = form.find("[id^='btnSubmitReply-']");
+                const $alert = form.find(".alert");
+                const $errorSpan = $("#replyError-" + commentId);
+
+                const postId = form.find("[name='PostId']").val();
+                const text = form.find("[name='Text']").val().trim();
+
+                if (!text) {
+                    $errorSpan.text("Reply cannot be empty.").show();
                     return;
                 }
 
@@ -463,55 +633,47 @@
 
                 $.ajax({
                     type: "POST",
-                    url: "@Url.Action("AddComment", "Post")",
-                    data: {
-                        PostId: postId,
-                        Text: text,
-                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
-                    },
+                    url: "/Post/AddReply",
+                    data: form.serialize(),
                     dataType: "json",
                     success: function (response) {
-                        if (response.error) {
-                            $alert.removeClass("alert-success").addClass("alert-danger show")
-                                .text(response.error).show();
-                        } else {
+                        if (response.success) {
                             const date = new Date(response.publishedOn);
-                            $("#comments").append(`
-                                            <div class="comment">
-                                                <img src="/img/${response.avatar || "default-avatar.jpg"}" 
-                                                     class="comment-avatar" 
-                                                     alt="${response.username}'s avatar" 
-                                                     loading="lazy" />
-                                                <div class="comment-content">
-                                                    <div class="comment-header">
-                                                        <h6 class="comment-author">
-                                                            <a href="/profile/${response.username}">${response.username}</a>
-                                                        </h6>
-                                                        <small class="comment-date">${date.toLocaleString("en-US", {
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit"
-                            })}</small>
-                                                    </div>
-                                                    <p class="comment-text">${response.text}</p>
-                                                </div>
-                                            </div>
-                                        `);
-                            $("#Text").val("");
-                            $("#commentAlert").removeClass("alert-danger").addClass("alert-success show")
-                                .text("Comment added successfully!").show().delay(3000).fadeOut();
-                            const commentCount = parseInt($("#commentCount").text()) + 1;
-                            $("#commentCount").text(commentCount);
+                            $("#comments").find(`#reply-form-${commentId}`).before(`
+                                <div class="comment ms-5">
+                                    <img src="/img/${response.avatar}" class="comment-avatar" alt="${response.username}'s avatar" loading="lazy" />
+                                    <div class="comment-content">
+                                        <div class="comment-header">
+                                            <h6 class="comment-author">
+                                                <a href="/profile/${response.username}">${response.name}</a>
+                                            </h6>
+                                            <small class="comment-date">${date.toLocaleString("en-US", {
+                                                year: "numeric",
+                                                month: "long",
+                                                day: "numeric",
+                                                hour: "2-digit",
+                                                minute: "2-digit"
+                                            })}</small>
+                                        </div>
+                                        <p class="comment-text">${response.text}</p>
+                                    </div>
+                                </div>
+                            `);
+                            form.find("[name='Text']").val("");
+                            $alert.removeClass("alert-danger").addClass("alert-success show")
+                                .text("Reply added successfully!").show().delay(3000).fadeOut();
+                        } else {
+                            $alert.removeClass("alert-success").addClass("alert-danger show")
+                                .text(response.message || "An error occurred.").show();
                         }
                     },
                     error: function (xhr, status, error) {
                         $alert.removeClass("alert-success").addClass("alert-danger show")
-                            .text("An error occurred while adding the comment: " + (xhr.responseJSON?.error || error)).show();
+                            .text("An error occurred while adding the reply: " + (xhr.responseJSON?.message || error)).show();
                     },
                     complete: function () {
-                        $button.removeClass("loading").prop("disabled", false).text("Submit Comment");
+                        $button.removeClass("loading").prop("disabled", false).text("Submit Reply");
+                        $errorSpan.hide();
                     }
                 });
             });
@@ -522,37 +684,37 @@
         });
     </script>
     <script>
-    $(document).ready(function() {
-        $('#likeBtn').on('click', function() {
-            const button = $(this);
-            const postId = button.data('post-id');
-            const token = $('input[name="__RequestVerificationToken"]').val();
+        $(document).ready(function () {
+            $('#likeBtn').on('click', function () {
+                const button = $(this);
+                const postId = button.data('post-id');
+                const token = $('input[name="__RequestVerificationToken"]').val();
 
-            $.ajax({
-                type: 'POST',
-                url: '/Post/ToggleLike',
-                data: {
-                    postId: postId,
-                    __RequestVerificationToken: token
-                },
-                success: function(response) {
-                    if (response.success) {
-                        $('#likeCount').text(response.likeCount);
-                        const icon = button.find('i');
-                        if (response.isLiked) {
-                            icon.removeClass('bi-heart').addClass('bi-heart-fill');
+                $.ajax({
+                    type: 'POST',
+                    url: '/Post/ToggleLike',
+                    data: {
+                        postId: postId,
+                        __RequestVerificationToken: token
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            $('#likeCount').text(response.likeCount);
+                            const icon = button.find('i');
+                            if (response.isLiked) {
+                                icon.removeClass('bi-heart').addClass('bi-heart-fill');
+                            } else {
+                                icon.removeClass('bi-heart-fill').addClass('bi-heart');
+                            }
                         } else {
-                            icon.removeClass('bi-heart-fill').addClass('bi-heart');
+                            alert(response.message || 'An error occurred.');
                         }
-                    } else {
-                        alert(response.message || 'An error occurred.');
+                    },
+                    error: function () {
+                        alert('An unexpected error occurred. Please try again.');
                     }
-                },
-                error: function() {
-                    alert('An unexpected error occurred. Please try again.');
-                }
+                });
             });
         });
-    });
-</script>
+    </script>
 }
