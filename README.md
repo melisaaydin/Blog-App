@@ -1,6 +1,6 @@
-<img width="2559" height="1228" alt="Ekran görüntüsü 2025-08-14 201243" src="https://github.com/user-attachments/assets/faeed42b-8567-447c-8346-e07530ece24f" />
-<img width="2559" height="1234" alt="Ekran görüntüsü 2025-08-14 201415" src="https://github.com/user-attachments/assets/cf3d582d-0e73-42f2-8fec-4a92b52c8f97" />
-<img width="2559" height="1232" alt="Ekran görüntüsü 2025-08-14 201437" src="https://github.com/user-attachments/assets/97ddcc7b-06a9-4cfb-9b1d-945d2e183dc8" />
+<img width="800" height="500" alt="image" src="https://github.com/user-attachments/assets/aea431a8-8503-4712-9681-e375721b4e91" />
+<img width="800" height="500" alt="Ekran görüntüsü 2025-08-14 201415" src="https://github.com/user-attachments/assets/cf3d582d-0e73-42f2-8fec-4a92b52c8f97" />
+<img width="800" height="500" alt="Ekran görüntüsü 2025-08-14 201437" src="https://github.com/user-attachments/assets/97ddcc7b-06a9-4cfb-9b1d-945d2e183dc8" />
 
 # Blog Application
 
