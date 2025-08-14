@@ -7,13 +7,21 @@
     <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="~/css/site.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Mls Blog</title>
     @await RenderSectionAsync("Head", required: false)
 </head>
+<style>
+    .navbar {
+        box-shadow: 0 2px 0 #7f143f;
+        border-radius: 18px;
+    }
+</style>
 
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg bg-white border-bottom shadow-sm">
+        <nav class="navbar navbar-expand-lg bg-white border-bottom ">
             <div class="container">
                 <a href="/post" class="navbar-brand">
                     <img style="height: 40px;" src="/img/mlsblog.png" alt="Mls Blog Logo">
@@ -143,7 +151,44 @@
             }
         });
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            toastr.options = {
+                "positionClass": "toast-bottom-right"
+            };
+            @if (TempData["ToastMessage"] != null)
+                {
+                    var message = TempData["ToastMessage"]?.ToString();
+                    var type = TempData["ToastType"]?.ToString() ?? "info";
 
+                    if (type == "success")
+                    {
+                        <text>
+                            toastr.success("@Html.Raw(message)");
+                        </text>
+                }
+                            else if (type == "error")
+                    {
+                        <text>
+                            toastr.error("@Html.Raw(message)");
+                        </text>
+                }
+                            else if (type == "warning")
+                    {
+                        <text>
+                            toastr.warning("@Html.Raw(message)");
+                        </text>
+                }
+                    else
+                    {
+                        <text>
+                            toastr.info("@Html.Raw(message)");
+                        </text>
+                }
+                }
+    });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 

@@ -6,12 +6,26 @@
 
 <style>
     .edit-profile-card {
-        max-width: 800px;
+        max-width: 600px;
         margin: 2rem auto;
         padding: 2.5rem;
         background: #fff;
         border-radius: 1rem;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 0 #7f143f;
+    }
+
+    h2 {
+        font-weight: 800;
+        font-size: 40px;
+        color: #7f143f;
+        text-shadow: 0 1px 0 #7f143f;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    label,
+    h5 {
+        font-weight: 700 !important;
+        color: #7f143f;
     }
 
     .profile-image-preview {
@@ -20,6 +34,19 @@
         border-radius: 50%;
         object-fit: cover;
         border: 4px solid #eef2f5;
+    }
+
+    .input-group-password {
+        position: relative;
+    }
+
+    .input-group-password .toggle-password {
+        position: absolute;
+        right: 15px;
+        top: 50px;
+        font-weight: 700;
+        transform: translateY(-50%);
+        cursor: pointer;
     }
 </style>
 
@@ -35,7 +62,8 @@
 
         <div class="mb-3">
             <label asp-for="ImageFile" class="form-label"></label>
-            <input asp-for="ImageFile" class="form-control">
+            <input asp-for="ImageFile" class="form-control"
+                onchange="document.getElementById('imagePreview').src = window.URL.createObjectURL(this.files[0])">
             <span asp-validation-for="ImageFile" class="text-danger"></span>
         </div>
 
@@ -57,24 +85,55 @@
             <span asp-validation-for="Email" class="text-danger"></span>
         </div>
 
-        <div class="d-grid">
-            <button type="submit" class="btn btn-primary">Save Changes</button>
+        <hr class="my-4">
+        <h5 class="mb-3">Change Password (optional)</h5>
+
+        <div class="mb-3 input-group-password">
+            <label asp-for="CurrentPassword" class="form-label"></label>
+            <input asp-for="CurrentPassword" class="form-control" id="currentPasswordInput">
+            <span class="toggle-password" onclick="togglePasswordVisibility('currentPasswordInput', this)"><i
+                    class="bi bi-eye-slash"></i></span>
+            <span asp-validation-for="CurrentPassword" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3 input-group-password">
+            <label asp-for="NewPassword" class="form-label"></label>
+            <input asp-for="NewPassword" class="form-control" id="newPasswordInput">
+            <span class="toggle-password" onclick="togglePasswordVisibility('newPasswordInput', this)"><i
+                    class="bi bi-eye-slash"></i></span>
+            <span asp-validation-for="NewPassword" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3 input-group-password">
+            <label asp-for="ConfirmNewPassword" class="form-label"></label>
+            <input asp-for="ConfirmNewPassword" class="form-control" id="confirmNewPasswordInput">
+            <span class="toggle-password" onclick="togglePasswordVisibility('confirmNewPasswordInput', this)"><i
+                    class="bi bi-eye-slash"></i></span>
+            <span asp-validation-for="ConfirmNewPassword" class="text-danger"></span>
+        </div>
+
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-dark">Update Profile</button>
         </div>
     </form>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
     <script>
-        document.getElementById("ImageFile").addEventListener("change", function (event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    document.getElementById("imagePreview").src = e.target.result;
-                }
-                reader.readAsDataURL(file);
+        function togglePasswordVisibility(id, iconElement) {
+            const input = document.getElementById(id);
+            const icon = iconElement.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
             }
-        });
+        }
     </script>
 }
