@@ -13,7 +13,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BlogApp.Controllers
 {
-
     public class UsersController : Controller
     {
         private readonly BlogContext _context;
@@ -21,6 +20,7 @@ namespace BlogApp.Controllers
         private readonly SignInManager<User> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly INotificationService _notificationService;
+
         public UsersController(UserManager<User> userManager, SignInManager<User> signInManager, IEmailSender emailSender, BlogContext context, INotificationService notificationService)
         {
             _userManager = userManager;
@@ -50,7 +50,7 @@ namespace BlogApp.Controllers
                 {
                     if (!await _userManager.IsEmailConfirmedAsync(user))
                     {
-                        ModelState.AddModelError("", "Please confirm your email before you can log in.");
+                        ModelState.AddModelError("", "Please confirm your email address before logging in.");
                         return View(model);
                     }
 
@@ -69,13 +69,13 @@ namespace BlogApp.Controllers
             return View();
         }
 
-
         [HttpGet]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction("Login");
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
@@ -106,9 +106,9 @@ namespace BlogApp.Controllers
         </p>
     </div>";
                     await _emailSender.SendEmailAsync(
-      model.Email!,
-      "Confirm Your Email",
-      emailBody);
+        model.Email!,
+        "Confirm Your Email",
+        emailBody);
 
                     return RedirectToAction("RegisterConfirmation");
                 }
@@ -139,13 +139,14 @@ namespace BlogApp.Controllers
             var result = await _userManager.ConfirmEmailAsync(user, token);
             if (result.Succeeded)
             {
-                TempData["message"] = "Your account has been successfully confirmed. You can now log in.";
+                TempData["message"] = "Your account has been confirmed successfully. You can now log in.";
                 return RedirectToAction("Login");
             }
 
-            TempData["message"] = "There was an error confirming your email.";
+            TempData["message"] = "There was an error confirming your email address.";
             return View("Error");
         }
+
         [HttpGet]
         public IActionResult RegisterConfirmation()
         {
@@ -172,6 +173,7 @@ namespace BlogApp.Controllers
             }
             return View(user);
         }
+
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> EditProfile()
@@ -179,12 +181,16 @@ namespace BlogApp.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))
             {
+                TempData["ToastMessage"] = "Error: User not found.";
+                TempData["ToastType"] = "error";
                 return NotFound();
             }
 
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
+                TempData["ToastMessage"] = "Error: User not found.";
+                TempData["ToastType"] = "error";
                 return NotFound();
             }
 
@@ -206,6 +212,8 @@ namespace BlogApp.Controllers
         {
             if (!ModelState.IsValid)
             {
+                TempData["ToastMessage"] = "Error: Please check the errors in the form.";
+                TempData["ToastType"] = "error";
                 return View(model);
             }
 
@@ -214,23 +222,30 @@ namespace BlogApp.Controllers
 
             if (user == null)
             {
+                TempData["ToastMessage"] = "Error: User not found.";
+                TempData["ToastType"] = "error";
                 return NotFound();
             }
 
+            // Update user details
+            user.Name = model.Name;
+            user.Email = model.Email;
+
+            // Handle username change
             if (user.UserName != model.UserName)
             {
                 var existingUser = await _userManager.FindByNameAsync(model.UserName!);
-                if (existingUser != null)
+                if (existingUser != null && existingUser.Id != user.Id)
                 {
                     ModelState.AddModelError("UserName", "This username is already taken.");
+                    TempData["ToastMessage"] = "Username is already taken.";
+                    TempData["ToastType"] = "warning";
                     return View(model);
                 }
                 await _userManager.SetUserNameAsync(user, model.UserName);
             }
 
-            user.Name = model.Name;
-            user.Email = model.Email;
-
+            // Handle image upload
             if (model.ImageFile != null)
             {
                 var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
@@ -238,7 +253,18 @@ namespace BlogApp.Controllers
                 if (!allowedExtensions.Contains(extension))
                 {
                     ModelState.AddModelError("ImageFile", "Invalid image format.");
+                    TempData["ToastMessage"] = "Invalid image format.";
+                    TempData["ToastType"] = "warning";
                     return View(model);
+                }
+
+                if (user.Image != "default-avatar.jpg")
+                {
+                    var oldImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", user.Image!);
+                    if (System.IO.File.Exists(oldImagePath))
+                    {
+                        System.IO.File.Delete(oldImagePath);
+                    }
                 }
 
                 var randomFileName = $"{Guid.NewGuid()}{extension}";
@@ -251,21 +277,68 @@ namespace BlogApp.Controllers
                 user.Image = randomFileName;
             }
 
+            // Handle password change
+            if (!string.IsNullOrEmpty(model.NewPassword))
+            {
+                if (string.IsNullOrEmpty(model.CurrentPassword))
+                {
+                    ModelState.AddModelError("CurrentPassword", "Current password is required to change the password.");
+                    TempData["ToastMessage"] = "Current password is required to change the password.";
+                    TempData["ToastType"] = "warning";
+                    return View(model);
+                }
+
+                // Check if the current password is correct
+                var isCurrentPasswordCorrect = await _userManager.CheckPasswordAsync(user, model.CurrentPassword);
+                if (!isCurrentPasswordCorrect)
+                {
+                    ModelState.AddModelError("CurrentPassword", "Your current password is incorrect.");
+                    TempData["ToastMessage"] = "Your current password is incorrect.";
+                    TempData["ToastType"] = "error";
+                    return View(model);
+                }
+
+                var passwordChangeResult = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+                if (!passwordChangeResult.Succeeded)
+                {
+                    foreach (var error in passwordChangeResult.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                    TempData["ToastMessage"] = "Failed to change password.";
+                    TempData["ToastType"] = "error";
+                    return View(model);
+                }
+            }
+            else if (!string.IsNullOrEmpty(model.CurrentPassword))
+            {
+                // If a current password is provided but a new one is not, show an error.
+                ModelState.AddModelError("NewPassword", "The new password field cannot be empty.");
+                TempData["ToastMessage"] = "The new password field cannot be empty.";
+                TempData["ToastType"] = "warning";
+                return View(model);
+            }
+
             var result = await _userManager.UpdateAsync(user);
 
             if (result.Succeeded)
             {
                 await _signInManager.RefreshSignInAsync(user);
-                return RedirectToAction("Profile", new { username = user.UserName });
+                TempData["ToastMessage"] = "Your profile has been updated successfully.";
+                TempData["ToastType"] = "success";
+                return RedirectToAction("Index", "Post");
             }
 
             foreach (var error in result.Errors)
             {
                 ModelState.AddModelError("", error.Description);
             }
+            TempData["ToastMessage"] = "An error occurred while updating your profile.";
+            TempData["ToastType"] = "error";
 
             return View(model);
         }
+
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -291,7 +364,6 @@ namespace BlogApp.Controllers
             var follow = new Follow { FollowerId = currentUserId, FollowingId = userToFollow.Id };
             _context.Follows.Add(follow);
             await _context.SaveChangesAsync();
-
             var message = $"{currentUser.Name ?? currentUser.UserName} started following you.";
             var link = $"/profile/{currentUser.UserName}";
             await _notificationService.CreateNotificationAsync(userToFollow.Id, message, link);
@@ -333,6 +405,7 @@ namespace BlogApp.Controllers
         {
             return View();
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
@@ -369,12 +442,12 @@ namespace BlogApp.Controllers
 
             return RedirectToAction("ForgotPasswordConfirmation");
         }
+
         [HttpGet]
         public IActionResult ForgotPasswordConfirmation()
         {
             return View();
         }
-
 
         [HttpGet]
         public async Task<IActionResult> ResetPassword(string? userId = null, string? token = null)
@@ -434,5 +507,4 @@ namespace BlogApp.Controllers
             return View();
         }
     }
-
 }
