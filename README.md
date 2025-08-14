@@ -1,128 +1,128 @@
-Blog Application
+<img width="2559" height="1228" alt="Ekran görüntüsü 2025-08-14 201243" src="https://github.com/user-attachments/assets/faeed42b-8567-447c-8346-e07530ece24f" />
+<img width="2559" height="1234" alt="Ekran görüntüsü 2025-08-14 201415" src="https://github.com/user-attachments/assets/cf3d582d-0e73-42f2-8fec-4a92b52c8f97" />
+<img width="2559" height="1232" alt="Ekran görüntüsü 2025-08-14 201437" src="https://github.com/user-attachments/assets/97ddcc7b-06a9-4cfb-9b1d-945d2e183dc8" />
+
+# Blog Application
+
 This project is a blog platform that allows users to share posts, manage their profiles, interact with other users, and comment, all while incorporating an admin approval process.
 
-Features
+---
+
+## 📌 Features
+
 Your application boasts the following core features, providing a rich user experience and administrative control:
 
-Post Management
-Create New Posts: Users can share new posts.
+### **Post Management**
+- **Create New Posts:** Users can share new posts.
+- **Post Approval:** Newly shared posts must be approved by an administrator before they become visible on the site.
+- **Post Editing:**
+  - **Normal Users:** Can only view and edit their own posts.
+  - **Admin Users:** Can view all users' posts on the "Manage Posts" page and change their active status (visible/hidden).
+- **Like Posts:** Users can like posts and see the number of likes and views.
+- **Post Detail Page:** From a post's detail page, users can navigate to:
+  - The profile of the user who shared the post.
+  - The profile pages of users who commented.
 
-Post Approval: Newly shared posts must be approved by an administrator before they become visible on the site.
+### **User Profile and Interactions**
+- **Account Confirmation:** A confirmation link is sent via email to newly created accounts.
+- **Password Reset:** Users can reset their passwords via a link sent to their email.
+- **Follow Notifications:** When a user follows another, a notification is sent to the followed user.
+- **Profile Update:** Users can update their profiles.
+- **View Other Profiles:** Users can browse other users' profiles.
+- **Follow/Unfollow:** Users can follow or unfollow others.
+- **Mutual Following & Messaging:** If two users follow each other, they can send messages.
+- **View User's Posts & Comments:** A profile shows a user’s posts and comments.
 
-Post Editing:
+### **Comments and Interactions**
+- **Comment on Posts:** Users can comment under posts.
+- **Reply to Comments:** Users can reply to existing comments.
 
-Normal Users: Can only view and edit their own posts.
+### **Administrator (Admin) Panel**
+- **Define User Roles:** Admins can assign or revoke admin roles.
+- **View Users:** Admin panel lists all users.
 
-Admin Users: Can view all users' posts on the "Manage Posts" page and change their active status (visible/hidden).
+---
 
-Like Posts: Users can like posts. They can also observe the number of likes and views a post has received.
+## 🛠 Technologies
 
-Post Detail Page: From a post's detail page, users can navigate to the profile page of the user who shared the post or to the profile detail pages of users who commented.
+### **Backend**
+- [.NET 9.0](https://dotnet.microsoft.com/) – Powerful and scalable backend.
+- Microsoft.AspNetCore.Identity.EntityFrameworkCore – Authentication & authorization.
+- Microsoft.AspNetCore.Identity.UI – Ready-to-use UI components.
+- Microsoft.AspNetCore.Mvc – MVC architecture.
+- Microsoft.EntityFrameworkCore.Sqlite – Lightweight database.
+- Microsoft.EntityFrameworkCore.Design – EF Core migrations & design tools.
+- Microsoft.Extensions.Logging – Logging operations.
+- Microsoft.AspNetCore.Mvc.NewtonsoftJson – JSON serialization/deserialization.
 
-User Profile and Interactions
-Account Confirmation: A confirmation link is sent via email to newly created accounts. The user confirms their account by clicking this link.
+### **Frontend**
+- JavaScript
+- HTML/CSS
 
-Password Reset: If users forget their passwords, they can receive a password reset link via email and renew their passwords.
+---
 
-Follow Notifications: When a user follows another user, a notification is sent to the followed user.
+## ⚙️ Setup and Running
 
-Profile Update: Users can update their own profiles.
+### **Prerequisites**
+- [.NET 9.0 SDK](https://dotnet.microsoft.com/download) installed.
+- A code editor (Visual Studio Code or Visual Studio).
 
-View Other Profiles: Users can browse other users' profiles.
+### **Steps**
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/melisaaydin/Blog-App.git
+   cd Blog-App
+````
 
-Follow/Unfollow: Users can follow or unfollow other users. The profile detail page shows how many followers a user has and how many people they are following.
+2. **Install Dependencies**
 
-Mutual Following and Messaging: If two users follow each other mutually, they can send messages to one another.
+   ```bash
+   dotnet restore
+   ```
 
-View User's Posts: A user's profile displays the posts they have published.
+3. **Apply Database Migrations**
 
-View User's Comments: A user's profile displays the comments they have made on posts.
+   ```bash
+   dotnet ef database update
+   ```
 
-Comments and Interactions
-Comment on Posts: Users can comment under posts.
+   *(If running for the first time, you may need to add a new migration with:)*
 
-Reply to Comments: Users can reply to existing comments.
+   ```bash
+   dotnet ef migrations add InitialCreate
+   ```
 
-Administrator (Admin) Panel
-Define User Roles: Admins can assign admin roles to users or revert them to normal user roles.
+4. **Run the Application**
 
-View Users: The admin panel is accessible only to admins and lists all users in the system.
+   * **HTTP**
 
-Technologies
-This project is built using .NET and JavaScript, adhering to modern web development standards.
+     ```bash
+     dotnet run --launch-profile http
+     ```
 
-Backend
-.NET 9.0: Used for a powerful and scalable backend.
+     ➜ Runs at `http://localhost:5001`
 
-Microsoft.AspNetCore.Identity.EntityFrameworkCore: For user authentication and authorization.
+   * **HTTPS**
 
-Microsoft.AspNetCore.Identity.UI: For ready-to-use UI components for authentication.
+     ```bash
+     dotnet run --launch-profile https
+     ```
 
-Microsoft.AspNetCore.Mvc: For the Model-View-Controller (MVC) architecture.
+     ➜ Runs at `https://localhost:7058` and `http://localhost:5001`
 
-Microsoft.EntityFrameworkCore.Sqlite: Used as a lightweight database solution for development and small-scale deployments.
+   * **IIS Express**
 
-Microsoft.EntityFrameworkCore.Design: For Entity Framework Core migrations and design-time tools.
+     ```bash
+     dotnet run --launch-profile "IIS Express"
+     ```
 
-Microsoft.Extensions.Logging: For in-application logging operations.
+---
 
-Microsoft.AspNetCore.Mvc.NewtonsoftJson: For JSON serialization and deserialization operations.
+## ⚙️ Configuration
 
-Frontend
-JavaScript: For a dynamic and interactive user interface.
+`launchSettings.json` defines environment settings:
 
-HTML/CSS: For page structure and styling.
-
-Setup and Running
-Follow these steps to set up and run the application in your local development environment:
-
-Prerequisites
-.NET 9.0 SDK must be installed.
-
-A code editor (e.g., Visual Studio Code or Visual Studio).
-
-Steps
-Clone the Repository:
-
-git clone https://github.com/melisaaydin/Blog-App.git
-cd Blog-App
-
-Install Dependencies:
-Restore all NuGet packages by running the following command in the project directory (where the .csproj file is located):
-
-dotnet restore
-
-Apply Database Migrations:
-Run the following commands to create Entity Framework Core migrations and update the database. If running for the first time, you may need to add a new migration with dotnet ef migrations add InitialCreate.
-
-dotnet ef database update
-
-Run the Application:
-You can start the application using one of the profiles defined in your launchSettings.json file.
-
-Run with HTTP:
-
-dotnet run --launch-profile http
-
-This will start the application at http://localhost:5001.
-
-Run with HTTPS:
-
-dotnet run --launch-profile https
-
-This will start the application at https://localhost:7058 and http://localhost:5001.
-
-Run with IIS Express:
-
-dotnet run --launch-profile "IIS Express"
-
-This will start the application via IIS Express at http://localhost:9120 and https://localhost:5001.
-
-Once the application successfully starts, your browser will automatically open at the specified URL.
-
-Configuration
-The launchSettings.json file defines how the application will be launched in different environments. Key configuration settings include:
-
+```json
 {
   "iisSettings": {
     "windowsAuthentication": false,
@@ -134,76 +134,56 @@ The launchSettings.json file defines how the application will be launched in dif
   },
   "profiles": {
     "http": {
-      "commandName": "Project",
-      "dotnetRunMessages": true,
-      "launchBrowser": true,
       "applicationUrl": "http://localhost:5001",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
     "https": {
-      "commandName": "Project",
-      "dotnetRunMessages": true,
-      "launchBrowser": true,
       "applicationUrl": "https://localhost:7058;http://localhost:5001",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
     "IIS Express": {
-      "commandName": "IISExpress",
-      "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     }
   }
 }
+```
 
-applicationUrl: The HTTP URLs where the application will run.
+---
 
-sslPort: The HTTPS port where the application will run.
+## 👥 User Roles and Access
 
-ASPNETCORE_ENVIRONMENT: Specifies the application environment (Development, Production, etc.).
+**Normal User**
 
-Usage
-Once the application is launched, it will feature an interface where users can register, log in, and access various functionalities based on their assigned roles.
+* Share posts.
+* View & edit own posts.
+* Comment & reply to posts.
+* Follow/unfollow users.
+* Message users with mutual follow.
+* Update own profile.
+* View other users’ posts & comments.
 
-User Roles and Access
-Normal User:
+**Admin User**
 
-Can share posts.
+* All features of a normal user.
+* Access **Admin Panel**.
+* View all posts & change their visibility.
+* Manage user roles.
 
-Can view and edit their own posts.
+---
 
-Can comment on posts and reply to comments.
+## 🤝 Contributing
 
-Can follow other users and message them if they are mutually following.
+1. Fork the repository.
+2. Create a new branch for your feature/bug fix.
+3. Make and test changes.
+4. Write descriptive commit messages.
+5. Submit a pull request.
 
-Can update their own profile.
+---
 
-Can observe other profiles, view their posts, and comments.
-
-Admin User:
-
-Has all the features of a normal user mentioned above.
-
-Can access the admin panel.
-
-Can view all posts on the "Manage Posts" page and change their active status.
-
-Can assign admin roles to users or revert them to normal user roles.
-
-Contributing
-If you wish to contribute to our project, please follow these steps:
-
-Fork the repository.
-
-Create a new branch for a new feature or bug fix.
-
-Make your changes and test them.
-
-Keep your commit messages descriptive.
-
-Submit your changes as a "pull request" to the original repository.
