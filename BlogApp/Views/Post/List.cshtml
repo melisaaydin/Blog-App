@@ -4,40 +4,59 @@
 }
 
 <style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f8fafc;
+        color: #1f2937;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: 'Roboto', sans-serif;
+        color: #2d3748;
+    }
+
     .header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 2rem;
+        margin-bottom: 2.5rem;
     }
 
     .header h1 {
-        font-size: 2rem;
-        font-weight: 700;
+        font-size: 2.2rem;
+        font-weight: 800;
         color: #7f143f;
     }
 
     .btn-primary {
-        background-color: #bababa;
-        border-color: #bababa;
-        border-radius: 0.5rem;
-        padding: 0.75rem 1.5rem;
+        background-color: rgb(209, 153, 162);
+        border-color: rgb(209, 153, 162);
+        border-radius: 0.75rem;
+        padding: 0.75rem 1.75rem;
         font-weight: 600;
         color: white;
-        transition: background-color 0.3s ease, transform 0.2s ease;
+        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: 0 4px 10px rgba(127, 20, 63, 0.2);
     }
 
     .btn-primary:hover {
-        background-color: #918f90;
-        border-color: #918f90;
-        transform: translateY(-2px);
+        background-color: #a82453;
+        border-color: #a82453;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 15px rgba(127, 20, 63, 0.35);
     }
 
     .filter-bar {
         display: flex;
-        gap: 1rem;
-        margin-bottom: 2rem;
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
         flex-wrap: wrap;
+        align-items: center;
     }
 
     .filter-bar select {
@@ -47,18 +66,18 @@
         font-weight: 500;
         font-size: 1rem;
         border: 1px solid #d1d5db;
-        border-radius: 0.5rem;
-        padding: 0.75rem 2.5rem 0.75rem 0.75rem;
-        background-image: url("data:image/svg+xml,%3Csvg fill='gray' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+        border-radius: 0.75rem;
+        padding: 0.75rem 2.5rem 0.75rem 1.2rem;
         background-repeat: no-repeat;
-        background-position: right 0.75rem center;
+        background-position: right 1rem center;
         background-size: 1rem;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
     }
 
     .filter-bar select:focus {
         outline: none;
         border-color: #7f143f;
-        box-shadow: 0 0 0 3px rgba(127, 20, 63, 0.2);
+        box-shadow: 0 0 0 0.25rem rgba(127, 20, 63, 0.25);
     }
 
     .filter-bar select option {
@@ -69,54 +88,68 @@
     }
 
     .filter-bar input {
-        padding: 0.75rem;
+        padding: 0.75rem 1.2rem;
         border: 1px solid #d1d5db;
-        border-radius: 0.5rem;
+        border-radius: 0.75rem;
         font-size: 1rem;
         flex: 1;
         min-width: 200px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
     }
+
+    .filter-bar input:focus {
+        outline: none;
+        border-color: #7f143f;
+        box-shadow: 0 0 0 0.25rem rgba(127, 20, 63, 0.25);
+    }
+
 
     .blog-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 1.5rem;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2rem;
     }
 
     .blog-card {
         background: #ffffff;
-        border-radius: 0.5rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 1rem;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
         overflow: hidden;
-        transition: transform 0.3s ease;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid #e2e8f0;
     }
 
     .blog-card:hover {
         transform: translateY(-5px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
     }
 
     .blog-card img {
         width: 100%;
-        height: 200px;
+        height: 180px;
         object-fit: cover;
+        border-top-left-radius: 1rem;
+        border-top-right-radius: 1rem;
     }
 
     .blog-card-content {
-        padding: 1.5rem;
+        padding: 1.8rem;
     }
 
     .blog-card-content h3 {
-        font-size: 1.25rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 0.6rem;
+        color: #2d3748;
     }
 
     .status-badge {
         display: inline-block;
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
+        padding: 0.4rem 0.8rem;
+        border-radius: 0.5rem;
         font-size: 0.85rem;
-        font-weight: 500;
+        font-weight: 600;
+        margin-bottom: 1rem;
     }
 
     .status-active {
@@ -130,81 +163,124 @@
     }
 
     .blog-card-actions {
-        margin-top: 1rem;
+        margin-top: 1.5rem;
         display: flex;
-        gap: 0.5rem;
+        gap: 0.8rem;
     }
 
     .btn-sm {
-        padding: 0.5rem 1rem;
-        font-size: 0.875rem;
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+        border-radius: 0.6rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-warning {
+        background-color: #fcd34d;
+        border-color: #fcd34d;
+        color: #78350f;
+    }
+
+    .btn-warning:hover {
+        background-color: #fbbf24;
+        border-color: #fbbf24;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(251, 191, 36, 0.3);
     }
 
     .btn-danger {
         background-color: #dc2626;
         border-color: #dc2626;
-        border-radius: 0.5rem;
+        border-radius: 0.6rem;
         color: white;
-        transition: background-color 0.3s ease, transform 0.2s ease;
+        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .btn-danger:hover {
         background-color: #b91c1c;
         border-color: #b91c1c;
         transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(220, 38, 38, 0.3);
     }
 
     .pagination {
         display: flex;
         justify-content: center;
-        gap: 0.5rem;
-        margin-top: 2rem;
+        gap: 0.75rem;
+        margin-top: 3rem;
+        margin-bottom: 2rem;
     }
 
     .pagination a {
-        padding: 0.5rem 1rem;
+        padding: 0.7rem 1.2rem;
         border: 1px solid #d1d5db;
-        border-radius: 0.5rem;
+        border-radius: 0.75rem;
         text-decoration: none;
         color: #1f2937;
-        transition: background-color 0.2s ease;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
     }
 
     .pagination a:hover {
         background-color: #f1f5f9;
+        border-color: #7f143f;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
 
     .pagination .active {
         background-color: #7f143f;
         color: white;
         border-color: #7f143f;
+        box-shadow: 0 4px 10px rgba(127, 20, 63, 0.2);
     }
 
     .modal-content {
-        border-radius: 0.5rem;
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        border-radius: 1rem;
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
     }
 
     .modal-header {
-        background-color: #7f143f;
+        background-color: rgba(255, 72, 72, 0.833);
         color: white;
-        border-top-left-radius: 0.5rem;
-        border-top-right-radius: 0.5rem;
+        border-top-left-radius: 1rem;
+        border-top-right-radius: 1rem;
+        padding: 1.2rem 1.5rem;
+    }
+
+    .modal-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #fff !important;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+        font-size: 1.05rem;
+        color: #374151;
+    }
+
+    .modal-footer {
+        padding: 1.2rem 1.5rem;
     }
 
     .toast-container {
         position: fixed;
-        bottom: 1rem;
-        right: 1rem;
+        bottom: 1.5rem;
+        right: 1.5rem;
         z-index: 1050;
     }
 
     .toast {
-        border-radius: 0.5rem;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 </style>
 
-<div class="container">
+<div class="container my-5">
     <div class="header">
         <h1>Manage Posts</h1>
         <a href="/post/create" class="btn btn-primary">Create New Post</a>
@@ -224,21 +300,23 @@
             @foreach (var item in Model.Posts)
             {
                 <div class="blog-card" data-post-id="@item.PostId" data-title="@(item.Title?.ToLower() ?? "")">
-                    <img src="/img/@(item.Image ?? "default.jpg")" alt="@(item.Title ?? "Post Image")">
+                    <img src="/img/@(item.Image ?? "https://placehold.co/800x450/e0e0e0/ffffff?text=No+Image")"
+                        alt="@(item.Title ?? "Post Image")">
                     <div class="blog-card-content">
                         <h3>@(item.Title ?? "Untitled")</h3>
                         <span class="status-badge @(item.IsActive ? "status-active" : "status-inactive")">
                             @(item.IsActive ? "Active" : "Inactive")
                         </span>
                         <div class="blog-card-actions">
-                  @if (User.IsInRole("Admin") && item.UserId != User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier))
-    {
-<a href="/Admin/EditPostStatus/@item.Url" class="btn btn-sm btn-warning">Manage Status</a>
-    }
-    else
-    {
-        <a href="/post/edit/@item.Url" class="btn btn-sm btn-primary">Edit</a>
-    }
+                            @if (User.IsInRole("Admin") && item.UserId !=
+                                                User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier))
+                            {
+                                <a href="/Admin/EditPostStatus/@item.Url" class="btn btn-sm btn-warning">Manage Status</a>
+                            }
+                            else
+                            {
+                                <a href="/post/edit/@item.Url" class="btn btn-sm btn-primary">Edit</a>
+                            }
                             <button type="button" class="btn btn-sm btn-danger delete-btn" data-bs-toggle="modal"
                                 data-bs-target="#deleteModal" data-post-id="@item.PostId"
                                 data-post-title="@item.Title">Delete</button>
@@ -276,7 +354,6 @@
     }
 </div>
 
-<!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -324,7 +401,8 @@
 
             searchInput.addEventListener('input', function () {
                 if (this.value.length >= 1 || this.value.length === 0) {
-                    applyFilters();
+                    clearTimeout(this.searchTimeout);
+                    this.searchTimeout = setTimeout(applyFilters, 500);
                 }
             });
 
@@ -341,13 +419,13 @@
             document.getElementById('confirm-delete').addEventListener('click', function () {
                 const postId = this.getAttribute('data-post-id');
                 if (!postId || isNaN(parseInt(postId))) {
-                    showToast('Error', 'Invalid post ID.');
+                    showToast('Error', 'Invalid post ID.', 'danger');
                     return;
                 }
 
                 const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
                 if (!tokenInput) {
-                    showToast('Error', 'CSRF token not found.');
+                    showToast('Error', 'CSRF token not found.', 'danger');
                     return;
                 }
                 const token = tokenInput.value;
@@ -368,7 +446,7 @@
                             bootstrap.Modal.getInstance(deleteModal).hide();
                             showToast('Success', data.message, 'success');
                         } else {
-                            showToast('Error', data.message || 'Failed to delete post.');
+                            showToast('Error', data.message || 'Failed to delete post.', 'danger');
                         }
                     })
                     .catch(error => {
@@ -380,6 +458,12 @@
                 const toastBody = document.querySelector('.toast-body');
                 toastTitle.textContent = title;
                 toastBody.textContent = message;
+                toastEl.classList.remove('text-bg-success', 'text-bg-danger', 'text-bg-warning', 'text-bg-info');
+                if (type === 'success') toastEl.classList.add('text-bg-success');
+                else if (type === 'danger') toastEl.classList.add('text-bg-danger');
+                else if (type === 'warning') toastEl.classList.add('text-bg-warning');
+                else toastEl.classList.add('text-bg-info');
+
                 toast.show();
             }
         });

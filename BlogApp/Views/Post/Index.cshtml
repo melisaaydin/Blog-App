@@ -32,251 +32,427 @@
 }
 
 <style>
-    body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        background-color: #f9fafb;
-        color: #1f2937;
-        line-height: 1.6;
-    }
     .header {
-        margin-bottom: 2.5rem;
+        margin-bottom: 3rem; 
     }
     .header h1 {
-        font-size: 2.5rem;
-        font-weight: 800;
+        font-size: 3rem; 
+        font-weight: 900; 
         color: #7f143f;
+        margin-bottom: 1.5rem; 
     }
-    .search-bar {
-        margin-bottom: 2.5rem;
-    }
-    .search-bar input {
-        width: 100%;
-        max-width: 500px;
-        padding: 0.875rem 1.25rem;
-        border: 1px solid #d1d5db;
-        border-radius: 0.75rem;
-        font-size: 1rem;
-        transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-    .search-bar input:focus {
-        border-color: #7f143f;
-        box-shadow: 0 0 0 3px rgba(127, 20, 63, 0.15);
-        outline: none;
-    }
-    .blog-list {
+    .search-input-group {
         display: flex;
-        flex-direction: column;
-        gap: 2rem;
+        align-items: center;
+        width: 100%;
+        max-width: 600px; 
+        margin: 0 auto; 
+        border: 1px solid #d1d5db;
+        border-radius: 2rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); 
+        transition: all 0.3s ease;
+        background-color: white;
+    }
+    .search-input-group:focus-within {
+        border-color: #7f143f;
+        box-shadow: 0 0 0 4px rgba(127, 20, 63, 0.2);
+    }
+    .search-input-group input {
+        border: none;
+        padding: 0.875rem 1.25rem;
+        border-radius: 2rem;
+        font-size: 1rem;
+        flex-grow: 1;
+        background-color: transparent; 
+    }
+    .search-input-group input:focus {
+        outline: none;
+        box-shadow: none; 
+    }
+    .search-input-group .input-group-text {
+        background-color: transparent;
+        border: none;
+        padding-right: 0.75rem;
+        color: #7f143f; 
+        font-size: 1.25rem;
+    }
+
+    .blog-list {
+        display: grid; 
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2.5rem; 
     }
     .blog-card {
         background: #ffffff;
-        border-radius: 1rem;
-        box-shadow: 0 2px 0 #7f143f;
+        border-radius: 1.25rem; 
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1); 
         overflow: hidden;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid #e2e8f0; 
     }
     .blog-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 2px 0 #7f143f;
+        transform: translateY(-8px); 
+        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15);
     }
     .blog-card img {
         width: 100%;
-        height: 300px;
-        object-fit: cover;
+        height: 250px;
+        object-fit: cover; 
+        border-top-left-radius: 1.25rem; 
+        border-top-right-radius: 1.25rem;
     }
     .blog-card-content {
         padding: 2rem;
     }
     .blog-card-content h3 {
-        font-size: 1.75rem;
+        font-size: 1.8rem; 
         font-weight: 700;
         margin-bottom: 0.75rem;
     }
     .blog-card-content h3 a {
-        color: #111827;
+        color: #2d3748;
         text-decoration: none;
-        transition: color 0.2s ease;
+        transition: color 0.3s ease;
     }
     .blog-card-content h3 a:hover {
-        color: #7f143f;
+        color: #7f143f; 
     }
     .blog-card-content p {
         color: #6b7280;
-        font-size: 1rem;
-        line-height: 1.6;
-        margin-bottom: 1.5rem;
+        font-size: 1.05rem; 
+        line-height: 1.7;
+        margin-bottom: 1.75rem; 
     }
     .blog-card-tags {
         margin-bottom: 1.5rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem; 
     }
-    .blog-card-tags a {
+    .tag-badge {
         display: inline-flex;
         align-items: center;
-        padding: 0.5rem 1rem;
-        border-radius: 2rem;
-        font-size: 0.875rem;
+        padding: 0.4rem 1rem; 
+        border-radius: 1.5rem; 
+        font-size: 0.85rem;
         font-weight: 600;
-        background-color: #f3f4f6;
-        color: #374151;
+        background-color: #fce4ec; 
+        color: #9c194e; 
         text-decoration: none;
-        margin-right: 0.5rem;
-        margin-bottom: 0.5rem;
-        transition: all 0.2s ease;
+        transition: all 0.3s ease;
+        border: 1px solid #f8bbd0; 
     }
-    .blog-card-tags a:hover {
-        background-color: #7f143f;
-        color: #ffffff;
+    .tag-badge:hover {
+        background-color: #f8bbd0; 
         transform: translateY(-2px);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
     }
+    .tag-badge i {
+        margin-right: 0.4rem; 
+        font-size: 1rem;
+    }
+
     .blog-card-actions {
         display: flex;
         align-items: center;
-        gap: 1rem;
+        justify-content: space-between; 
+        margin-top: 1.5rem;
     }
     .btn-primary {
-        background-color: #7f143f;
-        border-color: #7f143f;
+        background-color: rgb(209, 153, 162); 
+        border-color: rgb(209, 153, 162);
         border-radius: 0.75rem;
-        padding: 0.75rem 1.5rem;
-        font-size: 0.875rem;
+        padding: 0.85rem 1.8rem; 
+        font-size: 1rem; 
         font-weight: 600;
         color: #ffffff;
         text-decoration: none;
         transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 4px 10px rgba(127, 20, 63, 0.2);
     }
     .btn-primary:hover {
-        background-color: #9c194e;
-        border-color: #9c194e;
+        background-color: #a82453;
+        border-color: #a82453;
         transform: translateY(-3px);
-        box-shadow: 0 4px 12px rgba(127, 20, 63, 0.3);
+        box-shadow: 0 6px 15px rgba(127, 20, 63, 0.35); 
     }
     .share-btn {
         cursor: pointer;
         font-size: 1.5rem;
-        color: #7f143f;
+        margin-left: 36px;
+        color: rgb(195, 82, 101);
         transition: color 0.2s ease, transform 0.2s ease;
     }
     .share-btn:hover {
-        color: #9c194e;
-        transform: scale(1.1);
+        color: #a82453;
+        transform: scale(1.15); 
     }
     .popover-body {
         display: flex;
-        gap: 1.25rem;
-        padding: 1rem;
+        gap: 1.5rem; 
+        padding: 1.2rem;
+        border-radius: 0.75rem; 
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
     }
     .share-icon {
         color: #7f143f;
-        font-size: 1.75rem;
+        font-size: 2rem; 
         text-decoration: none;
         transition: transform 0.2s ease;
     }
     .share-icon:hover {
-        transform: scale(1.2);
+        transform: scale(1.25);
+        color: #a82453;
     }
+
     .sidebar {
         background: #ffffff;
-          box-shadow: 0 2px 0 #7f143f;
-        border-radius: 1rem;
-        padding: 2rem;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        border-radius: 1.25rem;
+        padding: 2.5rem; 
         margin-bottom: 2.5rem;
         position: sticky;
         top: 2rem;
+        border: 1px solid #e2e8f0; 
     }
+
+    .sidebar h4 {
+        font-family: 'Roboto', sans-serif;
+        font-size: 1.5rem; 
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 1.8rem; 
+    }
+
+    .vc-tags-menu ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem; 
+    }
+    .vc-tags-menu li a {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.4rem 1rem;
+        border-radius: 1.5rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+        background-color: #f1f5f9;
+        color: #4a5568;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: 1px solid #e2e8f0;
+    }
+    .vc-tags-menu li a:hover {
+        background-color: #e2e8f0;
+        color: #2d3748;
+        transform: translateY(-2px);
+    }
+
+  
+    .vc-new-posts ul { 
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .vc-new-posts li {
+        margin-bottom: 1.2rem; 
+    }
+    .vc-new-posts li a {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        text-decoration: none;
+        color: #2d3748;
+        transition: color 0.3s ease;
+    }
+    .vc-new-posts li a:hover {
+        color: #7f143f;
+    }
+    .vc-new-posts img { 
+        width: 60px;
+        height: 60px;
+        border-radius: 0.75rem;
+        object-fit: cover;
+        flex-shrink: 0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    .vc-new-posts .post-title-sidebar {
+        font-size: 1.05rem;
+        font-weight: 600;
+        line-height: 1.4;
+    }
+    .vc-new-posts .post-date-sidebar {
+        font-size: 0.85rem;
+        color: #718096;
+    }
+
     .pagination {
         display: flex;
         justify-content: center;
         gap: 0.75rem;
-        margin-top: 3rem;
+        margin-top: 4rem; 
         margin-bottom: 2rem;
     }
     .pagination a {
-        padding: 0.75rem 1.25rem;
+        padding: 0.8rem 1.3rem;
         border: 1px solid #d1d5db;
-        border-radius: 0.75rem;
+        border-radius: 0.75rem; 
         text-decoration: none;
         color: #1f2937;
         font-weight: 500;
-        transition: all 0.2s ease;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
     }
     .pagination a:hover {
         background-color: #f1f5f9;
         border-color: #7f143f;
+        transform: translateY(-2px); 
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
     .pagination .active {
         background-color: #7f143f;
         color: #ffffff;
         border-color: #7f143f;
+        box-shadow: 0 4px 10px rgba(127, 20, 63, 0.2);
     }
     .alert {
         padding: 1rem 1.5rem;
         border-radius: 0.75rem;
         margin-bottom: 2rem;
-        font-size: 0.9rem;
+        font-size: 0.95rem;
         font-weight: 500;
     }
     .alert-info {
         background-color: #e0f2fe;
         color: #0e7490;
+        border: 1px solid #93c5fd;
     }
+
     @@media (max-width: 991px) {
         .header h1 {
-            font-size: 2rem;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .search-input-group {
+            max-width: 100%; 
         }
         .blog-card img {
-            height: 250px;
+            height: 220px;
         }
-        .sidebar {
-            margin-top: 2rem;
-        }
-    }
-    @@media (max-width: 767px) {
         .blog-card-content {
             padding: 1.5rem;
         }
+        .btn-primary {
+            padding: 0.75rem 1.5rem;
+            font-size: 0.9rem;
+        }
+        .share-btn {
+        margin-left: 10px;
+        }
         .blog-card-content h3 {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
         }
         .blog-card-content p {
             font-size: 0.95rem;
         }
-        .search-bar input {
-            width: 100%;
+        .sidebar {
+            margin-top: 2.5rem;
+            padding: 2rem;
+        }
+    }
+    @@media (max-width: 767px) {
+        .header h1 {
+            font-size: 2rem;
+        }
+        .blog-list {
+            gap: 2rem;
+        }
+        .blog-card {
+            border-radius: 1rem;
+        }
+        .blog-card img {
+            height: 180px;
+            border-top-left-radius: 1rem;
+            border-top-right-radius: 1rem;
+        }
+        .blog-card-content {
+            padding: 1.2rem;
+        }
+        .blog-card-content h3 {
+            font-size: 1.4rem;
+        }
+        .blog-card-tags {
+            gap: 0.5rem;
+        }
+        .tag-badge {
+            font-size: 0.8rem;
+            padding: 0.3rem 0.8rem;
+        }
+        .btn-primary {
+            padding: 0.75rem 1.5rem;
+            font-size: 0.9rem;
+        }
+        .share-btn {
+            font-size: 1.5rem;
+        }
+        .share-icon {
+            font-size: 1.75rem;
+        }
+        .sidebar {
+            padding: 1.5rem;
+        }
+        .sidebar h4 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
         }
     }
 </style>
 
 <div class="container my-5">
+    <div class="text-center header">
+        <h1 style="padding-top: 55px;">@(string.IsNullOrEmpty(Model?.Tag) ? "Latest Posts" : $"Posts tagged '{Model.Tag}'")</h1>
+        <div class="search-bar">
+            <div class="search-input-group">
+                <input type="text" id="searchInput" placeholder="Search posts..." />
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-lg-8">
-            <div class="header">
-                <h1>@(string.IsNullOrEmpty(Model?.Tag) ? "Latest Posts" : $"Posts tagged '{Model.Tag}'")</h1>
-            </div>
-            <div class="search-bar">
-                <input type="text" id="searchInput" placeholder="Search posts..." />
-            </div>
             @if (Model?.Posts?.Any() == true)
             {
                 <div class="blog-list" id="blogGrid">
                     @foreach (var post in Model.Posts)
                     {
                         <div class="blog-card" data-post-id="@post.PostId" data-title="@(post.Title?.ToLower() ?? "")">
-                            <img src="/img/@(post.Image ?? "default.jpg")" alt="@(post.Title ?? "Post Image")" loading="lazy">
+                            <a href="/posts/details/@post.Url">
+                                <img src="/img/@(post.Image ?? "https://placehold.co/800x450/e0e0e0/ffffff?text=No+Image")" alt="@(post.Title ?? "Post Image")" loading="lazy">
+                            </a>
                             <div class="blog-card-content">
-                                <h3><a href="/posts/details/@post.Url">@(post.Title ?? "Untitled")</a></h3>
-                                <p>@(string.IsNullOrEmpty(post.Description) ? "No description available." : post.Description.Length > 200 ? post.Description.Substring(0, 200) + "..." : post.Description)</p>
                                 <div class="blog-card-tags">
                                     @foreach (var tag in post.Tags ?? Enumerable.Empty<BlogApp.Entity.Tag>())
                                     {
-                                        <a href="/posts/tag/@tag.Url" class="tag-badge">@tag.Text</a>
+                                        <a href="/posts/tag/@tag.Url" class="tag-badge"><i class="bi bi-tag-fill me-1"></i>@tag.Text</a>
                                     }
                                 </div>
+                                <h3><a href="/posts/details/@post.Url">@(post.Title ?? "Untitled")</a></h3>
+                                <p>@(string.IsNullOrEmpty(post.Description) ? "No description available." : post.Description.Length > 200 ? post.Description.Substring(0, 200) + "..." : post.Description)</p>
                                 <div class="blog-card-actions">
-                                    <a href="/posts/details/@post.Url" class="btn btn-primary">Read More</a>
-                                     <span class="text-muted ms-auto"><i class="bi bi-eye"></i> @post.ViewCount</span>
-                                    <i class="bi bi-share-fill share-btn" 
-                                       data-bs-toggle="popover" 
-                                       data-bs-html="true" 
+                                    <a href="/posts/details/@post.Url" class="btn btn-primary">
+                                        Read More <i class="bi bi-arrow-right"></i>
+                                    </a>
+                                    <small class="text-muted ms-auto"><i class="bi bi-eye"></i> @post.ViewCount Views</small>
+                                    <i class="bi bi-share-fill share-btn"
+                                       data-bs-toggle="popover"
+                                       data-bs-html="true"
                                        data-bs-content="
                                            <a href='https://twitter.com/intent/tweet?url=https://myblog.com/posts/details/@post.Url&text=@(HttpUtility.JavaScriptStringEncode(post.Title ?? "Check out this post!"))' target='_blank' class='share-icon share-twitter' aria-label='Share on Twitter'><i class='bi bi-twitter'></i></a>
                                            <a href='https://www.facebook.com/sharer/sharer.php?u=https://myblog.com/posts/details/@post.Url' target='_blank' class='share-icon share-facebook' aria-label='Share on Facebook'><i class='bi bi-facebook'></i></a>
@@ -316,8 +492,8 @@
             <div class="sidebar">
                 <vc:tags-menu></vc:tags-menu>
             </div>
-            <div class="sidebar">
-                <vc:new-posts></vc:new-posts>
+            <div class="sidebar mt-4"> 
+                <vc:new-posts></vc:new-posts> 
             </div>
         </div>
     </div>
@@ -326,21 +502,29 @@
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+           
             const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
             popoverTriggerList.forEach(popoverTriggerEl => {
                 new bootstrap.Popover(popoverTriggerEl, {
                     trigger: 'click',
-                    placement: 'top'
+                    placement: 'top',
                 });
             });
+
             const searchInput = document.getElementById('searchInput');
             const blogGrid = document.getElementById('blogGrid');
+
             searchInput.addEventListener('input', function () {
                 const searchTerm = this.value.toLowerCase();
                 const cards = blogGrid.querySelectorAll('.blog-card');
+
                 cards.forEach(card => {
                     const title = card.getAttribute('data-title');
-                    card.style.display = title.includes(searchTerm) ? '' : 'none';
+                    if (title && title.includes(searchTerm)) {
+                        card.style.display = ''; 
+                    } else {
+                        card.style.display = 'none'; 
+                    }
                 });
             });
         });

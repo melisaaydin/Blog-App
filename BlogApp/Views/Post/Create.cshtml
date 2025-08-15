@@ -2,48 +2,63 @@
 @using System.Linq
 
 <style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f8fafc;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Roboto', sans-serif;
+    }
+
     .login-card {
         max-width: 1000px;
         width: 100%;
-        padding: 2.5rem;
-        background: linear-gradient(145deg, #ffffff, #f1f5f9);
-        border-radius: 1.25rem;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        padding: 3rem; /
+        background: #ffffff;
+        border-radius: 1.5rem; 
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12); 
         transition: transform 0.3s ease, box-shadow 0.3s ease;
-        margin: 100px auto;
+        margin: 60px auto; 
+        border: 1px solid #e2e8f0;
     }
     .login-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+        transform: translateY(-7px); 
+        box-shadow: 0 18px 36px rgba(0, 0, 0, 0.18);
     }
     .form-control {
         border: 1px solid #d1d5db;
-        border-radius: 0.5rem;
-        padding: 0.75rem 1rem;
+        border-radius: 0.75rem; 
+        padding: 0.85rem 1.2rem; 
         transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        font-family: 'Inter', sans-serif;
+        font-size: 1rem;
     }
     .form-control:focus {
         border-color: #7f143f;
-        box-shadow: 0 0 0 0.2rem rgba(127, 20, 63, 0.25);
+        box-shadow: 0 0 0 0.25rem rgba(127, 20, 63, 0.25);
         outline: none;
     }
+
     .btn-primary {
-        background-color: #7f143f;
-        border-color: #7f143f;
-        border-radius: 0.5rem;
-        padding: 0.75rem;
+        background-color: rgb(209, 153, 162);
+        border-color: rgb(209, 153, 162);
+        border-radius: 0.75rem;
+        padding: 0.9rem 2rem; 
         font-weight: 600;
-        transition: background-color 0.3s ease, transform 0.2s ease;
-        width: 80%;
+        color: white;
+        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        width: 100%; 
+        max-width: 200px;
         display: block;
-        margin: 1.5rem auto;
-        position: relative;
-        overflow: hidden;
+        margin-top: 2.5rem; 
+        box-shadow: 0 4px 10px rgba(127, 20, 63, 0.2);
     }
     .btn-primary:hover {
-        background-color: #9c194e;
-        border-color: #9c194e;
-        transform: translateY(-2px);
+        background-color: #a82453;
+        border-color: #a82453;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 15px rgba(127, 20, 63, 0.35);
     }
     .btn-primary.loading::after {
         content: '';
@@ -58,29 +73,53 @@
         left: 50%;
         transform: translate(-50%, -50%);
     }
+    @@keyframes spin {
+        0% { transform: translate(-50%, -50%) rotate(0deg); }
+        100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    .btn-secondary {
+        background-color: #f1f5f9;
+        color: #4a5568;
+        border-color: #f1f5f9;
+        border-radius: 0.75rem;
+        padding: 0.9rem 2rem;
+        font-weight: 600;
+        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+    .btn-secondary:hover {
+        background-color: #e2e8f0;
+        color: #2d3748;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
     .text-danger {
-        font-size: 0.875rem;
+        font-size: 0.9rem; 
         color: #dc3545;
-        margin-top: 0.25rem;
+        margin-top: 0.4rem; 
+        display: block; 
     }
     .form-label {
-        font-weight: 500;
-        color: #374151;
-        font-size: 0.9rem;
-        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #2d3748;
+        font-size: 1rem;
+        margin-bottom: 0.6rem;
         display: block;
     }
     .preview-img {
         max-width: 100%;
         height: auto;
-        border-radius: 0.5rem;
-        margin-top: 1rem;
-        display: none;
+        border-radius: 0.75rem; 
+        margin-top: 1.5rem;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08); 
+        border: 1px solid #e2e8f0;
     }
     .form-check-input {
-        width: 1.25rem;
-        height: 1.25rem;
-        border-radius: 0.25rem;
+        width: 1.3rem;
+        height: 1.3rem;
+        border-radius: 0.35rem;
         border: 1px solid #d1d5db;
         transition: background-color 0.2s ease, border-color 0.2s ease;
     }
@@ -89,34 +128,39 @@
         border-color: #7f143f;
     }
     .form-check-label {
-        font-size: 0.95rem;
+        font-size: 1rem;
         color: #374151;
-        margin-left: 0.5rem;
+        margin-left: 0.6rem; 
         cursor: pointer;
     }
     .form-check {
         display: flex;
         align-items: center;
-        margin-bottom: 0.75rem;
+        margin-bottom: 1rem; 
     }
     .tag-section {
         background: #f8fafc;
-        padding: 1rem;
-        border-radius: 0.5rem;
+        padding: 1.8rem; 
+        border-radius: 1rem; 
         border: 1px solid #e5e7eb;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
     .section-title {
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: #1f2937;
-        margin-bottom: 1rem;
+        font-size: 1.6rem; 
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 1.5rem; 
+        border-bottom: 1px solid #e5e7eb; 
+        padding-bottom: 0.8rem;
     }
     .alert-danger {
-        background-color: #f8d7da;
-        color: #721c24;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        margin-bottom: 1rem;
+        background-color: #fee2e2;
+        color: #991b1b;
+        padding: 1.2rem;
+        border-radius: 0.75rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid #fecaca;
+        font-size: 0.95rem;
     }
     .no-tags {
         font-size: 0.95rem;
@@ -125,46 +169,37 @@
     }
 </style>
 
-<div class="d-flex justify-content-center align-items-center min-h-screen">
+<div class="container d-flex justify-content-center align-items-center py-5">
     <div class="login-card">
-        <h1 class="text-3xl font-bold text-center text-gray-900 mb-8">Post Create</h1>
-        @if (!ViewData.ModelState.IsValid)
-        {
-            <div class="alert alert-danger">
-                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                {
-                    <p>@error.ErrorMessage</p>
-                }
-            </div>
-        }
-        <form asp-action="Create" asp-controller="Post" method="post" enctype="multipart/form-data" class="space-y-5" id="createPostForm">
+        <h1 class="text-center mb-5 fw-bold" style="color: #7f143f;">Create a New Post</h1>
+        <form asp-controller="Post" asp-action="Create" method="post" enctype="multipart/form-data" class="space-y-5" id="createPostForm">
             @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="text-danger text-center font-medium"></div>
             <div class="row">
                 <div class="col-md-8">
                     <div class="mb-4">
-                        <label for="Title" class="form-label">Post Title</label>
-                        <input asp-for="Title" class="form-control w-full" id="Title" placeholder="Enter your post's title" title="Enter a concise and descriptive title" />
+                        <label asp-for="Title" class="form-label">Post Title</label>
+                        <input asp-for="Title" class="form-control" id="Title" placeholder="Enter your post's title" title="Enter a concise and descriptive title" />
                         <span asp-validation-for="Title" class="text-danger"></span>
                     </div>
                     <div class="mb-4">
-                        <label for="Description" class="form-label">Description</label>
-                        <input asp-for="Description" class="form-control w-full" id="Description" placeholder="Write your post's description" title="Provide a short summary of the post" />
+                        <label asp-for="Description" class="form-label">Description</label>
+                        <input asp-for="Description" class="form-control" id="Description" placeholder="Write your post's description" title="Provide a short summary of the post" />
                         <span asp-validation-for="Description" class="text-danger"></span>
                     </div>
                     <div class="mb-4">
-                        <label for="Url" class="form-label">URL Slug</label>
-                        <input asp-for="Url" class="form-control w-full" id="Url" placeholder="Enter a unique URL slug (e.g., my-post)" title="Use a unique, SEO-friendly URL" />
+                        <label asp-for="Url" class="form-label">URL Slug</label>
+                        <input asp-for="Url" class="form-control" id="Url" placeholder="Enter a unique URL slug (e.g., my-post)" title="Use a unique, SEO-friendly URL" />
                         <span asp-validation-for="Url" class="text-danger"></span>
                     </div>
                     <div class="mb-4">
-                        <label for="Content" class="form-label">Content</label>
-                        <textarea asp-for="Content" class="form-control w-full" id="Content" style="height: 200px;"></textarea>
+                        <label asp-for="Content" class="form-label">Content</label>
+                        <textarea asp-for="Content" class="form-control" id="Content" style="height: 250px;"></textarea>
                         <span asp-validation-for="Content" class="text-danger"></span>
                     </div>
                     @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Admin"))
                     {
-                        <div class="form-check mb-4">
+                        <div class="form-check mt-4">
                             <input asp-for="IsActive" class="form-check-input" id="IsActive" />
                             <label for="IsActive" class="form-check-label">Publish Post</label>
                         </div>
@@ -186,21 +221,23 @@
                         }
                         else
                         {
-                            <p class="no-tags">No tags available.</p>
+                            <p class="no-tags">No tags available. Please add tags from the admin panel.</p>
                         }
                     </div>
                     <div class="tag-section mt-4">
                         <h3 class="section-title">Featured Image</h3>
                         <div class="mb-4">
                             <label for="imageFile" class="form-label">Select Image</label>
-                            <input type="file" name="imageFile" id="imageFile" class="form-control w-full" accept="image/*" />
+                            <input type="file" name="imageFile" id="imageFile" class="form-control" accept="image/*" />
                             <img id="imagePreview" class="preview-img" alt="Image preview" style="display: none" />
                             <span class="text-danger" id="imageFileError"></span>
                         </div>
                     </div>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary" id="saveButton">Create</button>
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary" id="saveButton">Create Post</button>
+            </div>
         </form>
     </div>
 </div>
@@ -209,25 +246,25 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/8.0.0/tinymce.min.js" integrity="sha512-12CoCMNbCiAvjn0NaAmNaZGh45r1R6LoyEyYbm9JNVNUFuQD/NuvGAV9eynsmEA3MBfnFtwkqqdmjXPK4AqGzQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/8.0.0/tinymce.min.js" xintegrity="sha512-12CoCMNbCiAvjn0NaAmNaZGh45r1R6LoyEyYbm9JNVNUFuQD/NuvGAV9eynsmEA3MBfnFtwkqqdmjXPK4AqGzQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
         $(document).ready(function () {
             $("#createPostForm").validate({
-                ignore: "#imageFile"
+                ignore: "#imageFile" 
             });
         });
 
         tinymce.init({
             selector: '#Content',
             license_key: 'gpl',
-            plugins: 'lists link image table code preview',
-            toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | link image | code preview',
-            menubar: false,
+            plugins: 'lists link image table code preview fullscreen autoresize',
+            toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | link image | code preview | fullscreen',
+            menubar: false, 
             statusbar: true,
-            height: 400,
-            skin: 'oxide',
+            height: 600,
+            skin: 'oxide', 
             content_css: 'default',
-            images_upload_url: '/Post/UploadImage',
+            images_upload_url: '/Post/UploadImage', 
             images_upload_handler: async function (blobInfo, success, failure) {
                 const formData = new FormData();
                 formData.append('file', blobInfo.blob(), blobInfo.filename());
@@ -236,7 +273,7 @@
                         method: 'POST',
                         body: formData,
                         headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
+                            'X-Requested-With': 'XMLHttpRequest' 
                         }
                     });
                     const result = await response.json();
@@ -249,7 +286,7 @@
                     failure('Image upload error: ' + error.message);
                 }
             },
-            event_root: 'body',
+            event_root: 'body', 
             setup: function (editor) {
                 editor.on('init', function () {
                     console.log('TinyMCE initialized for Content');
@@ -258,20 +295,22 @@
         });
 
         document.getElementById('createPostForm').addEventListener('submit', function (e) {
-            tinymce.triggerSave();
+            tinymce.triggerSave(); 
             const content = document.getElementById('Content').value.trim();
-            const selectedTags = document.querySelectorAll('input[name="SelectedTagIds"]:checked');
-            console.log('Selected tags:', Array.from(selectedTags).map(tag => tag.value));
-            console.log('Content:', content);
             if (!content) {
                 e.preventDefault();
-                alert('Content is required.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Post content cannot be empty!',
+                });
                 return;
             }
+
             const saveButton = document.getElementById('saveButton');
             saveButton.classList.add('loading');
             saveButton.disabled = true;
-            saveButton.textContent = 'Creating...';
+            saveButton.textContent = 'Creating...'; 
         });
 
         document.addEventListener('DOMContentLoaded', function () {
@@ -283,7 +322,7 @@
                     const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif'];
                     if (!allowedTypes.includes(file.type)) {
                         document.getElementById('imageFileError').textContent = 'Invalid image format. Only PNG, JPG, JPEG, and GIF are allowed.';
-                        this.value = '';
+                        this.value = ''; 
                         document.getElementById('imagePreview').style.display = 'none';
                         return;
                     }
