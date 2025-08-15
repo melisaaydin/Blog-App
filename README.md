@@ -1,6 +1,13 @@
-<img width="800" height="500" alt="image" src="https://github.com/user-attachments/assets/aea431a8-8503-4712-9681-e375721b4e91" />
-<img width="800" height="500" alt="Ekran görüntüsü 2025-08-14 201415" src="https://github.com/user-attachments/assets/cf3d582d-0e73-42f2-8fec-4a92b52c8f97" />
-<img width="800" height="500" alt="Ekran görüntüsü 2025-08-14 201437" src="https://github.com/user-attachments/assets/97ddcc7b-06a9-4cfb-9b1d-945d2e183dc8" />
+<img width="400" height="250" alt="image" src="https://github.com/user-attachments/assets/5914ee3a-3054-4dca-b918-ce182dcd3c3f" />
+<img width="400" height="250" alt="image" src="https://github.com/user-attachments/assets/640a9755-7918-4c11-a3c7-d8b0d33415e7" />
+<img width="400" height="250" alt="image" src="https://github.com/user-attachments/assets/f543bfc5-3eea-482d-97b3-c46c8a4a3d92" />
+<img width="400" height="250" alt="image" src="https://github.com/user-attachments/assets/170d825b-9dcb-468f-9d09-52fa3dc92582" />
+<img width="400" height="250" alt="image" src="https://github.com/user-attachments/assets/8a96e060-390c-466d-a6b8-490a4ad5746d" />
+<img width="400" height="250" alt="image" src="https://github.com/user-attachments/assets/90c30c50-49b9-4191-8cb2-93befa6a8a28" />
+<img width="400" height="250" alt="image" src="https://github.com/user-attachments/assets/73eb1cff-5d13-4957-aa33-3936787e16bc" />
+
+
+
 
 # Blog Application
 
