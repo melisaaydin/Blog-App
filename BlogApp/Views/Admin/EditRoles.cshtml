@@ -4,29 +4,31 @@
     ViewData["Title"] = "Manage Roles";
 }
 
-<h2>Manage Roles for @Model.UserName</h2>
-<hr />
+<div style="margin-top: 100px;">
+    <h2>Manage Roles for @Model.UserName</h2>
+    <hr />
 
-<form asp-action="EditRoles" method="post">
-    @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="UserId" />
+    <form asp-action="EditRoles" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="UserId" />
 
-    <div class="card">
-        <div class="card-body">
-            @for (int i = 0; i < Model.Roles.Count; i++)
-            {
-                <div class="form-check m-1">
-                    <input type="hidden" asp-for="Roles[i].RoleName" />
-                    <input type="checkbox" asp-for="Roles[i].IsSelected" class="form-check-input" />
-                    <label class="form-check-label" asp-for="Roles[i].IsSelected">
-                        @Model.Roles[i].RoleName
-                    </label>
-                </div>
-            }
+        <div class="card">
+            <div class="card-body">
+                @for (int i = 0; i < Model.Roles.Count; i++)
+                {
+                    <div class="form-check m-1">
+                        <input type="hidden" asp-for="Roles[i].RoleName" />
+                        <input type="checkbox" asp-for="Roles[i].IsSelected" class="form-check-input" />
+                        <label class="form-check-label" asp-for="Roles[i].IsSelected">
+                            @Model.Roles[i].RoleName
+                        </label>
+                    </div>
+                }
+            </div>
+            <div class="card-footer">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                <a asp-action="UserList" class="btn btn-secondary">Cancel</a>
+            </div>
         </div>
-        <div class="card-footer">
-            <input type="submit" value="Save" class="btn btn-primary" />
-            <a asp-action="UserList" class="btn btn-secondary">Cancel</a>
-        </div>
-    </div>
-</form>
+    </form>
+</div>

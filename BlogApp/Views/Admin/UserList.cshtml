@@ -3,27 +3,28 @@
 @{
     ViewData["Title"] = "User List";
 }
+<div style="margin-top: 100px;">
+    <h1>User Management</h1>
 
-<h1>User Management</h1>
-
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>User Name</th>
-            <th>Email</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var user in Model)
-        {
+    <table class="table table-bordered table-striped">
+        <thead>
             <tr>
-                <td>@user.UserName</td>
-                <td>@user.Email</td>
-                <td>
-                    <a asp-action="EditRoles" asp-route-id="@user.Id" class="btn btn-primary btn-sm">Manage Roles</a>
-                </td>
+                <th>User Name</th>
+                <th>Email</th>
+                <th>Actions</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td>@user.UserName</td>
+                    <td>@user.Email</td>
+                    <td>
+                        <a asp-action="EditRoles" asp-route-id="@user.Id" class="btn btn-primary btn-sm">Manage Roles</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
