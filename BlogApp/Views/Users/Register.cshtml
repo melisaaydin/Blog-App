@@ -1,4 +1,8 @@
+@{
+    Layout = "_Layout";
+}
 @model RegisterViewModel
+
 <style>
     .login-card {
         max-width: 400px;
@@ -17,21 +21,21 @@
     }
 
     .form-control {
-        border: 1px solid #d1d5db;
+        border: 1px solid var(--border-color);
         border-radius: 0.5rem;
         padding: 0.75rem 1rem;
         transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
 
     .form-control:focus {
-        border-color: #7f143f;
+        border-color: var(--primary-color);
         box-shadow: 0 0 0 0.2rem rgba(127, 20, 63, 0.25);
         outline: none;
     }
 
     .btn-primary {
-        background-color: #7f143f;
-        border-color: #7f143f;
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
         border-radius: 0.5rem;
         padding: 0.75rem;
         font-weight: 600;
@@ -42,8 +46,8 @@
     }
 
     .btn-primary:hover {
-        background-color: #9c194e;
-        border-color: #9c194e;
+        background-color: var(--third-color);
+        border-color: var(--third-color);
         transform: translateY(-2px);
     }
 
@@ -55,33 +59,22 @@
 
     .form-label {
         font-weight: 500;
-        color: #374151;
+        color: var(--text-color);
     }
 
     .login-link {
-        color: #7f143f;
+        color: var(--primary-color);
         font-weight: 700;
         text-decoration: none;
-        transition: color 0.3s ease;
-    }
-
-    .login-link:hover {
-        color: #9c194e;
-
     }
 </style>
 
 <div class="d-flex justify-content-center align-items-center min-h-screen">
     <div class="login-card">
-        <h1 class="text-3xl font-bold text-center text-gray-900 mb-8">Welcome</h1>
+        <h1 class="text-3xl font-bold text-center text-gray-900 mb-8">Create an account</h1>
         <form action="Register" method="post" class="space-y-5">
             @Html.AntiForgeryToken()
-            <div asp-validation-summary="All" class="text-danger text-center font-medium"></div>
-            <div class="mb-4">
-                <label asp-for="UserName" class="form-label block text-sm mb-2"></label>
-                <input asp-for="UserName" class="form-control w-full" placeholder="Enter your user name">
-                <span asp-validation-for="UserName" class="text-danger"></span>
-            </div>
+            <div asp-validation-summary="ModelOnly" class="text-danger text-center font-medium"></div>
             <div class="mb-4">
                 <label asp-for="Name" class="form-label block text-sm mb-2"></label>
                 <input asp-for="Name" class="form-control w-full" placeholder="Enter your name">
@@ -105,7 +98,7 @@
             </div>
             <button type="submit" class="btn btn-primary">Register</button>
             <p class="text-center text-sm text-gray-600 mt-6">
-                You have already an account? <a href="/users/Login" class="login-link">Login</a>
+                You have already an account? <a href="/users/Login" class="login-link">Log in</a>
             </p>
         </form>
     </div>

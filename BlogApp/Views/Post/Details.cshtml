@@ -10,47 +10,47 @@
 <style>
     body {
         font-family: 'Inter', sans-serif;
-        color: #1f2937;
+        color: var(--text-color);
         line-height: 1.6;
-        background-color: #f8fafc;
+        background-color: var(--background-color);
     }
 
     h1, h2, h3, h4, h5, h6 {
         font-family: 'Roboto', sans-serif;
-        color: #2d3748;
+        color: var(--text-color);
     }
 
     a {
         text-decoration: none;
-        color: #7f143f;
+        color: var(--primary-color);
         transition: color 0.3s ease;
     }
 
     a:hover {
-        color: #a82453;
+        color: var(--secondary-color);
     }
 
     .post-container, .comment-section, .comment-form, .sidebar {
-        background: #ffffff;
+        background: var(--card-background);
         border-radius: 1.25rem;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1); 
+        box-shadow: var(--card-shadow);
         padding: 2.5rem;
-        margin-bottom: 2.5rem; 
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border: 1px solid #e2e8f0; 
+        margin-bottom: 2.5rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+        border: 1px solid var(--border-color);
     }
 
     .post-container:hover {
         transform: translateY(-5px);
-        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15); 
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15); /* Keep a subtle increase on hover */
     }
 
     .post-title {
-        font-size: 2.75rem; 
-        font-weight: 800; 
-        color: #2d3748;
+        font-size: 2.75rem;
+        font-weight: 800;
+        color: var(--text-color);
         line-height: 1.2;
-        margin-bottom: 1.5rem; 
+        margin-bottom: 1.5rem;
     }
 
     .tag-badge {
@@ -58,111 +58,112 @@
         align-items: center;
         font-size: 0.85rem;
         font-weight: 600;
-        padding: 0.4rem 1rem; 
-        border-radius: 1.5rem; 
+        padding: 0.4rem 1rem;
+        border-radius: 1.5rem;
         margin-right: 0.75rem;
         margin-bottom: 0.75rem;
         text-decoration: none;
         transition: all 0.3s ease;
-        background-color: #fce4ec; 
-        border: 1px solid #f8bbd0; 
-        color: #9c194e; 
+        background-color: var(--tag-background); /* New variable for tag background */
+        border: 1px solid var(--tag-border); /* New variable for tag border */
+        color: var(--tag-text); /* New variable for tag text */
     }
 
     .tag-badge:hover {
         transform: translateY(-2px);
-        background-color: #f8bbd0;
+        background-color: var(--tag-hover-background); /* New variable for tag hover background */
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
     }
 
     .post-image {
         width: 100%;
-        max-height: 450px; 
+        max-height: 450px;
         object-fit: cover;
-        border-radius: 1rem; 
-        margin-bottom: 2rem; 
+        border-radius: 1rem;
+        margin-bottom: 2rem;
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--border-color);
     }
 
     .post-meta {
         display: flex;
         flex-wrap: wrap;
-        gap: 1.5rem; 
-        font-size: 0.95rem; 
-        color: #6b7280;
-        margin-bottom: 2rem; 
+        gap: 1.5rem;
+        font-size: 0.95rem;
+        color: var(--text-secondary-color);
+        margin-bottom: 2rem;
         font-weight: 500;
     }
 
     .post-meta i {
-        margin-right: 0.6rem; 
-        color: #7f143f;
-        font-size: 1.1rem; 
+        margin-right: 0.6rem;
+        color: var(--primary-color);
+        font-size: 1.1rem;
     }
 
     .post-meta a {
         font-weight: 600;
-        color: #4a5568; 
+        color: var(--text-secondary-color);
     }
 
     .post-meta a:hover {
-        color: #7f143f;
+        color: var(--primary-color);
     }
 
     .post-content {
-        font-size: 1.15rem; 
+        font-size: 1.15rem;
         line-height: 1.8;
-        color: #374151;
+        color: var(--text-color);
         margin-bottom: 2.5rem;
     }
 
     .post-content p,
     .post-content ul,
     .post-content ol {
-        margin-bottom: 1.5rem; 
+        margin-bottom: 1.5rem;
     }
 
     .post-content h2,
     .post-content h3 {
         font-weight: 700;
-        color: #2d3748;
+        color: var(--text-color);
         margin: 2rem 0 1rem;
     }
 
     .post-content h2 {
-        font-size: 1.75rem; 
+        font-size: 1.75rem;
     }
 
     .post-content h3 {
-        font-size: 1.4rem; 
+        font-size: 1.4rem;
     }
 
     .comment-section {
-        margin-top: 3rem; 
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); 
-        border: 1px solid #e2e8f0;
+        margin-top: 3rem;
+        box-shadow: var(--card-shadow);
+        border: 1px solid var(--border-color);
     }
 
     .comment-count {
-        font-size: 2.2rem; 
-        margin-bottom: 1.8rem; 
-        font-weight: 800; 
+        font-size: 2.2rem;
+        margin-bottom: 1.8rem;
+        font-weight: 800;
         padding-bottom: 0.75rem;
-        border-bottom: 2px solid #e5e7eb;
-        color: #2d3748;
+        border-bottom: 2px solid var(--border-color);
+        color: var(--text-color);
     }
 
     .comment-list {
         display: flex;
         flex-direction: column;
-        gap: 0; 
+        gap: 0;
     }
 
     .comment-wrapper {
         position: relative;
-        padding: 1.2rem 0; 
-        border-bottom: 1px solid #f1f5f9; 
+        padding: 1.2rem 0;
+        border-bottom: 1px solid var(--border-color);
+        transition: background-color 0.3s ease;
     }
 
     .comment-wrapper:last-child {
@@ -170,55 +171,55 @@
     }
 
     .comment-wrapper:hover {
-        background-color: #fbfbfc; 
+        background-color: var(--hover-background); /* New variable for hover */
         border-radius: 0.75rem;
     }
 
     .comment {
         display: flex;
-        gap: 1.2rem; 
-        padding: 0; 
+        gap: 1.2rem;
+        padding: 0;
     }
 
     .comment-avatar {
-        width: 48px; 
+        width: 48px;
         height: 48px;
         border-radius: 50%;
         object-fit: cover;
-        border: 2px solid #e2e8f0;
+        border: 2px solid var(--border-color);
         flex-shrink: 0;
     }
 
     .comment-header {
         display: flex;
         align-items: center;
-        margin-bottom: 0.4rem; 
-        gap: 0.75rem; 
+        margin-bottom: 0.4rem;
+        gap: 0.75rem;
         justify-content: space-between;
     }
 
     .comment-author {
-        font-size: 1.05rem; 
+        font-size: 1.05rem;
         font-weight: 700;
-        color: #2d3748;
+        color: var(--text-color);
     }
 
     .comment-author a {
-        color: #2d3748;
+        color: var(--text-color);
     }
 
     .comment-author a:hover {
-        color: #7f143f;
+        color: var(--primary-color);
     }
 
     .comment-date {
         font-size: 0.85rem;
-        color: #718096;
+        color: var(--text-secondary-color);
         font-weight: 400;
     }
 
     .comment-text {
-        color: #4a5568;
+        color: var(--text-secondary-color);
         line-height: 1.6;
         margin-bottom: 0.8rem;
     }
@@ -226,20 +227,20 @@
     .reply-btn {
         display: inline-flex;
         align-items: center;
-        gap: 0.1rem; 
+        gap: 0.1rem;
         font-size: 0.9rem;
         padding: 0.3rem 0.8rem;
         border: none;
         background-color: transparent;
-        color: #6b7280;
+        color: var(--text-secondary-color);
         font-weight: 500;
         transition: all 0.3s ease;
         border-radius: 0.5rem;
     }
 
     .reply-btn:hover {
-        color: #7f143f; 
-        background-color: #f1f5f9; 
+        color: var(--primary-color);
+        background-color: var(--hover-background);
     }
 
     .reply-btn i {
@@ -249,7 +250,7 @@
     .reply-form {
         margin-top: 1rem;
         margin-left: 2rem;
-        border-left: 2px solid #e2e8f0;
+        border-left: 2px solid var(--border-color);
         padding-left: 1.5rem;
         position: relative;
     }
@@ -260,60 +261,61 @@
         left: 0;
         width: 2px;
         height: 100%;
-        background-color: #e2e8f0; 
+        background-color: var(--border-color);
     }
 
     .form-label {
         font-weight: 600;
-        color: #2d3748;
+        color: var(--text-color);
         font-size: 0.95rem;
         margin-bottom: 0.5rem;
-        display: block; 
+        display: block;
     }
 
     .form-control {
-        border: 1px solid #d1d5db; 
+        border: 1px solid var(--border-color);
         border-radius: 0.75rem;
         padding: 0.75rem 1rem;
         font-size: 1rem;
-        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+        background-color: var(--card-background);
+        color: var(--text-color);
     }
 
     .form-control:focus {
-        border-color: #7f143f;
-        box-shadow: 0 0 0 0.2rem rgba(127, 20, 63, 0.25);
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem var(--primary-color-shadow);
         outline: none;
     }
 
     .btn-primary {
-        background-color: #7f143f;
-        border-color: #7f143f;
-        border-radius: 0.75rem; 
-        padding: 0.7rem 1.6rem; 
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        border-radius: 0.75rem;
+        padding: 0.7rem 1.6rem;
         font-weight: 500;
         font-size: 0.95rem;
         color: #ffffff;
         transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
-        box-shadow: 0 4px 10px rgba(127, 20, 63, 0.2);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
 
     .btn-primary:hover {
-        background-color: #a82453;
-        border-color: #a82453;
+        background-color: var(--secondary-color);
+        border-color: var(--secondary-color);
         transform: translateY(-2px);
-        box-shadow: 0 6px 15px rgba(127, 20, 63, 0.35);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
     }
 
-   
     .comment-wrapper.has-replies > .comment::after {
         content: '';
         position: absolute;
-        bottom: 0; 
+        bottom: 0;
         width: 2px;
         height: 80%;
-        left: 24px; 
-        top:80px;
-        background-color: #d5d6da;
+        left: 24px;
+        top: 80px;
+        background-color: var(--border-color);
         z-index: 1;
         transform: scaleY(0);
         transform-origin: top;
@@ -325,18 +327,18 @@
     }
 
     .comment-wrapper.is-reply {
-        padding-left: 4.5rem; 
+        padding-left: 4.5rem;
         position: relative;
     }
 
     .comment-wrapper.is-reply > .comment::before {
         content: '';
         position: absolute;
-        top: 40px; 
-        left: 25px; 
-        width: 25px; 
+        top: 40px;
+        left: 25px;
+        width: 25px;
         height: 2px;
-        background-color: #d5d6da;
+        background-color: var(--border-color);
         z-index: 2;
     }
 
@@ -347,11 +349,11 @@
     .replies-container {
         overflow: hidden;
         max-height: 0;
-        transition: max-height 0.6s ease-in-out; 
+        transition: max-height 0.6s ease-in-out;
     }
 
     .replies-container.show {
-        max-height: 1000px; 
+        max-height: 1000px;
     }
 
     .toggle-replies-btn {
@@ -360,8 +362,8 @@
         gap: 0.2rem;
         font-size: 0.85rem;
         padding: 0.5rem 1rem;
-        border: none; 
-        color: #9c194e;
+        border: none;
+        color: var(--primary-color); /* Main theme color for replies count */
         background: transparent;
         font-weight: 500;
         cursor: pointer;
@@ -372,8 +374,8 @@
     }
 
     .toggle-replies-btn:hover {
-        color: #7f143f;
-        background-color: #dfe2e6;
+        color: var(--secondary-color);
+        background-color: var(--hover-background);
         transform: translateY(-2px);
     }
 
@@ -385,7 +387,7 @@
         transform: rotate(180deg);
     }
 
-    /* Toast and Alert styles (if not already globally defined in site.css or _Layout) */
+    /* Toast and Alert styles (theme adapted) */
     .alert {
         padding: 0.8rem 1.2rem;
         border-radius: 0.75rem;
@@ -393,20 +395,62 @@
         font-size: 0.9rem;
         font-weight: 500;
         opacity: 0;
-        transition: opacity 0.3s ease;
+        transition: opacity 0.3s ease, background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
     }
     .alert.show {
         opacity: 1;
     }
     .alert-success {
-        background-color: #d1fae5;
-        color: #065f46;
-        border: 1px solid #a7f3d0;
+        background-color: var(--success-background);
+        color: var(--success-color);
+        border: 1px solid var(--success-border);
     }
     .alert-danger {
-        background-color: #fee2e2;
-        color: #991b1b;
-        border: 1px solid #fecaca;
+        background-color: var(--error-background);
+        color: var(--error-color);
+        border: 1px solid var(--error-border);
+    }
+    .alert-info {
+        background-color: var(--info-background);
+        color: var(--info-color);
+        border: 1px solid var(--info-border);
+    }
+
+    /* Theme-specific variables for alerts/toasts */
+    :root {
+        --success-background: #d1fae5;
+        --success-color: #065f46;
+        --success-border: #a7f3d0;
+        --error-background: #fee2e2;
+        --error-color: #991b1b;
+        --error-border: #fecaca;
+        --info-background: #e0f2fe;
+        --info-color: #0E7490;
+        --info-border: #90cdf4;
+        --tag-background: #fce4ec;
+        --tag-text: #9c194e;
+        --tag-border: #f8bbd0;
+        --tag-hover-background: #f8bbd0;
+        --hover-background: #fbfbfc;
+        --primary-color-shadow: rgba(127, 20, 63, 0.25);
+    }
+
+    .dark-theme {
+        --success-background: #103b29;
+        --success-color: #81c784;
+        --success-border: #2e7d32;
+        --error-background: #3e0b0b;
+        --error-color: #ef9a9a;
+        --error-border: #c62828;
+        --info-background: #1a237e;
+        --info-color: #9fa8da;
+        --info-border: #5c6bc0;
+        --tag-background: #4a148c;
+        --tag-text: #e0b0ff;
+        --tag-border: #7b1fa2;
+        --tag-hover-background: #6a1b9a;
+        --hover-background: #334155; /* Darker hover for comments */
+        --primary-color-shadow: rgba(248, 187, 208, 0.25);
     }
 </style>
 
@@ -459,7 +503,7 @@
                             </span>
                         }
                     </div>
-                    <hr class="my-4" style="border-color: #e5e7eb;">
+                    <hr class="my-4" style="border-color: var(--border-color);">
                     <div class="post-content">@Html.Raw(Model.Content ?? "")</div>
                 </div>
 
@@ -487,7 +531,7 @@
                     }
                     else
                     {
-                        <p class="text-muted">Please <a href="/users/login" class="text-primary fw-bold">log in</a> to post a comment or reply.</p>
+                        <p class="text-muted">Please <a href="/users/login" class="text-primary fw-bold" style="color: var(--primary-color);">log in</a> to post a comment or reply.</p>
                     }
 
                     <div id="comments" class="comment-list">
@@ -618,7 +662,7 @@
                                                 <h6 class="comment-author">
                                                     <a href="/profile/${response.username}">${response.name}</a>
                                                 </h6>
-                                                <small class="comment-date">${date.toLocaleString("en-US", { 
+                                                <small class="comment-date">${date.toLocaleString("en-US", {
                                                     year: "numeric",
                                                     month: "long",
                                                     day: "numeric",
@@ -730,7 +774,7 @@
 
                                 const replyButton = `<button class="toggle-replies-btn" data-comment-id="${commentId}">
                                                         <i class="bi bi-chevron-down"></i> 1 Reply
-                                                     </button>`; 
+                                                     </button>`;
                                 const repliesContainer = `<div class="replies-container show" id="replies-container-${commentId}"></div>`;
                                 parentWrapper.append(replyButton).append(repliesContainer);
                                 $repliesContainer = $(`#replies-container-${commentId}`);
@@ -797,11 +841,19 @@
                                 icon.removeClass('bi-heart-fill').addClass('bi-heart');
                             }
                         } else {
-                            alert(response.message || 'An error occurred.');
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.message || 'An error occurred.'
+                            });
                         }
                     },
                     error: function () {
-                        alert('An unexpected error occurred. Please try again.');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'An unexpected error occurred. Please try again.'
+                        });
                     }
                 });
             });

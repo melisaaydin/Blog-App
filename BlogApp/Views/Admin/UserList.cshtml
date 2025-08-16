@@ -3,6 +3,94 @@
 @{
     ViewData["Title"] = "User List";
 }
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-color);
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: 'Roboto', sans-serif;
+        color: var(--text-color);
+    }
+
+    .table {
+        background-color: var(--card-background);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+        /* Ensures rounded corners apply to table */
+        color: var(--text-color);
+        transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .table thead {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    .table th {
+        border-bottom: 1px solid var(--border-color);
+        padding: 1rem 1.5rem;
+        color: white;
+        /* Ensure header text is white */
+    }
+
+    .table td {
+        border-top: 1px solid var(--border-color);
+        padding: 1rem 1.5rem;
+        color: var(--text-secondary-color);
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: var(--table-striped-odd-bg);
+        /* New variable for striped rows */
+    }
+
+    .table-bordered th,
+    .table-bordered td {
+        border: 1px solid var(--border-color);
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        border-radius: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        color: white;
+        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-primary:hover {
+        background-color: var(--secondary-color);
+        border-color: var(--secondary-color);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-sm {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+
+    /* Theme-specific variables for table */
+    :root {
+        --table-striped-odd-bg: #fdfdfd;
+    }
+
+    .dark-theme {
+        --table-striped-odd-bg: #2a3340;
+    }
+</style>
 <div style="margin-top: 100px;">
     <h1>User Management</h1>
 

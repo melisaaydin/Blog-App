@@ -16,6 +16,14 @@
     border-color: #7f143f !important;
 }
 
+.bi-bell-fill {
+    font-size: 22px;
+}
+
+.notification-icon-large {
+    font-size: 25px;
+}
+
 .btn-primary:hover,
 .btn-primary:focus,
 .btn-primary:active {

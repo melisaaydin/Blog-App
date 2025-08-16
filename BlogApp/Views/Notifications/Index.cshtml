@@ -1,66 +1,81 @@
 @model List<Notification>
-@using System.Globalization
-
-@{
-    ViewData["Title"] = "All Notifications";
-}
 
 <style>
-    .notification-list-item {
-        border-left: 4px solid #eef2f5;
-        transition: all 0.2s ease;
+    /* Notification Dropdown specific styles */
+    .dropdown-menu {
+        background-color: var(--card-background);
+        border: 1px solid var(--border-color);
+        box-shadow: var(--card-shadow);
+        transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .dropdown-item {
+        color: var(--text-secondary-color);
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    .dropdown-item:hover {
+        background-color: var(--hover-background) !important;
+        color: var(--text-color) !important;
+    }
+    .dropdown-divider {
+        border-top: 1px solid var(--border-color);
+    }
+    .dropdown-item h6 {
+        color: var(--text-color);
+    }
+    .text-muted {
+        color: var(--text-secondary-color) !important; /* Ensure muted text is themed */
+    }
+    .text-primary {
+        color: var(--primary-color) !important; /* Ensure primary text is themed */
     }
 
-    .notification-list-item.unread {
-        border-left-color: #7f143f;
-        background-color: #f8f9fa;
+    /* Unread notification background */
+    .unread-notification-bg {
+        background-color: var(--light-primary-background) !important;
     }
 
-    .notification-list-item:hover {
-        background-color: #f1f5f9;
-    }
-
-    .notification-link {
-        text-decoration: none;
-        color: inherit;
-    }
-
-    .notification-message {
-        color: #2c3e50;
-        font-weight: 500;
-    }
-
-    .notification-date {
-        font-size: 0.85em;
-        color: #6c757d;
+    /* Notification badge */
+    #notification-badge {
+        background-color: var(--error-color) !important; /* Use error color for badge for urgency */
+        color: white !important;
     }
 </style>
 
-<div class="container my-5">
-    <h1 class="mb-4">Your Notifications</h1>
+<li class="nav-item dropdown">
+    <a class="nav-link position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-bell-fill" style="color: var(--text-secondary-color);"></i>
+        @{
+            var unreadCount = Model.Count(n => !n.IsRead);
+        }
+        <span id="notification-badge"
+              class="position-absolute top-0 start-100 translate-middle badge rounded-pill @(unreadCount == 0 ? "d-none" : "")"
+              style="font-size: 0.6em; --bs-badge-padding-x: 0.5em; --bs-badge-padding-y: 0.5em;">
+            @unreadCount
+        </span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" style="width: 350px; max-height: 400px; overflow-y: auto;">
+        <li class="px-3 py-2">
+            <h6 class="mb-0">Notifications</h6>
+        </li>
+        <li><hr class="dropdown-divider"></li>
 
-    <div class="card shadow-sm">
-        <div class="card-body">
-            @if (Model.Any())
+        @if(Model.Any())
+        {
+            foreach(var notification in Model)
             {
-                <ul class="list-group list-group-flush">
-                    @foreach (var notification in Model)
-                    {
-                        <li class="list-group-item p-3 notification-list-item @(notification.IsRead ? "" : "unread")">
-                            <a href="@notification.LinkUrl" class="notification-link d-block">
-                                <p class="mb-1 notification-message">@notification.Message</p>
-                                <small class="notification-date">
-                                    @notification.CreatedAt.ToString("MMMM dd, yyyy 'at' HH:mm", CultureInfo.InvariantCulture)
-                                </small>
-                            </a>
-                        </li>
-                    }
-                </ul>
+                <li>
+                    <a class="dropdown-item py-2 @(notification.IsRead ? "" : "unread-notification-bg")" href="@notification.LinkUrl" style="white-space: normal;">
+                        <small>@notification.Message</small>
+                        <small class="d-block text-muted mt-1">@notification.CreatedAt.ToString("MMM dd, HH:mm")</small>
+                    </a>
+                </li>
             }
-            else
-            {
-                <p class="text-center text-muted p-4">You have no notifications yet.</p>
-            }
-        </div>
-    </div>
-</div>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-center text-primary" href="/Notifications/Index">View All Notifications"</a></li>
+        }
+        else
+        {
+            <li><p class="dropdown-item text-center text-muted py-4">No new notifications.</p></li>
+        }
+    </ul>
+</li>

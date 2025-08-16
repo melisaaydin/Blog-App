@@ -6,8 +6,8 @@
 <style>
     body {
         font-family: 'Inter', sans-serif;
-        background-color: #f8fafc;
-        color: #1f2937;
+        background-color: var(--background-color);
+        color: var(--text-color);
     }
 
     h1,
@@ -17,7 +17,7 @@
     h5,
     h6 {
         font-family: 'Roboto', sans-serif;
-        color: #2d3748;
+        color: var(--primary-color);
     }
 
     .header {
@@ -25,31 +25,32 @@
         justify-content: space-between;
         align-items: center;
         margin-bottom: 2.5rem;
-        margin-top: 100px;
+        margin-top: 60px;
     }
 
     .header h1 {
         font-size: 2.2rem;
         font-weight: 800;
-        color: #7f143f;
+        color: var(--primary-color);
     }
 
     .btn-primary {
-        background-color: rgb(209, 153, 162);
-        border-color: rgb(209, 153, 162);
+        background-color: var(--secondary-color);
+        border-color: var(--secondary-color);
         border-radius: 0.75rem;
         padding: 0.75rem 1.75rem;
         font-weight: 600;
         color: white;
         transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
-        box-shadow: 0 4px 10px rgba(127, 20, 63, 0.2);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     }
 
     .btn-primary:hover {
-        background-color: #a82453;
-        border-color: #a82453;
+        background-color: var(--primary-color-dark);
+        border-color: var(--primary-color-dark);
         transform: translateY(-3px);
-        box-shadow: 0 6px 15px rgba(127, 20, 63, 0.35);
+        color: var(--text-color);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.35);
     }
 
     .filter-bar {
@@ -62,48 +63,49 @@
 
     .filter-bar select {
         appearance: none;
-        background-color: #ffffff;
-        color: #1f2937;
+        background-color: var(--card-background);
+        color: var(--text-color);
         font-weight: 500;
         font-size: 1rem;
-        border: 1px solid #d1d5db;
+        border: 1px solid var(--border-color);
         border-radius: 0.75rem;
         padding: 0.75rem 2.5rem 0.75rem 1.2rem;
         background-repeat: no-repeat;
         background-position: right 1rem center;
         background-size: 1rem;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        box-shadow: var(--card-shadow);
     }
 
     .filter-bar select:focus {
         outline: none;
-        border-color: #7f143f;
-        box-shadow: 0 0 0 0.25rem rgba(127, 20, 63, 0.25);
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.25rem rgba(var(--primary-color-rgb), 0.25);
     }
 
     .filter-bar select option {
-        background-color: #ffffff;
-        color: #1f2937;
+        background-color: var(--card-background);
+        color: var(--text-color);
         font-weight: 500;
         padding: 0.5rem;
     }
 
     .filter-bar input {
+        background-color: var(--card-background);
+        color: var(--text-color);
         padding: 0.75rem 1.2rem;
-        border: 1px solid #d1d5db;
+        border: 1px solid var(--border-color);
         border-radius: 0.75rem;
         font-size: 1rem;
         flex: 1;
         min-width: 200px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        box-shadow: var(--card-shadow);
     }
 
     .filter-bar input:focus {
         outline: none;
-        border-color: #7f143f;
-        box-shadow: 0 0 0 0.25rem rgba(127, 20, 63, 0.25);
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.25rem rgba(var(--primary-color-rgb), 0.25);
     }
-
 
     .blog-grid {
         display: grid;
@@ -112,12 +114,12 @@
     }
 
     .blog-card {
-        background: #ffffff;
+        background: var(--card-background);
         border-radius: 1rem;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--card-shadow);
         overflow: hidden;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--border-color);
     }
 
     .blog-card:hover {
@@ -141,7 +143,7 @@
         font-size: 1.4rem;
         font-weight: 700;
         margin-bottom: 0.6rem;
-        color: #2d3748;
+        color: var(--text-color);
     }
 
     .status-badge {
@@ -175,7 +177,6 @@
         border-radius: 0.6rem;
         font-weight: 600;
         transition: all 0.3s ease;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
     }
 
     .btn-warning {
@@ -215,41 +216,44 @@
     }
 
     .pagination a {
+        background-color: var(--card-background);
+        border: 1px solid var(--border-color);
         padding: 0.7rem 1.2rem;
-        border: 1px solid #d1d5db;
         border-radius: 0.75rem;
         text-decoration: none;
-        color: #1f2937;
+        color: var(--text-color);
         font-weight: 500;
         transition: all 0.3s ease;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        box-shadow: var(--card-shadow);
     }
 
     .pagination a:hover {
-        background-color: #f1f5f9;
-        border-color: #7f143f;
+        background-color: var(--background-color);
+        border-color: var(--primary-color);
         transform: translateY(-2px);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--card-shadow);
     }
 
     .pagination .active {
-        background-color: #7f143f;
-        color: white;
-        border-color: #7f143f;
-        box-shadow: 0 4px 10px rgba(127, 20, 63, 0.2);
+        background-color: var(--primary-color);
+        color: var(--text-color-inverted);
+        border-color: var(--primary-color);
+        box-shadow: 0 4px 10px rgba(var(--primary-color-rgb), 0.2);
     }
 
     .modal-content {
+        background-color: var(--card-background);
         border-radius: 1rem;
         box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
     }
 
     .modal-header {
-        background-color: rgba(255, 72, 72, 0.833);
-        color: white;
+        background-color: #dc2626;
+        color: #fff;
         border-top-left-radius: 1rem;
         border-top-right-radius: 1rem;
         padding: 1.2rem 1.5rem;
+        border-bottom: 1px solid var(--border-color);
     }
 
     .modal-title {
@@ -261,7 +265,7 @@
     .modal-body {
         padding: 1.5rem;
         font-size: 1.05rem;
-        color: #374151;
+        color: var(--text-color);
     }
 
     .modal-footer {
@@ -277,10 +281,9 @@
 
     .toast {
         border-radius: 0.75rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--card-shadow);
     }
 </style>
-
 <div class="container my-5">
     <div class="header">
         <h1>Manage Posts</h1>

@@ -4,9 +4,111 @@
     ViewData["Title"] = "Manage Roles";
 }
 
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-color);
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: 'Roboto', sans-serif;
+        color: var(--text-color);
+    }
+
+    .card {
+        background-color: var(--card-background);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        box-shadow: var(--card-shadow);
+        transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+        color: var(--text-secondary-color);
+    }
+
+    .card-footer {
+        background-color: var(--card-background);
+        border-top: 1px solid var(--border-color);
+        padding: 1rem 1.5rem;
+        border-bottom-left-radius: 1rem;
+        border-bottom-right-radius: 1rem;
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        border-radius: 0.75rem;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        color: white;
+        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-primary:hover {
+        background-color: var(--secondary-color);
+        border-color: var(--secondary-color);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-secondary {
+        background-color: var(--background-color);
+        color: var(--text-secondary-color);
+        border-color: var(--border-color);
+        border-radius: 0.75rem;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-secondary:hover {
+        background-color: var(--border-color);
+        color: var(--text-color);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-check-input {
+        width: 1.3rem;
+        height: 1.3rem;
+        border-radius: 0.35rem;
+        border: 1px solid var(--border-color);
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+        background-color: var(--card-background);
+    }
+
+    .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .form-check-label {
+        font-size: 1rem;
+        color: var(--text-secondary-color);
+        margin-left: 0.6rem;
+        cursor: pointer;
+    }
+
+    .form-check {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+</style>
+
 <div style="margin-top: 100px;">
-    <h2>Manage Roles for @Model.UserName</h2>
-    <hr />
+    <h2 style="color: var(--text-color);">Manage Roles for @Model.UserName</h2>
+    <hr style="border-color: var(--border-color);" />
 
     <form asp-action="EditRoles" method="post">
         @Html.AntiForgeryToken()

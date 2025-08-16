@@ -8,25 +8,25 @@
     .edit-profile-card {
         max-width: 600px;
         margin: 2rem auto;
-        margin-top: 120px !important;
+        margin-top: 40px !important;
         padding: 2.5rem;
-        background: #fff;
+        background: var(--card-background);
         border-radius: 1rem;
-        box-shadow: 0 2px 0 #7f143f;
+        box-shadow: 0 2px 0 var(--primary-color);
     }
 
     h2 {
         font-weight: 800;
         font-size: 40px;
-        color: #7f143f;
-        text-shadow: 0 1px 0 #7f143f;
+        color: var(--primary-color);
+        text-shadow: 0 1px 0 var(--primary-color);
         font-family: Arial, Helvetica, sans-serif;
     }
 
     label,
     h5 {
         font-weight: 700 !important;
-        color: #7f143f;
+        color: var(--primary-color);
     }
 
     .profile-image-preview {
@@ -34,7 +34,7 @@
         height: 150px;
         border-radius: 50%;
         object-fit: cover;
-        border: 4px solid #eef2f5;
+        border: 4px solid var(--border-color);
     }
 
     .input-group-password {
@@ -48,6 +48,19 @@
         font-weight: 700;
         transform: translateY(-50%);
         cursor: pointer;
+    }
+
+    .form-control {
+        background-color: var(--card-background);
+        border-color: var(--border-color);
+        color: var(--text-color);
+    }
+
+    .form-control:focus {
+        background-color: var(--card-background);
+        border-color: var(--primary-color);
+        color: var(--text-color);
+        box-shadow: 0 0 0 0.25rem rgba(var(--primary-color-rgb), 0.25);
     }
 </style>
 
@@ -114,7 +127,7 @@
         </div>
 
         <div class="d-grid gap-2">
-            <button type="submit" class="btn btn-dark">Update Profile</button>
+            <button type="submit" class="btn btn-primary">Update Profile</button>
         </div>
     </form>
 </div>

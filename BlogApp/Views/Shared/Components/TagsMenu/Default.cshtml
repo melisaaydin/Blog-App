@@ -1,60 +1,76 @@
 @model List<Tag>
 
 <style>
-    .tags-form {
-        background: #ffffff;
-        border-radius: 1rem;
-        margin-bottom: 2rem;
+    .vc-tags-card {
+        border: none;
     }
 
-    .tags-title {
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: #1f2937;
-        margin-bottom: 1rem;
+    .vc-tags-title {
+        font-family: 'Roboto', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--sidebar-title-color);
+        margin-bottom: 1.8rem;
     }
 
-    .tag-btn {
-        font-size: 0.85rem;
-        font-weight: 500;
-        padding: 0.5rem 0.5rem;
-        border-radius: 0.5rem;
-        transition: all 0.2s ease;
-        border: 1px solid #e2e8f0;
-        color: #374151;
+    .vc-tag-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
     }
 
-    .tag-btn:hover {
-        background-color: #7f143f;
-        color: #ffffff;
-        border-color: #7f143f;
-        transform: translateY(-1px);
+    .vc-tag-item {
+        margin-bottom: 0;
     }
 
-    .no-tags {
+    .vc-tag-link {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.4rem 1rem;
+        border-radius: 1.5rem;
         font-size: 0.9rem;
-        color: #6b7280;
+        font-weight: 500;
+        background-color: var(--vc-tags-menu-item-bg);
+        color: var(--vc-tags-menu-item-text);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: 1px solid var(--border-color);
+    }
+
+    .vc-tag-link:hover {
+        background-color: var(--vc-tags-menu-item-hover-bg);
+        color: var(--text-color);
+        transform: translateY(-2px);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .vc-no-tags-found {
+        font-size: 0.9rem;
+        color: var(--text-secondary-color);
     }
 </style>
 
-<div class="tags-form">
-    <h5 class="tags-title">Tags</h5>
+<div class="vc-tags-card">
+    <h5 class="vc-tags-title">Tags</h5>
     <div class="card-body p-0">
-        <ul class="list-inline d-flex flex-wrap gap-2 ">
+        <ul class="vc-tag-list">
             @if (Model?.Any() ?? false)
             {
                 @foreach (var tag in Model)
                 {
-                    <li class="list-inline-item mb-2">
-                        <a style="text-decoration: none;" class="tag-btn" href="/posts/tag/@tag.Url"
-                            aria-label="Tag: @(tag.Text ?? "Tag")">@(tag.Text ??
-                                                "Tag")</a>
+                    <li class="vc-tag-item">
+                        <a class="vc-tag-link" href="/posts/tag/@tag.Url" aria-label="Tag: @(tag.Text ?? "Tag")">
+                            <i class="bi bi-tag-fill me-1"></i>@(tag.Text ?? "Tag")
+                        </a>
                     </li>
                 }
             }
             else
             {
-                <p class="no-tags">No tags found.</p>
+                <p class="vc-no-tags-found">No tags found.</p>
             }
         </ul>
     </div>

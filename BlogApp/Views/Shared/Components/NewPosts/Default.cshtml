@@ -1,27 +1,122 @@
 @model List<Post>
 
-<div class="card border-0">
-    <h5 class="card-title fw-bold text-dark">New Posts</h5>
+<style>
+    /* Styling for the New Posts component */
+    .vc-new-posts-card {
+        background-color: transparent;
+        /* Sidebar already has background, make this transparent */
+        border: none;
+        /* No border needed as it's inside sidebar */
+    }
+
+    .vc-new-posts-title {
+        font-family: 'Roboto', sans-serif;
+        font-size: 1.5rem;
+        /* Consistent with sidebar h4 */
+        font-weight: 700;
+        color: var(--sidebar-title-color);
+        /* Use theme variable for title */
+        margin-bottom: 1.8rem;
+        /* Consistent spacing */
+    }
+
+    .vc-new-posts-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .vc-new-posts-item {
+        margin-bottom: 1.2rem;
+        transition: background-color 0.2s ease;
+        /* Add transition for hover effect */
+        border-radius: 0.5rem;
+        /* Small rounded corners for hover */
+    }
+
+    .vc-new-posts-item:last-child {
+        margin-bottom: 0;
+        /* Remove margin for the last item */
+    }
+
+    .vc-new-posts-link {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        text-decoration: none;
+        color: var(--text-color);
+        /* Main text color for link */
+        padding: 0.5rem;
+        /* Add padding for clickable area */
+        transition: color 0.3s ease, background-color 0.3s ease;
+    }
+
+    .vc-new-posts-link:hover {
+        color: var(--primary-color);
+        /* Primary color on hover */
+        background-color: var(--hover-background);
+        /* Lighter background on hover */
+    }
+
+    .vc-new-posts-img {
+        width: 60px;
+        height: 60px;
+        border-radius: 0.75rem;
+        object-fit: cover;
+        flex-shrink: 0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-color);
+        /* Theme border */
+    }
+
+    .vc-new-posts-details {
+        flex-grow: 1;
+    }
+
+    .vc-new-posts-post-title {
+        font-size: 1.05rem;
+        font-weight: 600;
+        line-height: 1.4;
+        color: var(--text-color);
+        /* Title color */
+    }
+
+    .vc-new-posts-post-date {
+        font-size: 0.85rem;
+        color: var(--text-secondary-color);
+        /* Muted text color for date */
+    }
+
+    .vc-no-posts-found {
+        font-size: 0.9rem;
+        color: var(--text-secondary-color);
+    }
+</style>
+
+<div class="vc-new-posts-card">
+    <h5 class="vc-new-posts-title">New Posts</h5>
     <div class="card-body p-0">
         @if (Model?.Any() ?? false)
         {
-            @foreach (var post in Model)
-            {
-                <div class=" transition-hover p-2">
-                    <h6 class="mb-1">
-                        <a href="/posts/details/@post.Url" class="text-decoration-none text-dark fw-bold">@(post.Title
-                                                ?? "Untitled")</a>
-                    </h6>
-                    <p class="text-muted small mb-0">
-                        @(string.IsNullOrEmpty(post.Description) ? "No description" : post.Description.Length > 50 ?
-                                        post.Description.Substring(0, 50) + "..." : post.Description)
-                    </p>
-                </div>
-            }
+            <ul class="vc-new-posts-list">
+                @foreach (var post in Model)
+                {
+                    <li class="vc-new-posts-item">
+                        <a href="/posts/details/@post.Url" class="vc-new-posts-link">
+                            <img src="/img/@(post.Image ?? "https://placehold.co/60x60/e0e0e0/ffffff?text=Post")"
+                                alt="@(post.Title ?? "Post Image")" class="vc-new-posts-img" loading="lazy">
+                            <div class="vc-new-posts-details">
+                                <h6 class="vc-new-posts-post-title">@(post.Title ?? "Untitled")</h6>
+                                <p class="vc-new-posts-post-date">@(post.PublishedOn.ToString("MMM dd, yyyy"))</p>
+                            </div>
+                        </a>
+                    </li>
+                }
+            </ul>
         }
         else
         {
-            <p class="text-muted small">No new posts found.</p>
+            <p class="vc-no-posts-found">No new posts found.</p>
         }
     </div>
 </div>

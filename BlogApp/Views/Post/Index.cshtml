@@ -32,30 +32,42 @@
 }
 
 <style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-color);
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Roboto', sans-serif;
+        color: var(--text-color);
+    }
+
     .header {
-        margin-bottom: 3rem; 
+        margin-bottom: 3rem;
     }
     .header h1 {
-        font-size: 3rem; 
-        font-weight: 900; 
-        color: #7f143f;
-        margin-bottom: 1.5rem; 
+        font-size: 3rem;
+        font-weight: 900;
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+     
     }
     .search-input-group {
         display: flex;
         align-items: center;
         width: 100%;
-        max-width: 600px; 
-        margin: 0 auto; 
-        border: 1px solid #d1d5db;
+        max-width: 600px;
+        margin: 0 auto;
+        border: 1px solid var(--border-color);
         border-radius: 2rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); 
+        box-shadow: var(--card-shadow);
         transition: all 0.3s ease;
-        background-color: white;
+        background-color: var(--search-input-background);
     }
     .search-input-group:focus-within {
-        border-color: #7f143f;
-        box-shadow: 0 0 0 4px rgba(127, 20, 63, 0.2);
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 4px var(--primary-color-shadow);
     }
     .search-input-group input {
         border: none;
@@ -63,107 +75,111 @@
         border-radius: 2rem;
         font-size: 1rem;
         flex-grow: 1;
-        background-color: transparent; 
+        background-color: transparent;
+        color: var(--text-color);
     }
     .search-input-group input:focus {
         outline: none;
-        box-shadow: none; 
+        box-shadow: none;
+    }
+    .search-input-group input::placeholder { 
+        color: var(--search-input-placeholder-color);
     }
     .search-input-group .input-group-text {
         background-color: transparent;
         border: none;
         padding-right: 0.75rem;
-        color: #7f143f; 
+        color: var(--primary-color);
         font-size: 1.25rem;
     }
 
     .blog-list {
-        display: grid; 
+        display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 2.5rem; 
+        gap: 2.5rem;
     }
     .blog-card {
-        background: #ffffff;
-        border-radius: 1.25rem; 
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1); 
+        background: var(--card-background);
+        border-radius: 1.25rem;
+        box-shadow:0 2px 0 var(--secondary-color);
         overflow: hidden;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border: 1px solid #e2e8f0; 
+        transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+      
     }
     .blog-card:hover {
-        transform: translateY(-8px); 
-        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15);
+        transform: translateY(-8px);
     }
     .blog-card img {
         width: 100%;
         height: 250px;
-        object-fit: cover; 
-        border-top-left-radius: 1.25rem; 
+        object-fit: cover;
+        border-top-left-radius: 1.25rem;
         border-top-right-radius: 1.25rem;
     }
     .blog-card-content {
         padding: 2rem;
     }
     .blog-card-content h3 {
-        font-size: 1.8rem; 
+        font-size: 1.8rem;
         font-weight: 700;
         margin-bottom: 0.75rem;
+        color: var(--text-color);
     }
     .blog-card-content h3 a {
-        color: #2d3748;
+        color: var(--text-color);
         text-decoration: none;
         transition: color 0.3s ease;
     }
     .blog-card-content h3 a:hover {
-        color: #7f143f; 
+        color: var(--primary-color);
     }
     .blog-card-content p {
-        color: #6b7280;
-        font-size: 1.05rem; 
+        color: var(--text-color); 
+        font-size: 1.05rem;
         line-height: 1.7;
-        margin-bottom: 1.75rem; 
+        margin-bottom: 1.75rem;
     }
     .blog-card-tags {
         margin-bottom: 1.5rem;
         display: flex;
         flex-wrap: wrap;
-        gap: 0.75rem; 
+        gap: 0.75rem;
     }
     .tag-badge {
         display: inline-flex;
         align-items: center;
-        padding: 0.4rem 1rem; 
-        border-radius: 1.5rem; 
+        padding: 0.4rem 1rem;
+        border-radius: 1.5rem;
         font-size: 0.85rem;
         font-weight: 600;
-        background-color: #fce4ec; 
-        color: #9c194e; 
+        background-color: var(--tag-background);
+        color: var(--tag-text);
         text-decoration: none;
         transition: all 0.3s ease;
-        border: 1px solid #f8bbd0; 
+        border: 1.5px solid var(--border-color);
     }
     .tag-badge:hover {
-        background-color: #f8bbd0; 
+        background-color: var(--tag-hover-background);
         transform: translateY(-2px);
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
     }
     .tag-badge i {
-        margin-right: 0.4rem; 
+        margin-right: 0.4rem;
         font-size: 1rem;
     }
 
     .blog-card-actions {
         display: flex;
         align-items: center;
-        justify-content: space-between; 
+        justify-content: space-between;
         margin-top: 1.5rem;
     }
     .btn-primary {
-        background-color: rgb(209, 153, 162); 
-        border-color: rgb(209, 153, 162);
+        background-color: var(--primary-color);
+        border:none;
         border-radius: 0.75rem;
-        padding: 0.85rem 1.8rem; 
-        font-size: 1rem; 
+        padding: 0.85rem 1.8rem;
+        font-size: 1rem;
         font-weight: 600;
         color: #ffffff;
         text-decoration: none;
@@ -171,60 +187,61 @@
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
-        box-shadow: 0 4px 10px rgba(127, 20, 63, 0.2);
+     
     }
     .btn-primary:hover {
-        background-color: #a82453;
-        border-color: #a82453;
+        background-color: var(--secondary-color);
+    border: none;
         transform: translateY(-3px);
-        box-shadow: 0 6px 15px rgba(127, 20, 63, 0.35); 
+         
     }
     .share-btn {
         cursor: pointer;
         font-size: 1.5rem;
         margin-left: 36px;
-        color: rgb(195, 82, 101);
+        color: var(--share-icon-color);
         transition: color 0.2s ease, transform 0.2s ease;
     }
     .share-btn:hover {
-        color: #a82453;
-        transform: scale(1.15); 
+        color: var(--primary-color); 
+        transform: scale(1.15);
     }
     .popover-body {
         display: flex;
-        gap: 1.5rem; 
+        gap: 1.5rem;
         padding: 1.2rem;
-        border-radius: 0.75rem; 
+        border-radius: 0.75rem;
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        background-color: var(--card-background); 
     }
     .share-icon {
-        color: #7f143f;
-        font-size: 2rem; 
+        color: var(--primary-color); 
+        font-size: 2rem;
         text-decoration: none;
         transition: transform 0.2s ease;
     }
     .share-icon:hover {
         transform: scale(1.25);
-        color: #a82453;
+        color: var(--secondary-color);
     }
 
     .sidebar {
-        background: #ffffff;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        background: var(--sidebar-background); 
+        box-shadow: var(--card-shadow);
         border-radius: 1.25rem;
-        padding: 2.5rem; 
+        padding: 2.5rem;
         margin-bottom: 2.5rem;
         position: sticky;
         top: 2rem;
-        border: 1px solid #e2e8f0; 
+        border: 1px solid var(--sidebar-border);
     }
 
     .sidebar h4 {
         font-family: 'Roboto', sans-serif;
-        font-size: 1.5rem; 
+        font-size: 1.5rem;
         font-weight: 700;
-        color: #2d3748;
-        margin-bottom: 1.8rem; 
+        color: var(--sidebar-title-color); 
+        margin-bottom: 1.8rem;
     }
 
     .vc-tags-menu ul {
@@ -233,7 +250,7 @@
         margin: 0;
         display: flex;
         flex-wrap: wrap;
-        gap: 0.75rem; 
+        gap: 0.75rem;
     }
     .vc-tags-menu li a {
         display: inline-flex;
@@ -242,39 +259,39 @@
         border-radius: 1.5rem;
         font-size: 0.9rem;
         font-weight: 500;
-        background-color: #f1f5f9;
-        color: #4a5568;
+        background-color: var(--vc-tags-menu-item-bg);
+        color: var(--vc-tags-menu-item-text);
         text-decoration: none;
         transition: all 0.3s ease;
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--border-color); 
     }
     .vc-tags-menu li a:hover {
-        background-color: #e2e8f0;
-        color: #2d3748;
+        background-color: var(--vc-tags-menu-item-hover-bg); /* Themed tag menu item hover background */
+        color: var(--text-color); /* Themed text color on hover */
         transform: translateY(-2px);
     }
 
-  
-    .vc-new-posts ul { 
+
+    .vc-new-posts ul {
         list-style: none;
         padding: 0;
         margin: 0;
     }
     .vc-new-posts li {
-        margin-bottom: 1.2rem; 
+        margin-bottom: 1.2rem;
     }
     .vc-new-posts li a {
         display: flex;
         align-items: center;
         gap: 0.8rem;
         text-decoration: none;
-        color: #2d3748;
+        color: var(--text-color); /* Themed new posts link color */
         transition: color 0.3s ease;
     }
     .vc-new-posts li a:hover {
-        color: #7f143f;
+        color: var(--primary-color);
     }
-    .vc-new-posts img { 
+    .vc-new-posts img {
         width: 60px;
         height: 60px;
         border-radius: 0.75rem;
@@ -289,37 +306,41 @@
     }
     .vc-new-posts .post-date-sidebar {
         font-size: 0.85rem;
-        color: #718096;
+        color: var(--vc-new-posts-text-muted); 
     }
 
     .pagination {
         display: flex;
         justify-content: center;
         gap: 0.75rem;
-        margin-top: 4rem; 
+        margin-top: 4rem;
         margin-bottom: 2rem;
+    }
+    .text-muted{
+        color: var(--text-color) !important;
     }
     .pagination a {
         padding: 0.8rem 1.3rem;
-        border: 1px solid #d1d5db;
-        border-radius: 0.75rem; 
+        border: 1px solid var(--border-color);
+        border-radius: 0.75rem;
         text-decoration: none;
-        color: #1f2937;
+        color: var(--text-color);
         font-weight: 500;
         transition: all 0.3s ease;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        background-color: var(--card-background); 
     }
     .pagination a:hover {
-        background-color: #f1f5f9;
-        border-color: #7f143f;
-        transform: translateY(-2px); 
+        background-color: var(--hover-background); 
+        border-color: var(--primary-color);
+        transform: translateY(-2px);
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
     .pagination .active {
-        background-color: #7f143f;
+        background-color: var(--primary-color);
         color: #ffffff;
-        border-color: #7f143f;
-        box-shadow: 0 4px 10px rgba(127, 20, 63, 0.2);
+        border-color: var(--primary-color);
+        box-shadow: 0 4px 10px var(--primary-color-shadow);
     }
     .alert {
         padding: 1rem 1.5rem;
@@ -329,9 +350,38 @@
         font-weight: 500;
     }
     .alert-info {
-        background-color: #e0f2fe;
-        color: #0e7490;
-        border: 1px solid #93c5fd;
+        background-color: var(--info-background);
+        color: var(--info-color);
+        border: 1px solid var(--info-border);
+    }
+
+    :root {
+        --primary-color-shadow: rgba(127, 20, 63, 0.2); /
+        --secondary-color-shadow: rgba(168, 36, 83, 0.35);
+        --search-input-background: #ffffff;
+        --search-input-placeholder-color: #6b7280;
+        --share-icon-color: rgb(195, 82, 101); 
+        --sidebar-title-color: #1f2227;
+        --sidebar-background: #ffffff;
+        --sidebar-border: #e2e8f0;
+        --vc-tags-menu-item-bg: #f1f5f9;
+        --vc-tags-menu-item-hover-bg: #e2e8f0;
+        --vc-tags-menu-item-text: #4a5568;
+        --vc-new-posts-text-muted: #718096;
+    }
+    .dark-theme {
+        --primary-color-shadow: rgba(248, 187, 208, 0.25);
+        --secondary-color-shadow: rgba(255, 105, 180, 0.35); 
+        --search-input-background: rgb(29, 30, 32);
+        --search-input-placeholder-color: #cbd5e0;
+        --share-icon-color: #f8bbd0; 
+        --sidebar-title-color: #e2e8f0;
+        --sidebar-background: rgb(29, 30, 32);
+        --sidebar-border: rgb(29, 30, 32);
+        --vc-tags-menu-item-bg: rgb(29, 30, 32);
+        --vc-tags-menu-item-hover-bg: rgb(29, 30, 32);
+        --vc-tags-menu-item-text: #e2e8f0;
+        --vc-new-posts-text-muted: #a0aec0;
     }
 
     @@media (max-width: 991px) {
@@ -340,7 +390,7 @@
             margin-bottom: 1rem;
         }
         .search-input-group {
-            max-width: 100%; 
+            max-width: 100%;
         }
         .blog-card img {
             height: 220px;
@@ -416,7 +466,7 @@
 
 <div class="container my-5">
     <div class="text-center header">
-        <h1 style="padding-top: 55px;">@(string.IsNullOrEmpty(Model?.Tag) ? "Latest Posts" : $"Posts tagged '{Model.Tag}'")</h1>
+        <h1>@(string.IsNullOrEmpty(Model?.Tag) ? "Latest Posts" : $"Posts tagged '{Model.Tag}'")</h1>
         <div class="search-bar">
             <div class="search-input-group">
                 <input type="text" id="searchInput" placeholder="Search posts..." />
@@ -449,14 +499,15 @@
                                     <a href="/posts/details/@post.Url" class="btn btn-primary">
                                         Read More <i class="bi bi-arrow-right"></i>
                                     </a>
-                                    <small class="text-muted ms-auto"><i class="bi bi-eye"></i> @post.ViewCount Views</small>
+                                    <small class="text-muted ms-auto" style="color:var(--text-color); !important
+                                    "><i class="bi bi-eye"></i> @post.ViewCount Views</small>
                                     <i class="bi bi-share-fill share-btn"
                                        data-bs-toggle="popover"
                                        data-bs-html="true"
                                        data-bs-content="
-                                           <a href='https://twitter.com/intent/tweet?url=https://myblog.com/posts/details/@post.Url&text=@(HttpUtility.JavaScriptStringEncode(post.Title ?? "Check out this post!"))' target='_blank' class='share-icon share-twitter' aria-label='Share on Twitter'><i class='bi bi-twitter'></i></a>
-                                           <a href='https://www.facebook.com/sharer/sharer.php?u=https://myblog.com/posts/details/@post.Url' target='_blank' class='share-icon share-facebook' aria-label='Share on Facebook'><i class='bi bi-facebook'></i></a>
-                                           <a href='https://www.linkedin.com/sharing/share-offsite/?url=https://myblog.com/posts/details/@post.Url' target='_blank' class='share-icon share-linkedin' aria-label='Share on LinkedIn'><i class='bi bi-linkedin'></i></a>"
+                                            <a href='https://twitter.com/intent/tweet?url=https://myblog.com/posts/details/@post.Url&text=@(HttpUtility.JavaScriptStringEncode(post.Title ?? "Check out this post!"))' target='_blank' class='share-icon share-twitter' aria-label='Share on Twitter'><i class='bi bi-twitter'></i></a>
+                                            <a href='https://www.facebook.com/sharer/sharer.php?u=https://myblog.com/posts/details/@post.Url' target='_blank' class='share-icon share-facebook' aria-label='Share on Facebook'><i class='bi bi-facebook'></i></a>
+                                            <a href='https://www.linkedin.com/sharing/share-offsite/?url=https://myblog.com/posts/details/@post.Url' target='_blank' class='share-icon share-linkedin' aria-label='Share on LinkedIn'><i class='bi bi-linkedin'></i></a>"
                                        aria-label="Share this post"></i>
                                 </div>
                             </div>
@@ -492,8 +543,8 @@
             <div class="sidebar">
                 <vc:tags-menu></vc:tags-menu>
             </div>
-            <div class="sidebar mt-4"> 
-                <vc:new-posts></vc:new-posts> 
+            <div class="sidebar mt-4">
+                <vc:new-posts></vc:new-posts>
             </div>
         </div>
     </div>
@@ -502,7 +553,7 @@
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-           
+
             const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
             popoverTriggerList.forEach(popoverTriggerEl => {
                 new bootstrap.Popover(popoverTriggerEl, {
@@ -521,9 +572,9 @@
                 cards.forEach(card => {
                     const title = card.getAttribute('data-title');
                     if (title && title.includes(searchTerm)) {
-                        card.style.display = ''; 
+                        card.style.display = '';
                     } else {
-                        card.style.display = 'none'; 
+                        card.style.display = 'none';
                     }
                 });
             });
