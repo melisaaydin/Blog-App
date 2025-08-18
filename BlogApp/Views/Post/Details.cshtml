@@ -4,7 +4,7 @@
 @{
     ViewData["Title"] = Model?.Title ?? "Post Details";
     ViewData["Description"] = Model?.Description ?? "Read the latest insights and updates at MyBlog.";
-    ViewData["CanonicalUrl"] = Model != null ? $"/post/details/{Model.Url}" : "/post";
+    ViewData["CanonicalUrl"] = Model != null ? $"/posts/details/{Model.Url}" : "/posts";
 }
 
 <style>
@@ -30,7 +30,7 @@
         color: var(--secondary-color);
     }
 
-    .post-container, .comment-section, .comment-form, .sidebar {
+    .post-container, .comment-section, .sidebar {
         background: var(--card-background);
         border-radius: 1.25rem;
         box-shadow: var(--card-shadow);
@@ -39,10 +39,14 @@
         transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease;
         border: 1px solid var(--border-color);
     }
-
+.comment-form{
+    border:none;
+     
+}
     .post-container:hover {
         transform: translateY(-5px);
-        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15); /* Keep a subtle increase on hover */
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15); 
+        
     }
 
     .post-title {
@@ -64,14 +68,14 @@
         margin-bottom: 0.75rem;
         text-decoration: none;
         transition: all 0.3s ease;
-        background-color: var(--tag-background); /* New variable for tag background */
-        border: 1px solid var(--tag-border); /* New variable for tag border */
-        color: var(--tag-text); /* New variable for tag text */
+        background-color: var(--tag-background);
+        border: 1px solid var(--tag-border); 
+        color: var(--tag-text);
     }
 
     .tag-badge:hover {
         transform: translateY(-2px);
-        background-color: var(--tag-hover-background); /* New variable for tag hover background */
+        background-color: var(--tag-hover-background);
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
     }
 
@@ -171,7 +175,7 @@
     }
 
     .comment-wrapper:hover {
-        background-color: var(--hover-background); /* New variable for hover */
+        background-color: var(--hover-background); 
         border-radius: 0.75rem;
     }
 
@@ -279,13 +283,19 @@
         font-size: 1rem;
         transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease;
         background-color: var(--card-background);
-        color: var(--text-color);
+        color: var(--text-color) ;
+    
     }
-
+.form-control::placeholder{
+    color:var(--text-color);
+}
     .form-control:focus {
         border-color: var(--primary-color);
         box-shadow: 0 0 0 0.2rem var(--primary-color-shadow);
         outline: none;
+        color:var(--text-color);
+        background:transparent;
+       
     }
 
     .btn-primary {
@@ -416,7 +426,6 @@
         border: 1px solid var(--info-border);
     }
 
-    /* Theme-specific variables for alerts/toasts */
     :root {
         --success-background: #d1fae5;
         --success-color: #065f46;
@@ -427,10 +436,10 @@
         --info-background: #e0f2fe;
         --info-color: #0E7490;
         --info-border: #90cdf4;
-        --tag-background: #fce4ec;
-        --tag-text: #9c194e;
-        --tag-border: #f8bbd0;
-        --tag-hover-background: #f8bbd0;
+        --tag-background: #7f143f;
+        --tag-text: #faf7f7ff;
+        --tag-border: #7f143f;
+        --tag-hover-background: #f7f6f7ff;
         --hover-background: #fbfbfc;
         --primary-color-shadow: rgba(127, 20, 63, 0.25);
     }
@@ -445,11 +454,11 @@
         --info-background: #1a237e;
         --info-color: #9fa8da;
         --info-border: #5c6bc0;
-        --tag-background: #4a148c;
-        --tag-text: #e0b0ff;
-        --tag-border: #7b1fa2;
-        --tag-hover-background: #6a1b9a;
-        --hover-background: #334155; /* Darker hover for comments */
+        --tag-background: rgb(136, 0, 21);
+        --tag-text: #fae9e9ff;
+        --tag-border: rgb(136, 0, 21);
+        --tag-hover-background: #fae9e9ff;
+        --hover-background: #334155; 
         --primary-color-shadow: rgba(248, 187, 208, 0.25);
     }
 </style>
@@ -515,7 +524,7 @@
                         <div class="comment-form">
                             <h4 class="mb-2">Add a Comment</h4>
                             <div id="commentAlert" class="alert" style="display: none;"></div>
-                            <form id="commentForm" action="/Post/AddComment" method="post">
+                            <form id="commentForm" action="/Posts/AddComment" method="post">
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" id="PostId" name="PostId" value="@(Model.PostId)" />
                                 <div class="mb-4">
@@ -647,7 +656,7 @@
                 $button.addClass("loading").prop("disabled", true).text("Submitting...");
                 $.ajax({
                     type: "POST",
-                    url: "/Post/AddComment",
+                    url: "/Posts/AddComment",
                     data: $(this).serialize(),
                     dataType: "json",
                     success: function (response) {
@@ -675,7 +684,7 @@
                                                 <i class="bi bi-reply"></i> Reply
                                             </a>
                                             <div class="reply-form" id="reply-form-${response.commentId}" style="display: none;">
-                                                <form id="replyForm-${response.commentId}" action="/Post/AddReply" method="post">
+                                                <form id="replyForm-${response.commentId}" action="/Posts/AddReply" method="post">
                                                     @Html.AntiForgeryToken()
                                                     <input type="hidden" name="PostId" value="@Model.PostId" />
                                                     <input type="hidden" name="ParentCommentId" value="${response.commentId}" />
@@ -738,7 +747,7 @@
 
                 $.ajax({
                     type: "POST",
-                    url: "/Post/AddReply",
+                    url: "/Posts/AddReply",
                     data: form.serialize(),
                     dataType: "json",
                     success: function (response) {
@@ -826,7 +835,7 @@
 
                 $.ajax({
                     type: 'POST',
-                    url: '/Post/ToggleLike',
+                    url: '/Posts/ToggleLike',
                     data: {
                         postId: postId,
                         __RequestVerificationToken: token

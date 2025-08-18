@@ -1,115 +1,146 @@
 @model IEnumerable<User>
 
 @{
-    ViewData["Title"] = "User List";
+    ViewData["Title"] = "Kullanıcı Yönetimi";
 }
+
 <style>
-    body {
-        font-family: 'Inter', sans-serif;
-        background-color: var(--background-color);
-        color: var(--text-color);
+    @@keyframes fadeIn {
+        0% {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
-        font-family: 'Roboto', sans-serif;
-        color: var(--text-color);
-    }
-
-    .table {
+    .user-table {
         background-color: var(--card-background);
         border: 1px solid var(--border-color);
         border-radius: 1rem;
         box-shadow: var(--card-shadow);
         overflow: hidden;
-        /* Ensures rounded corners apply to table */
         color: var(--text-color);
         transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        margin-top: 40px;
+        width: 1300px;
     }
 
-    .table thead {
+    .user-table thead {
         background-color: var(--primary-color);
         color: white;
     }
 
-    .table th {
+    .user-table th {
+        padding: 1.2rem 1.5rem;
+        font-weight: 600;
+        text-align: left;
         border-bottom: 1px solid var(--border-color);
-        padding: 1rem 1.5rem;
-        color: white;
-        /* Ensure header text is white */
     }
 
-    .table td {
-        border-top: 1px solid var(--border-color);
-        padding: 1rem 1.5rem;
+    .user-table td {
+        padding: 1.2rem 1.5rem;
         color: var(--text-secondary-color);
+        border-top: 1px solid var(--border-color);
+        transition: background-color 0.3s ease;
     }
 
-    .table-striped tbody tr:nth-of-type(odd) {
-        background-color: var(--table-striped-odd-bg);
-        /* New variable for striped rows */
+    .user-table tbody tr {
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        animation: fadeIn 0.5s ease forwards;
     }
 
-    .table-bordered th,
-    .table-bordered td {
-        border: 1px solid var(--border-color);
+    .user-table tbody tr:nth-of-type(odd) {
+        background-color: var(--table-striped-bg, var(--card-background));
+
     }
 
-    .btn-primary {
+    .user-table tbody tr:hover {
+        background-color: var(--primary-color);
+        color: white !important;
+        transform: translateY(-2px);
+    }
+
+    .btn-manage {
         background-color: var(--primary-color);
         border-color: var(--primary-color);
         border-radius: 0.5rem;
-        padding: 0.75rem 1.5rem;
+        padding: 0.5rem 1rem;
         font-weight: 600;
         color: white;
         transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
     }
 
-    .btn-primary:hover {
+    .btn-manage:hover {
         background-color: var(--secondary-color);
         border-color: var(--secondary-color);
         transform: translateY(-2px);
         box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        color: white;
     }
 
-    .btn-sm {
-        padding: 0.5rem 1rem;
-        font-size: 0.875rem;
+    .btn-manage i {
+        transition: transform 0.3s ease;
     }
 
-    /* Theme-specific variables for table */
+    .btn-manage:hover i {
+        transform: scale(1.2);
+    }
+
     :root {
-        --table-striped-odd-bg: #fdfdfd;
+        --table-striped-bg: #f8fafc;
+
     }
 
     .dark-theme {
-        --table-striped-odd-bg: #2a3340;
+        --table-striped-bg: #2a2a2a;
+    }
+
+
+    @@media (max-width: 768px) {
+
+        .user-table th,
+        .user-table td {
+            padding: 0.8rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-manage {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+        }
     }
 </style>
-<div style="margin-top: 100px;">
-    <h1>User Management</h1>
 
-    <table class="table table-bordered table-striped">
+<div class="container">
+    <h1 class="mb-4 mt-4" style="font-weight: 700; animation: fadeIn 0.5s ease;">User Manage Panel</h1>
+
+    <table class="user-table table-bordered table-striped">
         <thead>
             <tr>
                 <th>User Name</th>
                 <th>Email</th>
-                <th>Actions</th>
+                <th>Transactions</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var user in Model)
             {
-                <tr>
-                    <td>@user.UserName</td>
+                <tr style="animation-delay: @(Model.ToList().IndexOf(user) * 0.1)s;">
+                    <td style="font-weight: 700;">@user.UserName</td>
                     <td>@user.Email</td>
                     <td>
-                        <a asp-action="EditRoles" asp-route-id="@user.Id" class="btn btn-primary btn-sm">Manage Roles</a>
+                        <a asp-action="EditRoles" asp-route-id="@user.Id" class="btn-manage">
+                            <i class="bi bi-gear-fill"></i> Manage Roles
+                        </a>
                     </td>
                 </tr>
             }

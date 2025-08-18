@@ -176,9 +176,9 @@
     }
     .btn-primary {
         background-color: var(--primary-color);
-        border:none;
+        border:none !important;
         border-radius: 0.75rem;
-        padding: 0.85rem 1.8rem;
+        padding: 0.8rem 1.4rem;
         font-size: 1rem;
         font-weight: 600;
         color: #ffffff;
@@ -186,12 +186,11 @@
         transition: all 0.3s ease;
         display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
+   
      
     }
     .btn-primary:hover {
         background-color: var(--secondary-color);
-    border: none;
         transform: translateY(-3px);
          
     }
@@ -227,7 +226,7 @@
 
     .sidebar {
         background: var(--sidebar-background); 
-        box-shadow: var(--card-shadow);
+        box-shadow:0 2px 0 var(--secondary-color);
         border-radius: 1.25rem;
         padding: 2.5rem;
         margin-bottom: 2.5rem;
@@ -266,8 +265,8 @@
         border: 1px solid var(--border-color); 
     }
     .vc-tags-menu li a:hover {
-        background-color: var(--vc-tags-menu-item-hover-bg); /* Themed tag menu item hover background */
-        color: var(--text-color); /* Themed text color on hover */
+        background-color: var(--vc-tags-menu-item-hover-bg);
+        color: var(--text-color);
         transform: translateY(-2px);
     }
 
@@ -285,7 +284,7 @@
         align-items: center;
         gap: 0.8rem;
         text-decoration: none;
-        color: var(--text-color); /* Themed new posts link color */
+        color: var(--text-color); 
         transition: color 0.3s ease;
     }
     .vc-new-posts li a:hover {
@@ -519,15 +518,15 @@
                     <div class="pagination">
                         @if (Model.CurrentPage > 1)
                         {
-                            <a href="@(string.IsNullOrEmpty(Model.Tag) ? $"/post?page={Model.CurrentPage - 1}" : $"/posts/tag/{Model.Tag}?page={Model.CurrentPage - 1}")">«</a>
+                            <a href="@(string.IsNullOrEmpty(Model.Tag) ? $"/posts?page={Model.CurrentPage - 1}" : $"/posts/tag/{Model.Tag}?page={Model.CurrentPage - 1}")">«</a>
                         }
                         @for (int i = 1; i <= Model.TotalPages; i++)
                         {
-                            <a href="@(string.IsNullOrEmpty(Model.Tag) ? $"/post?page={i}" : $"/posts/tag/{Model.Tag}?page={i}")" class="@(i == Model.CurrentPage ? "active" : "")">@i</a>
+                            <a href="@(string.IsNullOrEmpty(Model.Tag) ? $"/posts?page={i}" : $"/posts/tag/{Model.Tag}?page={i}")" class="@(i == Model.CurrentPage ? "active" : "")">@i</a>
                         }
                         @if (Model.CurrentPage < Model.TotalPages)
                         {
-                            <a href="@(string.IsNullOrEmpty(Model.Tag) ? $"/post?page={Model.CurrentPage + 1}" : $"/posts/tag/{Model.Tag}?page={Model.CurrentPage + 1}")">»</a>
+                            <a href="@(string.IsNullOrEmpty(Model.Tag) ? $"/posts?page={Model.CurrentPage + 1}" : $"/posts/tag/{Model.Tag}?page={Model.CurrentPage + 1}")">»</a>
                         }
                     </div>
                 }

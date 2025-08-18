@@ -1,23 +1,18 @@
 @model List<Post>
 
 <style>
-    /* Styling for the New Posts component */
     .vc-new-posts-card {
         background-color: transparent;
-        /* Sidebar already has background, make this transparent */
         border: none;
-        /* No border needed as it's inside sidebar */
+
     }
 
     .vc-new-posts-title {
         font-family: 'Roboto', sans-serif;
         font-size: 1.5rem;
-        /* Consistent with sidebar h4 */
         font-weight: 700;
         color: var(--sidebar-title-color);
-        /* Use theme variable for title */
         margin-bottom: 1.8rem;
-        /* Consistent spacing */
     }
 
     .vc-new-posts-list {
@@ -29,14 +24,11 @@
     .vc-new-posts-item {
         margin-bottom: 1.2rem;
         transition: background-color 0.2s ease;
-        /* Add transition for hover effect */
         border-radius: 0.5rem;
-        /* Small rounded corners for hover */
     }
 
     .vc-new-posts-item:last-child {
         margin-bottom: 0;
-        /* Remove margin for the last item */
     }
 
     .vc-new-posts-link {
@@ -45,17 +37,13 @@
         gap: 0.8rem;
         text-decoration: none;
         color: var(--text-color);
-        /* Main text color for link */
         padding: 0.5rem;
-        /* Add padding for clickable area */
         transition: color 0.3s ease, background-color 0.3s ease;
     }
 
     .vc-new-posts-link:hover {
         color: var(--primary-color);
-        /* Primary color on hover */
         background-color: var(--hover-background);
-        /* Lighter background on hover */
     }
 
     .vc-new-posts-img {
@@ -66,7 +54,6 @@
         flex-shrink: 0;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         border: 1px solid var(--border-color);
-        /* Theme border */
     }
 
     .vc-new-posts-details {
@@ -78,13 +65,11 @@
         font-weight: 600;
         line-height: 1.4;
         color: var(--text-color);
-        /* Title color */
     }
 
     .vc-new-posts-post-date {
         font-size: 0.85rem;
         color: var(--text-secondary-color);
-        /* Muted text color for date */
     }
 
     .vc-no-posts-found {

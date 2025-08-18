@@ -10,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 builder.Services.AddControllersWithViews();
 builder.Services.AddSession(options =>
 {
@@ -31,7 +30,6 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
     options.Password.RequireDigit = false;
     options.User.RequireUniqueEmail = true;
     options.SignIn.RequireConfirmedAccount = true;
-
 })
 .AddEntityFrameworkStores<BlogContext>()
 .AddDefaultUI()
@@ -45,9 +43,7 @@ builder.Services.AddScoped<ITagRepository, EfTagRepository>();
 builder.Services.AddScoped<ICommentRepository, EfCommentRepository>();
 builder.Services.AddScoped<IUserRepository, EfUserRepository>();
 builder.Services.AddScoped<INotificationService, EfNotificationService>();
-
 builder.Services.AddScoped<IEmailSender, EmailSender>();
-
 
 var app = builder.Build();
 
@@ -72,11 +68,6 @@ app.MapControllerRoute(
     defaults: new { controller = "Post", action = "Details" }
 );
 app.MapControllerRoute(
-    name: "post_edit",
-    pattern: "post/edit/{url}",
-    defaults: new { controller = "Post", action = "Edit" }
-);
-app.MapControllerRoute(
     name: "post_by_tag",
     pattern: "posts/tag/{url}",
     defaults: new { controller = "Post", action = "Index" }
@@ -98,11 +89,10 @@ app.MapControllerRoute(
 );
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Post}/{action=Index}/{id?}"
+    pattern: "{controller=Posts}/{action=Index}/{id?}"
 );
 
 app.Run();
-
 
 static async Task SeedDatabaseAsync(IApplicationBuilder app)
 {
@@ -115,7 +105,7 @@ static async Task SeedDatabaseAsync(IApplicationBuilder app)
     catch (Exception ex)
     {
         var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred during database seeding.");
+        logger.LogError(ex, "Veritabanı seed işlemi sırasında hata oluştu.");
     }
 }
 

@@ -287,7 +287,7 @@
 <div class="container my-5">
     <div class="header">
         <h1>Manage Posts</h1>
-        <a href="/post/create" class="btn btn-primary">Create New Post</a>
+        <a href="/posts/create" class="btn btn-primary">Create New Post</a>
     </div>
     <div class="filter-bar">
         <input type="text" id="searchInput" placeholder="Search posts..." value="@(ViewBag.Search ?? "")" />
@@ -319,7 +319,7 @@
                             }
                             else
                             {
-                                <a href="/post/edit/@item.Url" class="btn btn-sm btn-primary">Edit</a>
+                                <a href="/posts/edit/@item.Url" class="btn btn-sm btn-primary">Edit</a>
                             }
                             <button type="button" class="btn btn-sm btn-danger delete-btn" data-bs-toggle="modal"
                                 data-bs-target="#deleteModal" data-post-id="@item.PostId"
@@ -335,17 +335,17 @@
                 @if (Model.CurrentPage > 1)
                 {
                     <a
-                        href="/post/list?page=@(Model.CurrentPage - 1)@(string.IsNullOrEmpty(ViewBag.Search) ? "" : $"&search={ViewBag.Search}")@(string.IsNullOrEmpty(ViewBag.Status) ? "" : $"&status={ViewBag.Status}")">«</a>
+                        href="/posts/list?page=@(Model.CurrentPage - 1)@(string.IsNullOrEmpty(ViewBag.Search) ? "" : $"&search={ViewBag.Search}")@(string.IsNullOrEmpty(ViewBag.Status) ? "" : $"&status={ViewBag.Status}")">«</a>
                 }
                 @for (int i = 1; i <= Model.TotalPages; i++)
                 {
-                    <a href="/post/list?page=@i@(string.IsNullOrEmpty(ViewBag.Search) ? "" : $"&search={ViewBag.Search}")@(string.IsNullOrEmpty(ViewBag.Status) ? "" : $"&status={ViewBag.Status}")"
+                    <a href="/posts/list?page=@i@(string.IsNullOrEmpty(ViewBag.Search) ? "" : $"&search={ViewBag.Search}")@(string.IsNullOrEmpty(ViewBag.Status) ? "" : $"&status={ViewBag.Status}")"
                         class="@(i == Model.CurrentPage ? "active" : "")">@i</a>
                 }
                 @if (Model.CurrentPage < Model.TotalPages)
                 {
                     <a
-                        href="/post/list?page=@(Model.CurrentPage + 1)@(string.IsNullOrEmpty(ViewBag.Search) ? "" : $"&search={ViewBag.Search}")@(string.IsNullOrEmpty(ViewBag.Status) ? "" : $"&status={ViewBag.Status}")">»</a>
+                        href="/posts/list?page=@(Model.CurrentPage + 1)@(string.IsNullOrEmpty(ViewBag.Search) ? "" : $"&search={ViewBag.Search}")@(string.IsNullOrEmpty(ViewBag.Status) ? "" : $"&status={ViewBag.Status}")">»</a>
                 }
             </div>
         }
@@ -400,7 +400,7 @@
             function applyFilters() {
                 const search = searchInput.value;
                 const status = statusFilter.value;
-                window.location.href = `/post/list?search=${encodeURIComponent(search)}&status=${status}`;
+                window.location.href = `/posts/list?search=${encodeURIComponent(search)}&status=${status}`;
             }
 
             searchInput.addEventListener('input', function () {
@@ -434,7 +434,7 @@
                 }
                 const token = tokenInput.value;
 
-                fetch('/post/delete', {
+                fetch('/posts/delete', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

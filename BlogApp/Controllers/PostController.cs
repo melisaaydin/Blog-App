@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BlogApp.Controllers
 {
+    [Route("posts")]
     public class PostController : Controller
     {
         private readonly IPostRepository _postRepository;
@@ -24,12 +25,15 @@ namespace BlogApp.Controllers
         private readonly UserManager<User> _userManager;
         private readonly INotificationService _notificationService;
         private readonly BlogContext _context;
+
         public PostController(
             IPostRepository postRepository,
             ICommentRepository commentRepository,
             ITagRepository tagRepository,
             ILogger<PostController> logger,
-            UserManager<User> userManager, INotificationService notificationService, BlogContext context)
+            UserManager<User> userManager,
+            INotificationService notificationService,
+            BlogContext context)
         {
             _postRepository = postRepository;
             _commentRepository = commentRepository;
@@ -40,8 +44,10 @@ namespace BlogApp.Controllers
             _context = context;
         }
 
-        // GET: /post or /posts/tag/{tag}
-        public async Task<IActionResult> Index(string? tag, int page = 1)
+        // GET: /posts veya /posts/tag/{url}
+        [HttpGet("")]
+        [HttpGet("tag/{url}")]
+        public async Task<IActionResult> Index(string? url, int page = 1)
         {
             const int postsPerPage = 4;
             var postsQuery = _postRepository.Posts
@@ -50,9 +56,10 @@ namespace BlogApp.Controllers
                 .Where(p => p.IsActive)
                 .AsQueryable();
 
-            if (!string.IsNullOrEmpty(tag))
+            if (!string.IsNullOrEmpty(url))
             {
-                postsQuery = postsQuery.Where(p => p.Tags != null && p.Tags.Any(t => t.Url == tag));
+                postsQuery = postsQuery
+                        .Where(p => p.Tags.Any(t => t.Url == url));
             }
 
             int totalPosts = await postsQuery.CountAsync();
@@ -65,23 +72,24 @@ namespace BlogApp.Controllers
             var model = new PostsViewModel
             {
                 Posts = posts,
-                Tag = tag,
+                Tag = url,
                 CurrentPage = page,
                 TotalPages = (int)Math.Ceiling((double)totalPosts / postsPerPage)
             };
 
-            ViewBag.MetaDescription = string.IsNullOrEmpty(tag)
-                ? "Discover the latest posts on technology, lifestyle, and more at MyBlog."
-                : $"Explore posts tagged '{tag}' at MyBlog.";
-            ViewBag.CanonicalUrl = string.IsNullOrEmpty(tag)
-                ? $"/post?page={page}"
-                : $"/posts/tag/{tag}?page={page}";
+            ViewBag.MetaDescription = string.IsNullOrEmpty(url)
+                ? "Teknoloji, yaşam tarzı ve daha fazlası hakkında en son yazıları MyBlog'da keşfedin."
+                : $"'{url}' etiketli yazıları MyBlog'da keşfedin.";
+            ViewBag.CanonicalUrl = string.IsNullOrEmpty(url)
+                ? $"/posts?page={page}"
+                : $"/posts/tag/{url}?page={page}";
 
-            _logger.LogInformation($"Index action loaded. Total posts: {totalPosts}, Page: {page}, Tag: {tag}");
+            _logger.LogInformation($"Index action yüklendi. Toplam yazı: {totalPosts}, Sayfa: {page}, Etiket: {url}");
             return View(model);
         }
 
         // GET: /posts/details/{url}
+        [HttpGet("details/{url}")]
         public async Task<IActionResult> Details(string? url)
         {
             if (string.IsNullOrEmpty(url))
@@ -104,16 +112,15 @@ namespace BlogApp.Controllers
             {
                 return NotFound();
             }
+
             var sessionKey = $"viewed_post_{post.PostId}";
             if (HttpContext.Session.GetString(sessionKey) == null)
             {
-
                 post.ViewCount++;
                 await _postRepository.UpdatePost(post);
                 HttpContext.Session.SetString(sessionKey, "true");
             }
-            await _postRepository.UpdatePost(post);
-            // Set default avatar for users without images
+
             if (post.User != null)
             {
                 post.User.Image ??= "default-avatar.jpg";
@@ -131,38 +138,40 @@ namespace BlogApp.Controllers
 
             return View(post);
         }
-        [HttpPost]
+
+        // POST: /posts/addreply
+        [HttpPost("addreply")]
         [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> AddReply(int PostId, int ParentCommentId, string Text)
         {
             if (string.IsNullOrWhiteSpace(Text))
             {
-                return Json(new { success = false, message = "Reply text cannot be empty." });
+                return Json(new { success = false, message = "Yanıt metni boş olamaz." });
             }
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))
             {
-                return Json(new { success = false, message = "User not authenticated." });
+                return Json(new { success = false, message = "Kullanıcı doğrulanamadı." });
             }
 
             var currentUser = await _userManager.FindByIdAsync(userId);
             if (currentUser == null)
             {
-                return Json(new { success = false, message = "User not found." });
+                return Json(new { success = false, message = "Kullanıcı bulunamadı." });
             }
 
             var post = await _postRepository.Posts.FirstOrDefaultAsync(p => p.PostId == PostId && p.IsActive);
             if (post == null)
             {
-                return Json(new { success = false, message = "Post not found." });
+                return Json(new { success = false, message = "Yazı bulunamadı." });
             }
 
             var parentComment = await _commentRepository.GetCommentById(ParentCommentId);
             if (parentComment == null)
             {
-                return Json(new { success = false, message = "Parent comment not found." });
+                return Json(new { success = false, message = "Ana yorum bulunamadı." });
             }
 
             var reply = new Comment
@@ -178,7 +187,7 @@ namespace BlogApp.Controllers
 
             if (parentComment.UserId != userId)
             {
-                var message = $"{currentUser.Name ?? currentUser.UserName} replied to your comment on post: \"{post.Title}\"";
+                var message = $"{currentUser.Name ?? currentUser.UserName}, \"{post.Title}\" yazınızdaki yorumunuza yanıt verdi.";
                 var link = $"/posts/details/{post.Url}#comment-{ParentCommentId}";
                 await _notificationService.CreateNotificationAsync(parentComment.UserId, message, link);
             }
@@ -194,8 +203,9 @@ namespace BlogApp.Controllers
                 avatar = currentUser.Image ?? "default-avatar.jpg"
             });
         }
-        // POST: /Post/AddComment
-        [HttpPost]
+
+        // POST: /posts/addcomment
+        [HttpPost("addcomment")]
         [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> AddComment(int PostId, string? Text)
@@ -203,18 +213,19 @@ namespace BlogApp.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(Text))
             {
-                return Json(new { success = false, message = "Comment text cannot be empty or user not authenticated." });
+                return Json(new { success = false, message = "Yorum metni boş olamaz veya kullanıcı doğrulanamadı." });
             }
 
             var currentUser = await _userManager.FindByIdAsync(userId);
             if (currentUser == null)
             {
-                return Json(new { success = false, message = "User not found." });
+                return Json(new { success = false, message = "Kullanıcı bulunamadı." });
             }
+
             var post = await _postRepository.Posts.FirstOrDefaultAsync(p => p.PostId == PostId);
             if (post == null)
             {
-                return Json(new { success = false, message = "Post not found." });
+                return Json(new { success = false, message = "Yazı bulunamadı." });
             }
 
             var comment = new Comment
@@ -225,12 +236,14 @@ namespace BlogApp.Controllers
                 UserId = userId
             };
             await _commentRepository.CreateComment(comment);
+
             if (post.UserId != userId)
             {
-                var message = $"{currentUser.Name ?? currentUser.UserName} commented on your post: \"{post.Title}\"";
+                var message = $"{currentUser.Name ?? currentUser.UserName}, \"{post.Title}\" yazınıza yorum yaptı.";
                 var link = $"/posts/details/{post.Url}";
                 await _notificationService.CreateNotificationAsync(post.UserId, message, link);
             }
+
             return Json(new
             {
                 success = true,
@@ -242,21 +255,21 @@ namespace BlogApp.Controllers
             });
         }
 
-        // GET: /post/create
+        // GET: /posts/create
+        [HttpGet("create")]
         [Authorize]
         public async Task<IActionResult> Create()
         {
             var tags = await _tagRepository.Tags.ToListAsync();
             ViewBag.Tags = tags ?? new List<Tag>();
-            _logger.LogInformation($"Create view loaded. Tags count: {(tags?.Count ?? 0)}");
+            _logger.LogInformation($"Create görünümü yüklendi. Etiket sayısı: {(tags?.Count ?? 0)}");
             return View(new PostCreateViewModel());
         }
 
-        // POST: /post/create
+        // POST: /posts/create
+        [HttpPost("create")]
         [Authorize]
-        [HttpPost]
         [ValidateAntiForgeryToken]
-        [HttpPost]
         public async Task<IActionResult> Create(PostCreateViewModel model, IFormFile? imageFile)
         {
             if (!ModelState.IsValid)
@@ -282,7 +295,7 @@ namespace BlogApp.Controllers
                 var extension = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
                 if (!allowedExtensions.Contains(extension))
                 {
-                    ModelState.AddModelError("", "Invalid image format. Only JPG, JPEG, and PNG are allowed.");
+                    ModelState.AddModelError("", "Geçersiz resim formatı. Yalnızca JPG, JPEG ve PNG desteklenir.");
                     ViewBag.Tags = await _tagRepository.Tags.ToListAsync();
                     return View(model);
                 }
@@ -297,36 +310,34 @@ namespace BlogApp.Controllers
                 newPost.Image = randomFileName;
             }
 
-
             var selectedTagIds = model.SelectedTagIds?.Select(int.Parse).ToArray() ?? Array.Empty<int>();
-
             await _postRepository.CreatePost(newPost, selectedTagIds);
 
             var admins = await _userManager.GetUsersInRoleAsync("Admin");
             var postCreator = await _userManager.FindByIdAsync(newPost.UserId);
             foreach (var admin in admins)
             {
-                if (admin.Id == newPost.UserId)
+                if (admin.Id != newPost.UserId)
                 {
-                    var message = $"{postCreator?.Name ?? "A user"} created a new post: \"{newPost.Title}\"";
-                    var link = "/post/list";
+                    var message = $"{postCreator?.Name ?? "Bir kullanıcı"}, \"{newPost.Title}\" başlıklı yeni bir yazı oluşturdu.";
+                    var link = "/posts/list";
                     await _notificationService.CreateNotificationAsync(admin.Id, message, link);
                 }
             }
 
-            TempData["message"] = "Post has been created successfully.";
-
-            return RedirectToAction("List", "Post");
+            TempData["message"] = "Yazı başarıyla oluşturuldu.";
+            return RedirectToAction("List");
         }
 
-        // GET: /post/list
+        // GET: /posts/list
+        [HttpGet("list")]
         [Authorize]
         public async Task<IActionResult> List(string? search, string? status, int page = 1)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))
             {
-                _logger.LogWarning("List action failed: UserId is null or invalid.");
+                _logger.LogWarning("List action başarısız: Kullanıcı ID'si null veya geçersiz.");
                 return Unauthorized();
             }
 
@@ -361,7 +372,6 @@ namespace BlogApp.Controllers
                 .Take(postsPerPage)
                 .ToListAsync();
 
-            // Set default avatar for users without images
             foreach (var post in posts)
             {
                 if (post.User != null)
@@ -380,17 +390,18 @@ namespace BlogApp.Controllers
             ViewBag.Search = search;
             ViewBag.Status = status;
 
-            _logger.LogInformation($"List action loaded for UserId: {userId}, Search: {search}, Status: {status}, Total posts: {totalPosts}");
+            _logger.LogInformation($"List action yüklendi. Kullanıcı ID: {userId}, Arama: {search}, Durum: {status}, Toplam yazı: {totalPosts}");
             return View(model);
         }
 
-        // GET: /post/edit/{url}
+        // GET: /posts/edit/{url}
+        [HttpGet("edit/{url}")]
         [Authorize]
         public async Task<IActionResult> Edit(string? url)
         {
             if (string.IsNullOrEmpty(url))
             {
-                _logger.LogWarning("Edit GET action failed: URL is null or empty.");
+                _logger.LogWarning("Edit GET action başarısız: URL null veya boş.");
                 return NotFound();
             }
 
@@ -401,18 +412,17 @@ namespace BlogApp.Controllers
 
             if (post == null)
             {
-                _logger.LogWarning($"Post not found for URL: {url}");
+                _logger.LogWarning($"Yazı bulunamadı. URL: {url}");
                 return NotFound();
             }
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId) || (post.UserId != userId && !User.IsInRole("Admin")))
             {
-                _logger.LogWarning($"Unauthorized access to edit post with URL: {url} by UserId: {userId}");
+                _logger.LogWarning($"Yetkisiz erişim: URL: {url}, Kullanıcı ID: {userId}");
                 return Unauthorized();
             }
 
-            // Set default avatar if user image is not set
             if (post.User != null)
             {
                 post.User.Image ??= "default-avatar-icon.jpg";
@@ -432,13 +442,13 @@ namespace BlogApp.Controllers
                 SelectedTagIds = post.Tags?.Select(t => t.TagId.ToString()).ToArray() ?? Array.Empty<string>()
             };
 
-            _logger.LogInformation($"Edit view loaded for Post URL: {url}, PostId: {post.PostId}, UserId: {userId}, SelectedTagIds: {string.Join(",", model.SelectedTagIds)}, Tags count: {(tags?.Count ?? 0)}");
+            _logger.LogInformation($"Edit görünümü yüklendi. Yazı URL: {url}, Yazı ID: {post.PostId}, Kullanıcı ID: {userId}, Seçili Etiketler: {string.Join(",", model.SelectedTagIds)}, Etiket sayısı: {(tags?.Count ?? 0)}");
             return View(model);
         }
 
-        // POST: /post/edit
+        // POST: /posts/edit
+        [HttpPost("edit")]
         [Authorize]
-        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(PostCreateViewModel model, IFormFile? imageFile)
         {
@@ -467,7 +477,7 @@ namespace BlogApp.Controllers
                 var extension = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
                 if (!allowedExtensions.Contains(extension))
                 {
-                    ModelState.AddModelError("", "Invalid image format. Only JPG, JPEG, and PNG are allowed.");
+                    ModelState.AddModelError("", "Geçersiz resim formatı. Yalnızca JPG, JPEG ve PNG desteklenir.");
                     ViewBag.Tags = await _tagRepository.Tags.ToListAsync();
                     return View(model);
                 }
@@ -483,34 +493,33 @@ namespace BlogApp.Controllers
             }
 
             var selectedTagIds = model.SelectedTagIds?.Select(int.Parse).ToArray() ?? Array.Empty<int>();
-
             await _postRepository.EditPost(entityToUpdate, selectedTagIds);
 
-            return RedirectToAction("List", "Post");
+            return RedirectToAction("List");
         }
 
+        // POST: /posts/uploadimage
+        [HttpPost("uploadimage")]
         [Authorize]
-        [HttpPost]
-        [Route("post/uploadimage")]
         public async Task<IActionResult> UploadImage(IFormFile? file)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))
             {
-                _logger.LogWarning("UploadImage action failed: User is not authenticated.");
-                return Json(new { success = false, message = "User could not be authenticated." });
+                _logger.LogWarning("UploadImage action başarısız: Kullanıcı doğrulanamadı.");
+                return Json(new { success = false, message = "Kullanıcı doğrulanamadı." });
             }
 
             if (file == null || file.Length == 0)
             {
-                _logger.LogWarning("UploadImage action failed: No file uploaded.");
-                return Json(new { success = false, message = "No file uploaded." });
+                _logger.LogWarning("UploadImage action başarısız: Dosya yüklenmedi.");
+                return Json(new { success = false, message = "Dosya yüklenmedi." });
             }
 
             if (!IsValidImage(file))
             {
-                _logger.LogWarning("UploadImage action failed: Invalid image format.");
-                return Json(new { success = false, message = "Invalid image format. Only PNG, JPG, JPEG, and GIF are allowed." });
+                _logger.LogWarning("UploadImage action başarısız: Geçersiz resim formatı.");
+                return Json(new { success = false, message = "Geçersiz resim formatı. Yalnızca PNG, JPG, JPEG ve GIF desteklenir." });
             }
 
             try
@@ -518,36 +527,36 @@ namespace BlogApp.Controllers
                 var imageName = await SaveImageAsync(file, userId);
                 if (imageName == null)
                 {
-                    _logger.LogError("UploadImage action failed: Image saving returned null.");
-                    return Json(new { success = false, message = "An error occurred while uploading the image." });
+                    _logger.LogError("UploadImage action başarısız: Resim kaydedilemedi.");
+                    return Json(new { success = false, message = "Resim yüklenirken hata oluştu." });
                 }
-                _logger.LogInformation($"Image uploaded successfully by UserId: {userId}, Image: {imageName}");
+                _logger.LogInformation($"Resim başarıyla yüklendi. Kullanıcı ID: {userId}, Resim: {imageName}");
                 return Json(new { success = true, location = $"/img/{imageName}" });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to upload image by UserId: {userId}");
-                return Json(new { success = false, message = $"An error occurred while uploading the image: {ex.Message}" });
+                _logger.LogError(ex, $"Resim yükleme başarısız. Kullanıcı ID: {userId}");
+                return Json(new { success = false, message = $"Resim yüklenirken hata oluştu: {ex.Message}" });
             }
         }
 
-        // POST: /post/delete
+        // POST: /posts/delete
+        [HttpPost("delete")]
         [Authorize]
-        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete([FromBody] DeletePostRequest? request)
         {
             if (request == null || request.Id <= 0)
             {
-                _logger.LogWarning("Delete action failed: Invalid post ID.");
-                return Json(new { success = false, message = "Invalid post ID." });
+                _logger.LogWarning("Delete action başarısız: Geçersiz yazı ID'si.");
+                return Json(new { success = false, message = "Geçersiz yazı ID'si." });
             }
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))
             {
-                _logger.LogWarning("Delete action failed: UserId is null or invalid.");
-                return Json(new { success = false, message = "User could not be authenticated." });
+                _logger.LogWarning("Delete action başarısız: Kullanıcı ID'si null veya geçersiz.");
+                return Json(new { success = false, message = "Kullanıcı doğrulanamadı." });
             }
 
             var post = await _postRepository.Posts
@@ -556,27 +565,70 @@ namespace BlogApp.Controllers
 
             if (post == null)
             {
-                _logger.LogWarning($"Delete action failed: Post not found or unauthorized for PostId: {request.Id}, UserId: {userId}");
-                return Json(new { success = false, message = "Post not found or you do not have permission to delete it." });
+                _logger.LogWarning($"Delete action başarısız: Yazı bulunamadı veya yetkisiz. Yazı ID: {request.Id}, Kullanıcı ID: {userId}");
+                return Json(new { success = false, message = "Yazı bulunamadı veya silme izniniz yok." });
             }
 
             try
             {
-                // Delete associated image if it exists and is not default
                 if (!string.IsNullOrEmpty(post.Image) && post.Image != "default.jpg")
                 {
                     await DeleteImageAsync(post.Image, userId);
                 }
 
                 await _postRepository.DeletePost(request.Id);
-                _logger.LogInformation($"Post {request.Id} deleted by UserId: {userId}");
-                return Json(new { success = true, message = "Post deleted successfully." });
+                _logger.LogInformation($"Yazı {request.Id} silindi. Kullanıcı ID: {userId}");
+                return Json(new { success = true, message = "Yazı başarıyla silindi." });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to delete Post {request.Id} by UserId: {userId}");
-                return Json(new { success = false, message = "An error occurred while deleting the post." });
+                _logger.LogError(ex, $"Yazı silme başarısız. Yazı ID: {request.Id}, Kullanıcı ID: {userId}");
+                return Json(new { success = false, message = "Yazı silinirken hata oluştu." });
             }
+        }
+
+        // POST: /posts/togglelike
+        [HttpPost("togglelike")]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleLike(int postId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Json(new { success = false, message = "Kullanıcı bulunamadı." });
+            }
+
+            var existingLike = await _context.Likes
+                .FirstOrDefaultAsync(l => l.PostId == postId && l.UserId == userId);
+
+            bool isLiked;
+
+            if (existingLike != null)
+            {
+                _context.Likes.Remove(existingLike);
+                isLiked = false;
+            }
+            else
+            {
+                var newLike = new Like { PostId = postId, UserId = userId };
+                _context.Likes.Add(newLike);
+                isLiked = true;
+
+                var post = await _context.Posts.FindAsync(postId);
+                if (post != null && post.UserId != userId)
+                {
+                    var currentUser = await _userManager.FindByIdAsync(userId);
+                    var message = $"{currentUser?.Name ?? "Biri"}, \"{post.Title}\" yazınızı beğendi.";
+                    var link = $"/posts/details/{post.Url}";
+                    await _notificationService.CreateNotificationAsync(post.UserId, message, link);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            var likeCount = await _context.Likes.CountAsync(l => l.PostId == postId);
+
+            return Json(new { success = true, isLiked, likeCount });
         }
 
         private bool IsValidImage(IFormFile file)
@@ -605,12 +657,12 @@ namespace BlogApp.Controllers
                 {
                     await file.CopyToAsync(stream);
                 }
-                _logger.LogInformation($"Image saved: {newFileName} by UserId: {userId}");
+                _logger.LogInformation($"Resim kaydedildi: {newFileName}, Kullanıcı ID: {userId}");
                 return newFileName;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to save image for UserId: {userId}");
+                _logger.LogError(ex, $"Resim kaydetme başarısız. Kullanıcı ID: {userId}");
                 return null;
             }
         }
@@ -623,59 +675,18 @@ namespace BlogApp.Controllers
                 if (System.IO.File.Exists(imagePath))
                 {
                     await Task.Run(() => System.IO.File.Delete(imagePath));
-                    _logger.LogInformation($"Image deleted: {imageName} by UserId: {userId}");
+                    _logger.LogInformation($"Resim silindi: {imageName}, Kullanıcı ID: {userId}");
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, $"Failed to delete image: {imageName} by UserId: {userId}");
+                _logger.LogWarning(ex, $"Resim silme başarısız: {imageName}, Kullanıcı ID: {userId}");
             }
         }
 
         public class DeletePostRequest
         {
             public int Id { get; set; }
-        }
-        [HttpPost]
-        [Authorize]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ToggleLike(int postId)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userId))
-            {
-                return Json(new { success = false, message = "User not found." });
-            }
-            var existingLike = await _context.Likes
-                .FirstOrDefaultAsync(l => l.PostId == postId && l.UserId == userId);
-
-            bool isLiked;
-
-            if (existingLike != null)
-            {
-                _context.Likes.Remove(existingLike);
-                isLiked = false;
-            }
-            else
-            {
-                var newLike = new Like { PostId = postId, UserId = userId };
-                _context.Likes.Add(newLike);
-                isLiked = true;
-
-                var post = await _context.Posts.FindAsync(postId);
-                if (post != null && post.UserId != userId)
-                {
-                    var currentUser = await _userManager.FindByIdAsync(userId);
-                    var message = $"{currentUser?.Name ?? "Someone"} liked your post: \"{post.Title}\"";
-                    var link = $"/posts/details/{post.Url}";
-                    await _notificationService.CreateNotificationAsync(post.UserId, message, link);
-                }
-            }
-
-            await _context.SaveChangesAsync();
-            var likeCount = await _context.Likes.CountAsync(l => l.PostId == postId);
-
-            return Json(new { success = true, isLiked, likeCount });
         }
     }
 }
