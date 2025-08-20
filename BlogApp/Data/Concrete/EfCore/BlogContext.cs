@@ -15,6 +15,7 @@ namespace BlogApp.Data.Concrete.EfCore
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Like> Likes { get; set; }
         public DbSet<Message> Messages { get; set; }
+        public DbSet<Collection> Collections { get; set; }
         public BlogContext(DbContextOptions<BlogContext> options) : base(options)
         {
         }
@@ -71,7 +72,18 @@ namespace BlogApp.Data.Concrete.EfCore
         "PostTag",
         pt => pt.HasOne<Tag>().WithMany().HasForeignKey("TagId"),
         pt => pt.HasOne<Post>().WithMany().HasForeignKey("PostId"));
-
+            modelBuilder.Entity<Post>()
+                    .HasMany(p => p.Collections)
+                    .WithMany(c => c.Posts)
+                    .UsingEntity<Dictionary<string, object>>(
+                        "PostCollections",
+                        j => j.HasOne<Collection>().WithMany().HasForeignKey("CollectionId"),
+                        j => j.HasOne<Post>().WithMany().HasForeignKey("PostId"),
+                        j =>
+                        {
+                            j.HasKey("PostId", "CollectionId");
+                            j.ToTable("PostCollections");
+                        });
 
             modelBuilder.Entity<Post>()
                 .HasOne(p => p.User)

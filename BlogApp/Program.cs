@@ -17,6 +17,11 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+builder.Services.AddLogging(logging =>
+{
+    logging.AddConsole();
+    logging.AddDebug();
+});
 builder.Services.AddDbContext<BlogContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("sql_connection");
@@ -34,16 +39,21 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 .AddEntityFrameworkStores<BlogContext>()
 .AddDefaultUI()
 .AddDefaultTokenProviders();
+
 builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
 {
     options.TokenLifespan = TimeSpan.FromHours(3);
 });
+
+builder.Services.AddAntiforgery();
+
 builder.Services.AddScoped<IPostRepository, EfPostRepository>();
 builder.Services.AddScoped<ITagRepository, EfTagRepository>();
 builder.Services.AddScoped<ICommentRepository, EfCommentRepository>();
 builder.Services.AddScoped<IUserRepository, EfUserRepository>();
 builder.Services.AddScoped<INotificationService, EfNotificationService>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
+builder.Services.AddScoped<ICollectionRepository, EfCollectionRepository>();
 
 var app = builder.Build();
 
@@ -59,8 +69,14 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseSession();
 app.UseWebSockets();
+app.UseAntiforgery();
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}"
+);
 
 app.MapControllerRoute(
     name: "post_details",
@@ -88,9 +104,18 @@ app.MapControllerRoute(
     defaults: new { controller = "Message", action = "Chat" }
 );
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Posts}/{action=Index}/{id?}"
+    name: "collection_details",
+    pattern: "collections/details/{id}",
+    defaults: new { controller = "Collection", action = "Details" }
 );
+
+app.MapGet("/", context =>
+{
+    context.Response.Redirect("/posts");
+    return Task.CompletedTask;
+});
+
+app.MapControllers();
 
 app.Run();
 

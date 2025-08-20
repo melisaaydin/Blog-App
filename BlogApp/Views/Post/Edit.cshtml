@@ -8,12 +8,7 @@
         color: var(--text-color);
     }
 
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
+    h1, h2, h3, h4, h5, h6 {
         font-family: 'Roboto', sans-serif;
         color: var(--text-color);
     }
@@ -101,13 +96,8 @@
     }
 
     @@keyframes spin {
-        0% {
-            transform: translate(-50%, -50%) rotate(0deg);
-        }
-
-        100% {
-            transform: translate(-50%, -50%) rotate(360deg);
-        }
+        0% { transform: translate(-50%, -50%) rotate(0deg); }
+        100% { transform: translate(-50%, -50%) rotate(360deg); }
     }
 
     .text-danger {
@@ -228,132 +218,130 @@
         margin-left: 1rem;
     }
 </style>
-<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-<div class="container d-flex justify-content-center align-items-center py-5">
-        <div class="login-card">
-                <h1 class="text-center mb-5 fw-bold" style="color: var(--primary-color);">Edit Post</h1>
-                @if (!ViewData.ModelState.IsValid)
-                {
-                        <div class="alert alert-danger">
-                                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                                {
-                                        <p>@error.ErrorMessage</p>
-                                }
-                            </div>
-                }
-                <form asp-action="Edit" asp-controller="Post" method="post" enctype="multipart/form-data"
-            class="space-y-6" id="editPostForm">
-                        @Html.AntiForgeryToken()
-                        <div asp-validation-summary="All" class="text-danger text-center font-medium mb-4"></div>
-                        <input type="hidden" asp-for="PostId" id="PostId" />
-                        <div class="row">
-                                <div class="col-md-8">
-                                        <div class="mb-4">
-                                                <label for="Title" class="form-label">Post Title</label>
-                                                <input asp-for="Title" class="form-control" id="Title"
-                            placeholder="Enter the post title" title="Enter a concise and descriptive title" />
-                                                <span asp-validation-for="Title" class="text-danger"></span>
-                                            </div>
-                                        <div class="mb-4">
-                                                <label for="Description" class="form-label">Description</label>
-                                                <input asp-for="Description" class="form-control" id="Description"
-                            placeholder="Write a brief description" title="Provide a short summary of the post" />
-                                                <span asp-validation-for="Description" class="text-danger"></span>
-                                            </div>
-                                        <div class="mb-4">
-                                                <label for="Url" class="form-label">URL Slug</label>
-                                                <input asp-for="Url" class="form-control" id="Url"
-                            placeholder="Enter a unique URL slug (e.g., my-post)"
-                            title="Use a unique, SEO-friendly URL" />
-                                                <span asp-validation-for="Url" class="text-danger"></span>
-                                            </div>
-                                        <div class="mb-4">
-                                                <label for="Content" class="form-label">Content</label>
-                                                                        <div id="editor-container"
-                            style="height: 400px; border: 1px solid var(--border-color); border-radius: 0.75rem; transition: border-color 0.2s ease;">
-                        </div>
-                                                                        <textarea asp-for="Content" class="form-control"
-                            id="Content" style="display: none;"></textarea>
-                                                <span asp-validation-for="Content" class="text-danger"></span>
-                                            </div>
-                                        @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Admin"))
-                                        {
-                                                <div class="form-check mt-4">
-                                                        <input asp-for="IsActive" class="form-check-input" id="IsActive" />
-                                                        <label for="IsActive" class="form-check-label">Publish Post</label>
-                                                    </div>
-                                        }
-                                    </div>
-                                <div class="col-md-4">
-                                        <div class="tag-section">
-                                                <h3 class="section-title">Tags</h3>
-                                                @if (ViewBag.Tags is List<BlogApp.Entity.Tag> tags && tags.Any())
-                                                {
-                                                        @foreach (var tag in tags)
-                                                        {
-                                                                <div class="form-check mb-2">
-                                                                        <input class="form-check-input" name="SelectedTagIds"
-                                        type="checkbox" value="@tag.TagId" id="tag_@tag.TagId"                                  
-                                                     @(Model?.SelectedTagIds?.Contains(tag.TagId.ToString()) == true ? "checked"
-                                                                                     : "") />
-                                                                        <label for="tag_@tag.TagId"
-                                        class="form-check-label">@tag.Text</label>
-                                                                    </div>
-                                                        }
-                                                }
-                                                else
-                                                {
-                                                        <p class="no-tags">No tags available.</p>
-                                                }
-                                            </div>
-                                        <div class="tag-section mt-4">
-                                                <h3 class="section-title">Featured Image</h3>
-                                                <div class="mb-4">
-                                                        <label for="imageFile" class="form-label">Select Image</label>
-                                                       
-                                                        <input type="file" name="imageFile" id="imageFile"
-                                class="form-control-hidden" accept="image/*" />
-                                                        <div class="custom-file-input-wrapper">
-                                                                <label for="imageFile" class="custom-file-label">Choose
-                                    File</label>
-                                                                <span id="fileNameDisplay" class="file-name-display">No
-                                    file chosen</span>
-                                                            </div>
 
-                                                        @if (!string.IsNullOrEmpty(Model?.Image))
-                                                        {
-                                                                <img id="imagePreview" class="preview-img"
-                                    src="/img/@Model.Image" alt="Image preview" />
-                                                        }
-                                                        else
-                                                        {
-                                                                <img id="imagePreview" class="preview-img"
-                                    alt="Image preview" style="display: none" />
-                                                        }
-                                                        <span class="text-danger" id="imageFileError"></span>
-                                                    </div>
-                                            </div>
-                                    </div>
-                            </div>
-                        <div class="d-grid">
-                                <button type="submit" class="btn btn-primary" id="saveButton">Save Post</button>
-                            </div>
-                    </form>
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+<div class="container d-flex justify-content-center align-items-center py-5">
+    <div class="login-card">
+        <h1 class="text-center mb-5 fw-bold" style="color: var(--primary-color);">Edit Post</h1>
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <p>@error.ErrorMessage</p>
+                }
             </div>
+        }
+      <form asp-action="Edit" asp-controller="Post" asp-route-url="@Model.Url" method="post" enctype="multipart/form-data" class="space-y-6" id="editPostForm">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="All" class="text-danger text-center font-medium mb-4"></div>
+            <input type="hidden" asp-for="PostId" id="PostId" />
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="mb-4">
+                        <label for="Title" class="form-label">Post Title</label>
+                        <input asp-for="Title" class="form-control" id="Title" placeholder="Enter the post title" title="Enter a concise and descriptive title" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                    <div class="mb-4">
+                        <label for="Description" class="form-label">Description</label>
+                        <input asp-for="Description" class="form-control" id="Description" placeholder="Write a brief description" title="Provide a short summary of the post" />
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <div class="mb-4">
+                        <label for="Url" class="form-label">URL Slug</label>
+                        <input asp-for="Url" class="form-control" id="Url" placeholder="Enter a unique URL slug (e.g., my-post)" title="Use a unique, SEO-friendly URL" />
+                        <span asp-validation-for="Url" class="text-danger"></span>
+                    </div>
+                    <div class="mb-4">
+                        <label for="Content" class="form-label">Content</label>
+                        <div id="editor-container" style="height: 400px; border: 1px solid var(--border-color); border-radius: 0.75rem; transition: border-color 0.2s ease;"></div>
+                        <textarea asp-for="Content" class="form-control" id="Content" style="display: none;"></textarea>
+                        <span asp-validation-for="Content" class="text-danger"></span>
+                    </div>
+                    @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Admin"))
+                    {
+                        <div class="form-check mt-4">
+                            <input asp-for="IsActive" class="form-check-input" id="IsActive" />
+                            <label for="IsActive" class="form-check-label">Publish Post</label>
+                        </div>
+                    }
+                </div>
+                <div class="col-md-4">
+                    <div class="tag-section">
+                        <h3 class="section-title">Tags</h3>
+                        @if (ViewBag.Tags is List<BlogApp.Entity.Tag> tags && tags.Any())
+                        {
+                            @foreach (var tag in tags)
+                            {
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" name="SelectedTagIds" type="checkbox" value="@tag.TagId" id="tag_@tag.TagId"
+                                           @(Model?.SelectedTagIds?.Contains(tag.TagId.ToString()) == true ? "checked" : "") />
+                                    <label for="tag_@tag.TagId" class="form-check-label">@tag.Text</label>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="no-tags">No tags available.</p>
+                        }
+                    </div>
+                    <div class="tag-section mt-4">
+                        <h3 class="section-title">Add to Collections</h3>
+                        @if (ViewBag.OpenCollections is List<BlogApp.Entity.Collection> collections && collections.Any())
+                        {
+                            @foreach (var coll in collections)
+                            {
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" name="SelectedCollectionIds" type="checkbox" value="@coll.Id" id="collection_@coll.Id"
+                                           @(Model?.SelectedCollectionIds?.Contains(coll.Id.ToString()) == true ? "checked" : "") />
+                                    <label for="collection_@coll.Id" class="form-check-label">@coll.Title</label>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="no-tags">No open collections available.</p>
+                        }
+                    </div>
+                    <div class="tag-section mt-4">
+                        <h3 class="section-title">Featured Image</h3>
+                        <div class="mb-4">
+                            <label for="imageFile" class="form-label">Select Image</label>
+                            <input type="file" name="imageFile" id="imageFile" class="form-control-hidden" accept="image/*" />
+                            <div class="custom-file-input-wrapper">
+                                <label for="imageFile" class="custom-file-label">Choose File</label>
+                                <span id="fileNameDisplay" class="file-name-display">
+                                    @(string.IsNullOrEmpty(Model?.Image) ? "No file chosen" : Model.Image)
+                                </span>
+                            </div>
+                            @if (!string.IsNullOrEmpty(Model?.Image))
+                            {
+                                <img id="imagePreview" class="preview-img" src="/img/@Model.Image" alt="Image preview" />
+                            }
+                            else
+                            {
+                                <img id="imagePreview" class="preview-img" alt="Image preview" style="display: none" />
+                            }
+                            <span class="text-danger" id="imageFileError"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary" id="saveButton">Save Post</button>
+            </div>
+        </form>
+    </div>
 </div>
+
 @section Scripts {
-   
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-   
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
-   
-    <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
-   
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
-   
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-   
     <script>
         $(document).ready(function () {
             var toolbarOptions = [
@@ -398,28 +386,21 @@
                 }
                 document.getElementById('Content').value = content;
 
+                const formData = new FormData(this);
+                for (let [key, value] of formData.entries()) {
+                    console.log(`${key}: ${value}`);
+                }
+
                 const saveButton = $("#saveButton");
                 saveButton.addClass("loading");
                 saveButton.prop("disabled", true);
                 saveButton.text("Saving...");
             });
 
-            $('input[name="SelectedTagIds"]').on("change", function () {
-                const selectedTags = $('input[name="SelectedTagIds"]:checked').map(function () {
-                    return this.value;
-                }).get();
-                console.log("Current Selected Tag IDs:", selectedTags);
-            });
-
             document.addEventListener('DOMContentLoaded', function () {
                 const imageFile = document.getElementById('imageFile');
                 const imagePreview = document.getElementById('imagePreview');
                 const fileNameDisplay = document.getElementById('fileNameDisplay');
-
-                const currentImage = '@Model.Image';
-                if (currentImage) {
-                    fileNameDisplay.textContent = currentImage;
-                }
 
                 imageFile.addEventListener('change', function () {
                     const file = this.files[0];
@@ -430,7 +411,7 @@
                             document.getElementById('imageFileError').textContent = 'Invalid image format. Only PNG, JPG, JPEG, and GIF are allowed.';
                             this.value = '';
                             document.getElementById('imagePreview').style.display = 'none';
-                            fileNameDisplay.textContent = 'No file chosen';
+                            fileNameDisplay.textContent = '@(string.IsNullOrEmpty(Model?.Image) ? "No file chosen" : Model.Image)';
                             return;
                         }
                         document.getElementById('imageFileError').textContent = '';
@@ -441,7 +422,7 @@
                         };
                         reader.readAsDataURL(file);
                     } else {
-                        fileNameDisplay.textContent = 'No file chosen';
+                        fileNameDisplay.textContent = '@(string.IsNullOrEmpty(Model?.Image) ? "No file chosen" : Model.Image)';
                         imagePreview.src = '@(Model != null && !string.IsNullOrEmpty(Model.Image) ? $"/img/{Model.Image}" : "")';
                         imagePreview.style.display = '@(Model != null && !string.IsNullOrEmpty(Model.Image) ? "block" : "none")';
                     }

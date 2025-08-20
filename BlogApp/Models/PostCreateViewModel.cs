@@ -22,5 +22,6 @@ namespace BlogApp.Models
         public bool IsActive { get; set; }
 
         public string[]? SelectedTagIds { get; set; }
+        public string[] SelectedCollectionIds { get; set; }
     }
 }
