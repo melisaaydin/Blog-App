@@ -5,177 +5,128 @@
 <img width="400" height="250" alt="image" src="https://github.com/user-attachments/assets/8a96e060-390c-466d-a6b8-490a4ad5746d" />
 <img width="400" height="250" alt="image" src="https://github.com/user-attachments/assets/73eb1cff-5d13-4957-aa33-3936787e16bc" />
 
-BlogApp
+📘 BlogApp
 📋 Proje Hakkında
 
-BlogApp, kullanıcıların makaleler oluşturup yayımlayabileceği, diğer kullanıcılarla etkileşimde bulunabileceği ve içeriklerini yönetebileceği tam özellikli bir blog platformudur. Uygulama, güçlü bir kullanıcı kimlik doğrulama, yetkilendirme ve yönetim sistemiyle birlikte gelir.
-
-
-
-
+BlogApp, kullanıcıların makale oluşturup yayımlayabileceği, diğer kullanıcılarla etkileşim kurabileceği ve içeriklerini yönetebileceği tam özellikli bir blog platformudur.
+Uygulama; güçlü kullanıcı kimlik doğrulama, yetkilendirme ve yönetim sistemine sahiptir. Modern arayüz, gelişmiş içerik yönetimi ve sosyal etkileşim özellikleriyle kullanıcı dostu bir deneyim sunar.
 
 ✨ Temel Özellikler
 
-Kullanıcı Yönetimi: Kullanıcılar, e-posta onayıyla hesap oluşturabilir, giriş yapabilir, şifrelerini sıfırlayabilir ve profillerini düzenleyebilirler. Profil resmi yükleme ve değiştirme gibi işlevler de mevcuttur.
+👤 Kullanıcı Yönetimi
 
+E-posta onayıyla hesap oluşturma ve giriş yapma
 
+Şifre sıfırlama ve profil düzenleme
 
+Profil resmi yükleme ve değiştirme
 
+📝 Makale (Post) İşlemleri
 
-Makale (Post) İşlemleri:
+Yeni makale oluşturma, düzenleme ve silme
 
-Kullanıcılar yeni makaleler oluşturabilir, düzenleyebilir ve silebilir.
+Makale modeli: Başlık, Açıklama, URL, İçerik
 
+Etiket desteği ile kategorilendirme
 
+Meta veriler: yazar bilgisi, tarih, görüntülenme sayısı
 
-Makaleler, başlık, açıklama, URL ve içerik gibi alanları içeren bir model kullanır.
+Gelişmiş zengin metin editörü (Quill.js) ile içerik girişi
 
+💬 Sosyal Etkileşimler
 
+Yorumlar: Makalelere yorum yapma ve yanıtlama (AJAX ile dinamik ekleme)
 
-Makaleler, ilgili oldukları konuları belirtmek için etiketlerle ilişkilendirilebilir.
+Beğeniler: Makaleleri beğenme ve beğeniyi geri çekme
 
+Takip: Kullanıcıları takip etme / takibi bırakma
 
-Makale sayfaları, yazar bilgisi, yayınlanma tarihi ve görüntülenme sayısı gibi meta verileri gösterir.
+Özel Mesajlaşma: Karşılıklı takipte olan kullanıcılar arasında
 
-Gelişmiş bir metin editörü (Quill.js) ile içerik girişi yapılır.
+📂 Koleksiyonlar
 
+Makalelerden özel koleksiyonlar oluşturma
 
-Sosyal Etkileşimler:
+Koleksiyonları herkese açık veya gizli yapabilme
 
+🔔 Bildirim Sistemi
 
-Yorumlar: Kullanıcılar makalelere yorum yapabilir ve yorumlara yanıt verebilir. Yorumlar AJAX kullanılarak dinamik olarak eklenir.
+Yorum, beğeni, takip gibi etkileşimler için bildirimler
 
+Okunmamış bildirim sayısı ve detaylı listeleme
 
+🛠️ Yönetim Paneli
 
+Yalnızca admin kullanıcılar erişebilir
 
+Kullanıcı listeleme ve rol düzenleme
 
-Beğeniler: Kullanıcılar makaleleri beğenip beğenilerini geri çekebilir.
-
-
-
-
-Takip Etme: Kullanıcılar diğer kullanıcıları takip edebilir veya takibi bırakabilir. Takip bilgileri kullanıcının profil sayfasında gösterilir.
-
-
-Özel Mesajlaşma: Karşılıklı takipte olan kullanıcılar birbirleriyle özel olarak mesajlaşabilir.
-
-
-
-Koleksiyonlar:
-
-Makalelerden özel koleksiyonlar oluşturulabilir.
-
-Koleksiyonlar herkese açık veya gizli olabilir.
-
-
-
-Bildirim Sistemi: Yeni bir yorum, beğeni veya takip gibi etkileşimler için kullanıcılara bildirimler gönderilir. Okunmamış bildirim sayısı ve detayları görüntülenebilir.
-
-
-
-Yönetim Paneli:
-
-Sadece 
-
-Admin rolüne sahip kullanıcılar için özel bir yönetim paneli mevcuttur.
-
-
-
-
-Adminler, tüm kullanıcıları listeleyebilir ve rollerini düzenleyebilir.
-
-
-
-
-
-Adminler, makalelerin aktiflik durumunu yönetebilir ve bir makaleyi pasif durumdan aktif duruma getirebilir.
-
-
-
+Makale aktiflik durumunu yönetme
 
 ⚙️ Uygulama Yapısı ve Teknolojiler
-Bu uygulama, ASP.NET Core MVC çatısı kullanılarak geliştirilmiştir.
-
 Kullanılan Teknolojiler
 
-Backend: C#, ASP.NET Core MVC, Entity Framework Core.
+Backend: C#, ASP.NET Core MVC, Entity Framework Core
 
+Veritabanı: SQLite
 
+Kimlik Yönetimi: ASP.NET Core Identity
 
+Önyüz: HTML, CSS, Bootstrap, JavaScript, jQuery
 
-Veritabanı: SQLite.
+Ek Kütüphaneler
 
+Quill.js: Zengin metin editörü
 
-Kimlik Yönetimi: ASP.NET Core Identity.
+SweetAlert2: Özelleştirilebilir uyarılar
 
+Toastr: Geçici bildirim mesajları
 
-Önyüz: HTML, CSS, Bootstrap, JavaScript, jQuery.
+Bootstrap Icons: İkon seti
 
+Tema Desteği: Açık & Koyu tema
 
-
-
-
-Ek Kütüphaneler:
-
-
-Quill.js: Makale içeriği için zengin metin editörü.
-
-
-
-SweetAlert2: Kullanıcı etkileşimleri için özelleştirilebilir uyarı pencereleri.
-
-
-
-Toastr: Geçici bildirim mesajları (toast) için kullanılır.
-
-
-
-Bootstrap Icons: Çeşitli ikonlar için kullanılır.
-
-
-
-Temalar: Uygulama, CSS değişkenleri kullanılarak açık ve koyu tema arasında geçiş yapma desteğine sahiptir.
-
-
-
-Proje Yapısı
-Controllers/: Uygulamanın iş mantığını ve HTTP isteklerini yöneten denetleyici sınıflarını içerir (AdminController.cs, PostController.cs, UsersController.cs, MessageController.cs, CollectionController.cs, NotificationsController.cs).
-
-Data/: Veri erişim katmanıdır ve Entity Framework Core ile veritabanı işlemlerini yönetir (BlogContext.cs, EfPostRepository.cs gibi).
-
-Entity/: Veritabanı tablolarını temsil eden sınıfları içerir (Post.cs, User.cs, Comment.cs, Collection.cs, Message.cs).
-
-
-Models/: Görünümlerin ihtiyaç duyduğu verileri taşımak için kullanılan ViewModel sınıflarıdır.
-
-
-ViewComponents/: Dinamik ve tekrar kullanılabilir UI bileşenlerini içerir.
-
-
-Views/: Uygulamanın HTML görünümleri (.cshtml dosyaları) bu klasörde bulunur.
-
-
+📂 Proje Yapısı
+BlogApp/
+│
+├── Controllers/         # Denetleyiciler (AdminController, PostController, UsersController, ...)
+├── Data/                # Veri erişim katmanı (BlogContext, EF Repository sınıfları)
+├── Entity/              # Veritabanı tabloları (Post, User, Comment, Collection, Message)
+├── Models/              # ViewModel sınıfları
+├── ViewComponents/      # Tekrar kullanılabilir UI bileşenleri
+├── Views/               # Razor View dosyaları (.cshtml)
+└── wwwroot/             # Statik dosyalar (CSS, JS, görseller)
 
 🚀 Kurulum ve Çalıştırma
-Gereksinimler:
+Gereksinimler
 
-.NET 6 SDK veya üzeri.
+.NET 6 SDK veya üzeri
 
-SQLite (Entity Framework Core ile otomatik olarak yönetilir).
+SQLite (EF Core ile otomatik yönetilir)
 
-Tercihen Visual Studio veya Visual Studio Code.
+Visual Studio / Visual Studio Code
 
-Veritabanı Ayarları:
+Adımlar
 
+Repoyu klonlayın:
 
-appsettings.json dosyasında DefaultConnection bağlantı dizginin SQLite için doğru şekilde ayarlandığından emin olun.
-
-Veritabanı şemasını oluşturmak ve başlangıç verilerini yüklemek için komut satırından dotnet ef database update komutunu çalıştırın. Uygulama, SeedData.cs sınıfı aracılığıyla test verilerini otomatik olarak dolduracaktır.
-
-Uygulamayı Çalıştırma:
-
-Projeyi Visual Studio'da açın ve 
-
-F5 tuşuna basın veya projenin kök dizininde dotnet run komutunu çalıştırın.
+git clone https://github.com/melisaaydin/Blog-App.git
+cd BlogApp
 
 
+Bağımlılıkları yükleyin:
+
+dotnet restore
+
+
+Veritabanını oluşturun:
+
+dotnet ef database update
+
+
+Uygulamayı çalıştırın:
+
+dotnet run
+
+
+veya Visual Studio’da F5 ile çalıştırabilirsiniz.
