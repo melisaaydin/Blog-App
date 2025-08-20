@@ -1,0 +1,200 @@
+@model BlogApp.Entity.Collection
+
+@{
+    ViewData["Title"] = Model?.Title ?? "Collection Details";
+    ViewBag.MetaDescription = $"Read articles in the '{Model?.Title}' collection at MyBlog.";
+}
+
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+        color: var(--text-color);
+        line-height: 1.6;
+        background-color: var(--background-color);
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Roboto', sans-serif;
+        color: var(--text-color);
+    }
+    a {
+        text-decoration: none;
+        color: var(--primary-color);
+    }
+    .collection-container {
+        background: var(--card-background);
+        border-radius: 1.25rem;
+        box-shadow: var(--card-shadow);
+        padding: 2.5rem;
+        margin-bottom: 2.5rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-top: 40px;
+        border: 1px solid var(--border-color);
+    }
+
+    .collection-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+    }
+
+    .collection-title {
+        font-size: 2.75rem;
+        font-weight: 800;
+        color: var(--text-color);
+        line-height: 1.2;
+        margin-bottom: 1.5rem;
+    }
+
+    .collection-meta {
+        font-size: 0.95rem;
+        color: var(--text-secondary-color);
+        margin-bottom: 2rem;
+        font-weight: 500;
+    }
+
+    .collection-meta span {
+        margin-right: 1rem;
+    }
+
+    .post-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2rem;
+    }
+
+    .post-card {
+        background: var(--card-background);
+        border-radius: 1rem;
+        margin-top: 20px;
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid var(--border-color);
+    }
+
+    .post-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+    }
+
+    .post-card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-top-left-radius: 1rem;
+        border-top-right-radius: 1rem;
+    }
+
+    .post-card-content {
+        padding: 1.8rem;
+    }
+
+    .post-card-content h3 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 0.6rem;
+        color: var(--text-color);
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        border: none;
+        border-radius: 0.75rem;
+        padding: 0.9rem 2rem;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--secondary-color);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-danger {
+        background-color: var(--error-color);
+        border: none;
+        border-radius: 0.75rem;
+        padding: 0.9rem 2rem;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+    .btn-danger:hover {
+        background-color: var(--error-color-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+</style>
+
+<div class="container">
+    <div class="collection-container">
+        <h2 class="collection-title">@Model.Title</h2>
+        <div class="collection-meta">
+            <span>Created by @(Model.Creator?.Name ?? "Unknown")</span> |
+            <span>@Model.Posts.Count Posts</span> |
+            <span>Created on @Model.CreatedAt.ToString("MMMM dd, yyyy")</span> |
+            <span>Status: @(Model.IsOpen ? "Open" : "Closed")</span>
+        </div>
+        <p>@(string.IsNullOrEmpty(Model.Description) ? "No description available." : Model.Description)</p>
+
+        @if (User.Identity.IsAuthenticated && User.FindFirstValue(ClaimTypes.NameIdentifier) == Model.CreatorId)
+        {
+            <form id="toggleStatusForm" action="/collections/toggle-status/@Model.Id" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+                <button type="button" class="btn btn-primary" id="toggleButton">@(Model.IsOpen ? "Close Collection" : "Open Collection")</button>
+            </form>
+        }
+
+        @if (Model.Posts.Any())
+        {
+            <div class="post-grid">
+                @foreach (var post in Model.Posts)
+                {
+                    <div class="post-card">
+                        <img src="/img/@(post.Image ?? "default.jpg")" alt="@post.Title" />
+                        <div class="post-card-content">
+                            <h3><a href="/posts/details/@post.Url">@post.Title</a></h3>
+                            <p>@(string.IsNullOrEmpty(post.Description) ? "No description available." : post.Description)</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info">
+                No posts in this collection yet.
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function () {
+            $('#toggleButton').on('click', function (e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You are about to " + (/@Model.IsOpen ? "close" : "open"/) + " this collection. This action cannot be undone!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, proceed!',
+                    cancelButtonText: 'No, cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#toggleStatusForm').submit();
+                    }
+                });
+            });
+        });
+    </script>
+}

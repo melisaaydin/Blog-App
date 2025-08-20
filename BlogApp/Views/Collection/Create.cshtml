@@ -1,0 +1,205 @@
+@model BlogApp.Models.CollectionCreateViewModel
+
+@{
+    ViewData["Title"] = "Create Collection | MyBlog";
+}
+
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-color);
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: 'Roboto', sans-serif;
+        color: var(--text-color);
+    }
+
+    .login-card {
+        max-width: 1000px;
+        width: 100%;
+        padding: 3rem;
+        background: var(--card-background);
+        border-radius: 1.5rem;
+        box-shadow: var(--card-shadow);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin: 60px auto;
+        margin-top: 40px;
+        border: 1px solid var(--border-color);
+        animation: fadeInUp 0.8s ease-out;
+    }
+
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .login-card:hover {
+        transform: translateY(-7px);
+        box-shadow: 0 18px 36px rgba(0, 0, 0, 0.18);
+    }
+
+    .form-control {
+        border: 1px solid var(--border-color);
+        border-radius: 0.75rem;
+        padding: 0.85rem 1.2rem;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+        font-family: 'Inter', sans-serif;
+        font-size: 1rem;
+        background-color: var(--card-background);
+        color: var(--text-color);
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.25rem var(--primary-color-shadow);
+        outline: none;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--text-color);
+        font-size: 1rem;
+        margin-bottom: 0.6rem;
+        display: block;
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        border-radius: 0.75rem;
+        padding: 0.9rem 2rem;
+        font-weight: 600;
+        color: white;
+        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        width: 100%;
+        max-width: 200px;
+        display: block;
+        margin-top: 2.5rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--secondary-color);
+        border-color: var(--secondary-color);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-primary.loading::after {
+        content: '';
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #fff;
+        border-radius: 50%;
+        border-top-color: transparent;
+        animation: spin 0.6s linear infinite;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: translate(-50%, -50%) rotate(0deg);
+        }
+
+        100% {
+            transform: translate(-50%, -50%) rotate(360deg);
+        }
+    }
+
+    .text-danger {
+        font-size: 0.9rem;
+        color: var(--error-color);
+        margin-top: 0.4rem;
+        display: block;
+    }
+</style>
+
+<div class="container">
+    <div class="login-card">
+        <h2>Create a New Collection</h2>
+        <form asp-action="Create" asp-controller="Collection" method="post" id="createCollectionForm">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="Title" class="form-label">Collection Title</label>
+                <input asp-for="Title" class="form-control" placeholder="Enter collection title" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label">Description</label>
+                <textarea asp-for="Description" class="form-control" rows="5"
+                    placeholder="Describe your collection"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary" id="saveButton">Create Collection</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function () {
+            $("#createCollectionForm").validate({
+                rules: {
+                    Title: {
+                        required: true,
+                        minlength: 3,
+                        maxlength: 100
+                    },
+                    Description: {
+                        required: true,
+                        minlength: 10,
+                        maxlength: 500
+                    }
+                },
+                messages: {
+                    Title: {
+                        required: "Please enter a collection title.",
+                        minlength: "Title must be at least 3 characters long.",
+                        maxlength: "Title cannot exceed 100 characters."
+                    },
+                    Description: {
+                        required: "Please enter a description.",
+                        minlength: "Description must be at least 10 characters long.",
+                        maxlength: "Description cannot exceed 500 characters."
+                    }
+                },
+                submitHandler: function (form) {
+                    const saveButton = $("#saveButton");
+                    saveButton.addClass("loading").prop("disabled", true).text("Creating...");
+                    form.submit();
+                }
+            });
+        });
+    </script>
+}

@@ -1,81 +1,120 @@
 @model List<Notification>
 
+@{
+    ViewData["Title"] = "Notifications | MyBlog";
+    ViewBag.MetaDescription = "View all your notifications on MyBlog.";
+}
+
 <style>
-    /* Notification Dropdown specific styles */
-    .dropdown-menu {
-        background-color: var(--card-background);
-        border: 1px solid var(--border-color);
-        box-shadow: var(--card-shadow);
-        transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-    }
-    .dropdown-item {
-        color: var(--text-secondary-color);
-        transition: background-color 0.3s ease, color 0.3s ease;
-    }
-    .dropdown-item:hover {
-        background-color: var(--hover-background) !important;
-        color: var(--text-color) !important;
-    }
-    .dropdown-divider {
-        border-top: 1px solid var(--border-color);
-    }
-    .dropdown-item h6 {
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--background-color);
         color: var(--text-color);
     }
-    .text-muted {
-        color: var(--text-secondary-color) !important; /* Ensure muted text is themed */
-    }
-    .text-primary {
-        color: var(--primary-color) !important; /* Ensure primary text is themed */
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: 'Roboto', sans-serif;
+        color: var(--text-color);
     }
 
-    /* Unread notification background */
-    .unread-notification-bg {
-        background-color: var(--light-primary-background) !important;
+    .notification-container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 2rem;
+        background: var(--card-background);
+        border-radius: 1.25rem;
+        box-shadow: var(--card-shadow);
+        border: 1px solid var(--border-color);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    /* Notification badge */
-    #notification-badge {
-        background-color: var(--error-color) !important; /* Use error color for badge for urgency */
-        color: white !important;
+    .notification-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+    }
+
+    .notification-item {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+        transition: background-color 0.3s ease;
+    }
+
+    .notification-item:last-child {
+        border-bottom: none;
+    }
+
+    .notification-item:hover {
+        background-color: var(--hover-background);
+    }
+
+    .notification-item .notification-message {
+        color: var(--text-color);
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .notification-item .notification-time {
+        color: var(--text-secondary-color);
+        font-size: 0.9rem;
+    }
+
+    .unread-notification {
+        background-color: var(--light-primary-background);
+        font-weight: 500;
+    }
+
+    .no-notifications {
+        text-align: center;
+        color: var(--text-secondary-color);
+        padding: 2rem;
+    }
+
+    .back-to-top {
+        display: block;
+        margin-top: 2rem;
+        text-align: center;
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        border: none;
+        border-radius: 0.75rem;
+        padding: 0.9rem 2rem;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--secondary-color);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     }
 </style>
 
-<li class="nav-item dropdown">
-    <a class="nav-link position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="bi bi-bell-fill" style="color: var(--text-secondary-color);"></i>
-        @{
-            var unreadCount = Model.Count(n => !n.IsRead);
-        }
-        <span id="notification-badge"
-              class="position-absolute top-0 start-100 translate-middle badge rounded-pill @(unreadCount == 0 ? "d-none" : "")"
-              style="font-size: 0.6em; --bs-badge-padding-x: 0.5em; --bs-badge-padding-y: 0.5em;">
-            @unreadCount
-        </span>
-    </a>
-    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" style="width: 350px; max-height: 400px; overflow-y: auto;">
-        <li class="px-3 py-2">
-            <h6 class="mb-0">Notifications</h6>
-        </li>
-        <li><hr class="dropdown-divider"></li>
+<div class="notification-container">
+    <h2>All Notifications</h2>
 
-        @if(Model.Any())
+    @if (Model.Any())
+    {
+        foreach (var notification in Model)
         {
-            foreach(var notification in Model)
-            {
-                <li>
-                    <a class="dropdown-item py-2 @(notification.IsRead ? "" : "unread-notification-bg")" href="@notification.LinkUrl" style="white-space: normal;">
-                        <small>@notification.Message</small>
-                        <small class="d-block text-muted mt-1">@notification.CreatedAt.ToString("MMM dd, HH:mm")</small>
-                    </a>
-                </li>
-            }
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item text-center text-primary" href="/Notifications/Index">View All Notifications"</a></li>
+            <div class="notification-item @(notification.IsRead ? "" : "unread-notification")">
+                <div class="notification-message">@notification.Message</div>
+                <div class="notification-time">@notification.CreatedAt.ToString("MMM dd, HH:mm")</div>
+            </div>
         }
-        else
-        {
-            <li><p class="dropdown-item text-center text-muted py-4">No new notifications.</p></li>
-        }
-    </ul>
-</li>
+        <a href="/collections" class="back-to-top btn btn-primary">Back to Collections</a>
+    }
+    else
+    {
+        <div class="no-notifications">
+            You have no notifications at the moment.
+        </div>
+    }
+</div>
