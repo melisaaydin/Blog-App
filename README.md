@@ -5,191 +5,177 @@
 <img width="400" height="250" alt="image" src="https://github.com/user-attachments/assets/8a96e060-390c-466d-a6b8-490a4ad5746d" />
 <img width="400" height="250" alt="image" src="https://github.com/user-attachments/assets/73eb1cff-5d13-4957-aa33-3936787e16bc" />
 
+BlogApp
+📋 Proje Hakkında
+
+BlogApp, kullanıcıların makaleler oluşturup yayımlayabileceği, diğer kullanıcılarla etkileşimde bulunabileceği ve içeriklerini yönetebileceği tam özellikli bir blog platformudur. Uygulama, güçlü bir kullanıcı kimlik doğrulama, yetkilendirme ve yönetim sistemiyle birlikte gelir.
 
 
 
-# Blog Application
 
-This project is a blog platform that allows users to share posts, manage their profiles, interact with other users, and comment, all while incorporating an admin approval process.
 
----
+✨ Temel Özellikler
 
-## 📌 Features
+Kullanıcı Yönetimi: Kullanıcılar, e-posta onayıyla hesap oluşturabilir, giriş yapabilir, şifrelerini sıfırlayabilir ve profillerini düzenleyebilirler. Profil resmi yükleme ve değiştirme gibi işlevler de mevcuttur.
 
-Your application boasts the following core features, providing a rich user experience and administrative control:
 
-### **Post Management**
-- **Create New Posts:** Users can share new posts.
-- **Post Approval:** Newly shared posts must be approved by an administrator before they become visible on the site.
-- **Post Editing:**
-  - **Normal Users:** Can only view and edit their own posts.
-  - **Admin Users:** Can view all users' posts on the "Manage Posts" page and change their active status (visible/hidden).
-- **Like Posts:** Users can like posts and see the number of likes and views.
-- **Post Detail Page:** From a post's detail page, users can navigate to:
-  - The profile of the user who shared the post.
-  - The profile pages of users who commented.
 
-### **User Profile and Interactions**
-- **Account Confirmation:** A confirmation link is sent via email to newly created accounts.
-- **Password Reset:** Users can reset their passwords via a link sent to their email.
-- **Follow Notifications:** When a user follows another, a notification is sent to the followed user.
-- **Profile Update:** Users can update their profiles.
-- **View Other Profiles:** Users can browse other users' profiles.
-- **Follow/Unfollow:** Users can follow or unfollow others.
-- **Mutual Following & Messaging:** If two users follow each other, they can send messages.
-- **View User's Posts & Comments:** A profile shows a user’s posts and comments.
 
-### **Comments and Interactions**
-- **Comment on Posts:** Users can comment under posts.
-- **Reply to Comments:** Users can reply to existing comments.
 
-### **Administrator (Admin) Panel**
-- **Define User Roles:** Admins can assign or revoke admin roles.
-- **View Users:** Admin panel lists all users.
+Makale (Post) İşlemleri:
 
----
+Kullanıcılar yeni makaleler oluşturabilir, düzenleyebilir ve silebilir.
 
-## 🛠 Technologies
 
-### **Backend**
-- [.NET 9.0](https://dotnet.microsoft.com/) – Powerful and scalable backend.
-- Microsoft.AspNetCore.Identity.EntityFrameworkCore – Authentication & authorization.
-- Microsoft.AspNetCore.Identity.UI – Ready-to-use UI components.
-- Microsoft.AspNetCore.Mvc – MVC architecture.
-- Microsoft.EntityFrameworkCore.Sqlite – Lightweight database.
-- Microsoft.EntityFrameworkCore.Design – EF Core migrations & design tools.
-- Microsoft.Extensions.Logging – Logging operations.
-- Microsoft.AspNetCore.Mvc.NewtonsoftJson – JSON serialization/deserialization.
 
-### **Frontend**
-- JavaScript
-- HTML/CSS
+Makaleler, başlık, açıklama, URL ve içerik gibi alanları içeren bir model kullanır.
 
----
 
-## ⚙️ Setup and Running
 
-### **Prerequisites**
-- [.NET 9.0 SDK](https://dotnet.microsoft.com/download) installed.
-- A code editor (Visual Studio Code or Visual Studio).
+Makaleler, ilgili oldukları konuları belirtmek için etiketlerle ilişkilendirilebilir.
 
-### **Steps**
-1. **Clone the Repository**
-   ```bash
-   git clone https://github.com/melisaaydin/Blog-App.git
-   cd Blog-App
-````
 
-2. **Install Dependencies**
+Makale sayfaları, yazar bilgisi, yayınlanma tarihi ve görüntülenme sayısı gibi meta verileri gösterir.
 
-   ```bash
-   dotnet restore
-   ```
+Gelişmiş bir metin editörü (Quill.js) ile içerik girişi yapılır.
 
-3. **Apply Database Migrations**
 
-   ```bash
-   dotnet ef database update
-   ```
+Sosyal Etkileşimler:
 
-   *(If running for the first time, you may need to add a new migration with:)*
 
-   ```bash
-   dotnet ef migrations add InitialCreate
-   ```
+Yorumlar: Kullanıcılar makalelere yorum yapabilir ve yorumlara yanıt verebilir. Yorumlar AJAX kullanılarak dinamik olarak eklenir.
 
-4. **Run the Application**
 
-   * **HTTP**
 
-     ```bash
-     dotnet run --launch-profile http
-     ```
 
-     ➜ Runs at `http://localhost:5001`
 
-   * **HTTPS**
+Beğeniler: Kullanıcılar makaleleri beğenip beğenilerini geri çekebilir.
 
-     ```bash
-     dotnet run --launch-profile https
-     ```
 
-     ➜ Runs at `https://localhost:7058` and `http://localhost:5001`
 
-   * **IIS Express**
 
-     ```bash
-     dotnet run --launch-profile "IIS Express"
-     ```
+Takip Etme: Kullanıcılar diğer kullanıcıları takip edebilir veya takibi bırakabilir. Takip bilgileri kullanıcının profil sayfasında gösterilir.
 
----
 
-## ⚙️ Configuration
+Özel Mesajlaşma: Karşılıklı takipte olan kullanıcılar birbirleriyle özel olarak mesajlaşabilir.
 
-`launchSettings.json` defines environment settings:
 
-```json
-{
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:9120",
-      "sslPort": 5001
-    }
-  },
-  "profiles": {
-    "http": {
-      "applicationUrl": "http://localhost:5001",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
-    "https": {
-      "applicationUrl": "https://localhost:7058;http://localhost:5001",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
-    "IIS Express": {
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    }
-  }
-}
-```
 
----
+Koleksiyonlar:
 
-## 👥 User Roles and Access
+Makalelerden özel koleksiyonlar oluşturulabilir.
 
-**Normal User**
+Koleksiyonlar herkese açık veya gizli olabilir.
 
-* Share posts.
-* View & edit own posts.
-* Comment & reply to posts.
-* Follow/unfollow users.
-* Message users with mutual follow.
-* Update own profile.
-* View other users’ posts & comments.
 
-**Admin User**
 
-* All features of a normal user.
-* Access **Admin Panel**.
-* View all posts & change their visibility.
-* Manage user roles.
+Bildirim Sistemi: Yeni bir yorum, beğeni veya takip gibi etkileşimler için kullanıcılara bildirimler gönderilir. Okunmamış bildirim sayısı ve detayları görüntülenebilir.
 
----
 
-## 🤝 Contributing
 
-1. Fork the repository.
-2. Create a new branch for your feature/bug fix.
-3. Make and test changes.
-4. Write descriptive commit messages.
-5. Submit a pull request.
+Yönetim Paneli:
 
----
+Sadece 
+
+Admin rolüne sahip kullanıcılar için özel bir yönetim paneli mevcuttur.
+
+
+
+
+Adminler, tüm kullanıcıları listeleyebilir ve rollerini düzenleyebilir.
+
+
+
+
+
+Adminler, makalelerin aktiflik durumunu yönetebilir ve bir makaleyi pasif durumdan aktif duruma getirebilir.
+
+
+
+
+⚙️ Uygulama Yapısı ve Teknolojiler
+Bu uygulama, ASP.NET Core MVC çatısı kullanılarak geliştirilmiştir.
+
+Kullanılan Teknolojiler
+
+Backend: C#, ASP.NET Core MVC, Entity Framework Core.
+
+
+
+
+Veritabanı: SQLite.
+
+
+Kimlik Yönetimi: ASP.NET Core Identity.
+
+
+Önyüz: HTML, CSS, Bootstrap, JavaScript, jQuery.
+
+
+
+
+
+Ek Kütüphaneler:
+
+
+Quill.js: Makale içeriği için zengin metin editörü.
+
+
+
+SweetAlert2: Kullanıcı etkileşimleri için özelleştirilebilir uyarı pencereleri.
+
+
+
+Toastr: Geçici bildirim mesajları (toast) için kullanılır.
+
+
+
+Bootstrap Icons: Çeşitli ikonlar için kullanılır.
+
+
+
+Temalar: Uygulama, CSS değişkenleri kullanılarak açık ve koyu tema arasında geçiş yapma desteğine sahiptir.
+
+
+
+Proje Yapısı
+Controllers/: Uygulamanın iş mantığını ve HTTP isteklerini yöneten denetleyici sınıflarını içerir (AdminController.cs, PostController.cs, UsersController.cs, MessageController.cs, CollectionController.cs, NotificationsController.cs).
+
+Data/: Veri erişim katmanıdır ve Entity Framework Core ile veritabanı işlemlerini yönetir (BlogContext.cs, EfPostRepository.cs gibi).
+
+Entity/: Veritabanı tablolarını temsil eden sınıfları içerir (Post.cs, User.cs, Comment.cs, Collection.cs, Message.cs).
+
+
+Models/: Görünümlerin ihtiyaç duyduğu verileri taşımak için kullanılan ViewModel sınıflarıdır.
+
+
+ViewComponents/: Dinamik ve tekrar kullanılabilir UI bileşenlerini içerir.
+
+
+Views/: Uygulamanın HTML görünümleri (.cshtml dosyaları) bu klasörde bulunur.
+
+
+
+🚀 Kurulum ve Çalıştırma
+Gereksinimler:
+
+.NET 6 SDK veya üzeri.
+
+SQLite (Entity Framework Core ile otomatik olarak yönetilir).
+
+Tercihen Visual Studio veya Visual Studio Code.
+
+Veritabanı Ayarları:
+
+
+appsettings.json dosyasında DefaultConnection bağlantı dizginin SQLite için doğru şekilde ayarlandığından emin olun.
+
+Veritabanı şemasını oluşturmak ve başlangıç verilerini yüklemek için komut satırından dotnet ef database update komutunu çalıştırın. Uygulama, SeedData.cs sınıfı aracılığıyla test verilerini otomatik olarak dolduracaktır.
+
+Uygulamayı Çalıştırma:
+
+Projeyi Visual Studio'da açın ve 
+
+F5 tuşuna basın veya projenin kök dizininde dotnet run komutunu çalıştırın.
+
 
