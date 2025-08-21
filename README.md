@@ -1,9 +1,13 @@
-<img width="400" height="280" alt="image" src="https://github.com/user-attachments/assets/5914ee3a-3054-4dca-b918-ce182dcd3c3f" />
-<img width="400" height="250" alt="image" src="https://github.com/user-attachments/assets/640a9755-7918-4c11-a3c7-d8b0d33415e7" />
-<img width="400" height="250" alt="image" src="https://github.com/user-attachments/assets/f543bfc5-3eea-482d-97b3-c46c8a4a3d92" />
-<img width="400" height="250" alt="image" src="https://github.com/user-attachments/assets/170d825b-9dcb-468f-9d09-52fa3dc92582" />
-<img width="400" height="250" alt="image" src="https://github.com/user-attachments/assets/8a96e060-390c-466d-a6b8-490a4ad5746d" />
-<img width="400" height="250" alt="image" src="https://github.com/user-attachments/assets/73eb1cff-5d13-4957-aa33-3936787e16bc" />
+<img width="2530" height="1242" alt="image" src="https://github.com/user-attachments/assets/b082bc13-67c7-4a0e-bec0-4d6921c66da6" />
+
+<img width="2559" height="1225" alt="image" src="https://github.com/user-attachments/assets/18f0ae27-35f5-4bdf-867f-009a1c501906" />
+<img width="2532" height="1225" alt="image" src="https://github.com/user-attachments/assets/3a39a089-f2e8-41b2-8f5d-7de69edb7000" />
+<img width="2559" height="1233" alt="image" src="https://github.com/user-attachments/assets/157fa997-cffe-4064-a7dd-074e9780efdc" />
+<img width="2559" height="1229" alt="image" src="https://github.com/user-attachments/assets/75bc3f52-6bf1-40ee-a7d6-e8f6d0764d2e" />
+<img width="2529" height="1223" alt="image" src="https://github.com/user-attachments/assets/424c6512-13c7-496d-a66d-9699417c4eaa" />
+<img width="2559" height="1235" alt="image" src="https://github.com/user-attachments/assets/d9382fcd-5f43-4cc3-b387-356b9f58b4ed" />
+
+
 
 📘 BlogApp
 📋 Proje Hakkında
