@@ -1,11 +1,12 @@
-<img width="2530" height="1242" alt="image" src="https://github.com/user-attachments/assets/b082bc13-67c7-4a0e-bec0-4d6921c66da6" />
 
-<img width="2559" height="1225" alt="image" src="https://github.com/user-attachments/assets/18f0ae27-35f5-4bdf-867f-009a1c501906" />
-<img width="2532" height="1225" alt="image" src="https://github.com/user-attachments/assets/3a39a089-f2e8-41b2-8f5d-7de69edb7000" />
-<img width="2559" height="1233" alt="image" src="https://github.com/user-attachments/assets/157fa997-cffe-4064-a7dd-074e9780efdc" />
-<img width="2559" height="1229" alt="image" src="https://github.com/user-attachments/assets/75bc3f52-6bf1-40ee-a7d6-e8f6d0764d2e" />
-<img width="2529" height="1223" alt="image" src="https://github.com/user-attachments/assets/424c6512-13c7-496d-a66d-9699417c4eaa" />
-<img width="2559" height="1235" alt="image" src="https://github.com/user-attachments/assets/d9382fcd-5f43-4cc3-b387-356b9f58b4ed" />
+<img width="250" height="300" alt="Ekran görüntüsü 2025-09-10 174857" src="https://github.com/user-attachments/assets/4dac16d5-311e-43ee-bf2f-75b32069789b" />
+<img width="250" height="300" alt="Ekran görüntüsü 2025-09-10 181306" src="https://github.com/user-attachments/assets/04e0fd26-4be5-4859-b42e-1950e488800a" />
+<img width="250" height="300" alt="Ekran görüntüsü 2025-09-10 181315" src="https://github.com/user-attachments/assets/f5b51e93-f0be-4ffe-88d3-7005d3567ffd" />
+<img width="250" height="300" alt="Ekran görüntüsü 2025-09-10 181353" src="https://github.com/user-attachments/assets/1e4a0f19-d86f-4d4c-9732-bebd847a2f75" />
+<img width="250" height="300" alt="Ekran görüntüsü 2025-09-10 181537" src="https://github.com/user-attachments/assets/092872a4-b573-41af-b6d4-6dd9c3fcc167" />
+<img width="250" height="300" alt="Ekran görüntüsü 2025-09-10 181601" src="https://github.com/user-attachments/assets/719c5769-3536-4b5c-b3b6-a76eb8769c57" />
+<img width="250" height="300" alt="Ekran görüntüsü 2025-09-10 181700" src="https://github.com/user-attachments/assets/6ad1f23f-9b4c-4501-b817-ebff40d2c70b" />
+<img width="250" height="300" alt="Ekran görüntüsü 2025-09-10 181854" src="https://github.com/user-attachments/assets/77895fd4-7655-4c49-8c27-0c17b1f223f2" />
 
 
 
