@@ -1,195 +1,137 @@
-<img width="400" height="280" alt="image" src="https://github.com/user-attachments/assets/5914ee3a-3054-4dca-b918-ce182dcd3c3f" />
-<img width="400" height="250" alt="image" src="https://github.com/user-attachments/assets/640a9755-7918-4c11-a3c7-d8b0d33415e7" />
-<img width="400" height="250" alt="image" src="https://github.com/user-attachments/assets/f543bfc5-3eea-482d-97b3-c46c8a4a3d92" />
-<img width="400" height="250" alt="image" src="https://github.com/user-attachments/assets/170d825b-9dcb-468f-9d09-52fa3dc92582" />
-<img width="400" height="250" alt="image" src="https://github.com/user-attachments/assets/8a96e060-390c-466d-a6b8-490a4ad5746d" />
-<img width="400" height="250" alt="image" src="https://github.com/user-attachments/assets/73eb1cff-5d13-4957-aa33-3936787e16bc" />
+
+<img width="250" height="300" alt="Ekran görüntüsü 2025-09-10 174857" src="https://github.com/user-attachments/assets/4dac16d5-311e-43ee-bf2f-75b32069789b" />
+<img width="250" height="300" alt="Ekran görüntüsü 2025-09-10 181306" src="https://github.com/user-attachments/assets/04e0fd26-4be5-4859-b42e-1950e488800a" />
+<img width="250" height="300" alt="Ekran görüntüsü 2025-09-10 181315" src="https://github.com/user-attachments/assets/f5b51e93-f0be-4ffe-88d3-7005d3567ffd" />
+<img width="250" height="300" alt="Ekran görüntüsü 2025-09-10 181353" src="https://github.com/user-attachments/assets/1e4a0f19-d86f-4d4c-9732-bebd847a2f75" />
+<img width="250" height="300" alt="Ekran görüntüsü 2025-09-10 181537" src="https://github.com/user-attachments/assets/092872a4-b573-41af-b6d4-6dd9c3fcc167" />
+<img width="250" height="300" alt="Ekran görüntüsü 2025-09-10 181601" src="https://github.com/user-attachments/assets/719c5769-3536-4b5c-b3b6-a76eb8769c57" />
+<img width="250" height="300" alt="Ekran görüntüsü 2025-09-10 181700" src="https://github.com/user-attachments/assets/6ad1f23f-9b4c-4501-b817-ebff40d2c70b" />
+<img width="250" height="300" alt="Ekran görüntüsü 2025-09-10 181854" src="https://github.com/user-attachments/assets/77895fd4-7655-4c49-8c27-0c17b1f223f2" />
 
 
 
+📘 BlogApp
+📋 Proje Hakkında
 
-# Blog Application
+BlogApp, kullanıcıların makale oluşturup yayımlayabileceği, diğer kullanıcılarla etkileşim kurabileceği ve içeriklerini yönetebileceği tam özellikli bir blog platformudur.
+Uygulama; güçlü kullanıcı kimlik doğrulama, yetkilendirme ve yönetim sistemine sahiptir. Modern arayüz, gelişmiş içerik yönetimi ve sosyal etkileşim özellikleriyle kullanıcı dostu bir deneyim sunar.
 
-This project is a blog platform that allows users to share posts, manage their profiles, interact with other users, and comment, all while incorporating an admin approval process.
+✨ Temel Özellikler
 
----
+👤 Kullanıcı Yönetimi
 
-## 📌 Features
+E-posta onayıyla hesap oluşturma ve giriş yapma
 
-Your application boasts the following core features, providing a rich user experience and administrative control:
+Şifre sıfırlama ve profil düzenleme
 
-### **Post Management**
-- **Create New Posts:** Users can share new posts.
-- **Post Approval:** Newly shared posts must be approved by an administrator before they become visible on the site.
-- **Post Editing:**
-  - **Normal Users:** Can only view and edit their own posts.
-  - **Admin Users:** Can view all users' posts on the "Manage Posts" page and change their active status (visible/hidden).
-- **Like Posts:** Users can like posts and see the number of likes and views.
-- **Post Detail Page:** From a post's detail page, users can navigate to:
-  - The profile of the user who shared the post.
-  - The profile pages of users who commented.
+Profil resmi yükleme ve değiştirme
 
-### **User Profile and Interactions**
-- **Account Confirmation:** A confirmation link is sent via email to newly created accounts.
-- **Password Reset:** Users can reset their passwords via a link sent to their email.
-- **Follow Notifications:** When a user follows another, a notification is sent to the followed user.
-- **Profile Update:** Users can update their profiles.
-- **View Other Profiles:** Users can browse other users' profiles.
-- **Follow/Unfollow:** Users can follow or unfollow others.
-- **Mutual Following & Messaging:** If two users follow each other, they can send messages.
-- **View User's Posts & Comments:** A profile shows a user’s posts and comments.
+📝 Makale (Post) İşlemleri
 
-### **Comments and Interactions**
-- **Comment on Posts:** Users can comment under posts.
-- **Reply to Comments:** Users can reply to existing comments.
+Yeni makale oluşturma, düzenleme ve silme
 
-### **Administrator (Admin) Panel**
-- **Define User Roles:** Admins can assign or revoke admin roles.
-- **View Users:** Admin panel lists all users.
+Makale modeli: Başlık, Açıklama, URL, İçerik
 
----
+Etiket desteği ile kategorilendirme
 
-## 🛠 Technologies
+Meta veriler: yazar bilgisi, tarih, görüntülenme sayısı
 
-### **Backend**
-- [.NET 9.0](https://dotnet.microsoft.com/) – Powerful and scalable backend.
-- Microsoft.AspNetCore.Identity.EntityFrameworkCore – Authentication & authorization.
-- Microsoft.AspNetCore.Identity.UI – Ready-to-use UI components.
-- Microsoft.AspNetCore.Mvc – MVC architecture.
-- Microsoft.EntityFrameworkCore.Sqlite – Lightweight database.
-- Microsoft.EntityFrameworkCore.Design – EF Core migrations & design tools.
-- Microsoft.Extensions.Logging – Logging operations.
-- Microsoft.AspNetCore.Mvc.NewtonsoftJson – JSON serialization/deserialization.
+Gelişmiş zengin metin editörü (Quill.js) ile içerik girişi
 
-### **Frontend**
-- JavaScript
-- HTML/CSS
+💬 Sosyal Etkileşimler
 
----
+Yorumlar: Makalelere yorum yapma ve yanıtlama (AJAX ile dinamik ekleme)
 
-## ⚙️ Setup and Running
+Beğeniler: Makaleleri beğenme ve beğeniyi geri çekme
 
-### **Prerequisites**
-- [.NET 9.0 SDK](https://dotnet.microsoft.com/download) installed.
-- A code editor (Visual Studio Code or Visual Studio).
+Takip: Kullanıcıları takip etme / takibi bırakma
 
-### **Steps**
-1. **Clone the Repository**
-   ```bash
-   git clone https://github.com/melisaaydin/Blog-App.git
-   cd Blog-App
-````
+Özel Mesajlaşma: Karşılıklı takipte olan kullanıcılar arasında
 
-2. **Install Dependencies**
+📂 Koleksiyonlar
 
-   ```bash
-   dotnet restore
-   ```
+Makalelerden özel koleksiyonlar oluşturma
 
-3. **Apply Database Migrations**
+Koleksiyonları herkese açık veya gizli yapabilme
 
-   ```bash
-   dotnet ef database update
-   ```
+🔔 Bildirim Sistemi
 
-   *(If running for the first time, you may need to add a new migration with:)*
+Yorum, beğeni, takip gibi etkileşimler için bildirimler
 
-   ```bash
-   dotnet ef migrations add InitialCreate
-   ```
+Okunmamış bildirim sayısı ve detaylı listeleme
 
-4. **Run the Application**
+🛠️ Yönetim Paneli
 
-   * **HTTP**
+Yalnızca admin kullanıcılar erişebilir
 
-     ```bash
-     dotnet run --launch-profile http
-     ```
+Kullanıcı listeleme ve rol düzenleme
 
-     ➜ Runs at `http://localhost:5001`
+Makale aktiflik durumunu yönetme
 
-   * **HTTPS**
+⚙️ Uygulama Yapısı ve Teknolojiler
+Kullanılan Teknolojiler
 
-     ```bash
-     dotnet run --launch-profile https
-     ```
+Backend: C#, ASP.NET Core MVC, Entity Framework Core
 
-     ➜ Runs at `https://localhost:7058` and `http://localhost:5001`
+Veritabanı: SQLite
 
-   * **IIS Express**
+Kimlik Yönetimi: ASP.NET Core Identity
 
-     ```bash
-     dotnet run --launch-profile "IIS Express"
-     ```
+Önyüz: HTML, CSS, Bootstrap, JavaScript, jQuery
 
----
+Ek Kütüphaneler
 
-## ⚙️ Configuration
+Quill.js: Zengin metin editörü
 
-`launchSettings.json` defines environment settings:
+SweetAlert2: Özelleştirilebilir uyarılar
 
-```json
-{
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:9120",
-      "sslPort": 5001
-    }
-  },
-  "profiles": {
-    "http": {
-      "applicationUrl": "http://localhost:5001",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
-    "https": {
-      "applicationUrl": "https://localhost:7058;http://localhost:5001",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
-    "IIS Express": {
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    }
-  }
-}
-```
+Toastr: Geçici bildirim mesajları
 
----
+Bootstrap Icons: İkon seti
 
-## 👥 User Roles and Access
+Tema Desteği: Açık & Koyu tema
 
-**Normal User**
+📂 Proje Yapısı
+BlogApp/
+│
+├── Controllers/         # Denetleyiciler (AdminController, PostController, UsersController, ...)
+├── Data/                # Veri erişim katmanı (BlogContext, EF Repository sınıfları)
+├── Entity/              # Veritabanı tabloları (Post, User, Comment, Collection, Message)
+├── Models/              # ViewModel sınıfları
+├── ViewComponents/      # Tekrar kullanılabilir UI bileşenleri
+├── Views/               # Razor View dosyaları (.cshtml)
+└── wwwroot/             # Statik dosyalar (CSS, JS, görseller)
 
-* Share posts.
-* View & edit own posts.
-* Comment & reply to posts.
-* Follow/unfollow users.
-* Message users with mutual follow.
-* Update own profile.
-* View other users’ posts & comments.
+🚀 Kurulum ve Çalıştırma
+Gereksinimler
 
-**Admin User**
+.NET 6 SDK veya üzeri
 
-* All features of a normal user.
-* Access **Admin Panel**.
-* View all posts & change their visibility.
-* Manage user roles.
+SQLite (EF Core ile otomatik yönetilir)
 
----
+Visual Studio / Visual Studio Code
 
-## 🤝 Contributing
+Adımlar
 
-1. Fork the repository.
-2. Create a new branch for your feature/bug fix.
-3. Make and test changes.
-4. Write descriptive commit messages.
-5. Submit a pull request.
+Repoyu klonlayın:
 
----
+git clone https://github.com/melisaaydin/Blog-App.git
+cd BlogApp
 
+
+Bağımlılıkları yükleyin:
+
+dotnet restore
+
+
+Veritabanını oluşturun:
+
+dotnet ef database update
+
+
+Uygulamayı çalıştırın:
+
+dotnet run
+
+
+veya Visual Studio’da F5 ile çalıştırabilirsiniz.
