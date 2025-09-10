@@ -1,7 +1,7 @@
 @model InboxViewModel
-
 @{
     ViewData["Title"] = "Messages";
+    var currentUserName = User.Identity?.Name ?? "";
 }
 
 <style>
@@ -85,16 +85,12 @@
         color: white !important;
     }
 
-    .bi-chat-dots {
-        color: var(--border-color) !important;
-    }
-
     :root {
         --light-primary-background: #f8f0f4;
     }
 
     .dark-theme {
-        --light-primary-background: #3a223f;
+        --light-primary-background: #b591b588;
     }
 </style>
 
@@ -116,33 +112,50 @@
             <div class="tab-content h-100">
                 <div class="tab-pane fade show active h-100" id="chats-pane" role="tabpanel">
                     <div class="list-group list-group-flush">
-                        @foreach (var convo in Model.Conversations)
+                        @if (Model.Conversations != null && Model.Conversations.Any())
                         {
-                            <a href="#" class="list-group-item list-group-item-action p-3 conversation-link"
-                                data-username="@convo.OtherUser?.UserName">
-                                <div class="d-flex align-items-center">
-                                    <img src="/img/@(convo.OtherUser?.Image ?? "default-avatar.jpg")" alt="avatar"
-                                        class="rounded-circle me-3" style="width: 50px; height: 50px;">
-                                    <div class="w-100">
-                                        <div class="d-flex justify-content-between">
-                                            <h6 class="mb-1" style="color: var(--text-color);">@convo.OtherUser?.Name</h6>
-                                            <small class="text-muted"
-                                                style="color: var(--text-secondary-color) !important;">@convo.LastMessage?.SentAt.ToString("HH:mm")</small>
+                            @foreach (var convo in Model.Conversations)
+                            {
+                                if (convo.OtherUser != null && !string.IsNullOrEmpty(convo.OtherUser.UserName) &&
+                                convo.OtherUser.UserName != currentUserName)
+                                {
+                                    <a href="#" class="list-group-item list-group-item-action p-3 conversation-link"
+                                        data-username="@convo.OtherUser.UserName">
+                                        <div class="d-flex align-items-center">
+                                            <img src="/img/@(convo.OtherUser.Image ?? "default-avatar.jpg")" alt="avatar"
+                                                class="rounded-circle me-3" style="width: 50px; height: 50px;">
+                                            <div class="w-100">
+                                                <div class="d-flex justify-content-between">
+                                                    <h6 class="mb-1" style="color: var(--text-color);">@convo.OtherUser.Name</h6>
+                                                    <small class="text-muted"
+                                                        style="color: var(--text-secondary-color) !important;">
+                                                        @(convo.LastMessage?.SentAt.ToString("HH:mm") ?? "")
+                                                    </small>
+                                                </div>
+                                                <p class="mb-1 small text-muted text-truncate"
+                                                    style="color: var(--text-secondary-color) !important;">
+                                                    @(convo.LastMessage?.Content ?? "No messages yet")
+                                                </p>
+                                            </div>
                                         </div>
-                                        <p class="mb-1 small text-muted text-truncate"
-                                            style="color: var(--text-secondary-color) !important;">
-                                            @convo.LastMessage?.Content</p>
-                                    </div>
-                                </div>
-                            </a>
+                                    </a>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-center text-muted p-4" style="color: var(--text-secondary-color) !important;">
+                                No conversations available. Start a new chat from the "New Chat" tab.
+                            </p>
                         }
                     </div>
                 </div>
                 <div class="tab-pane fade h-100" id="contacts-pane" role="tabpanel">
                     <div class="list-group list-group-flush">
-                        @if (Model.Contacts.Any())
+                        @if (Model.Contacts != null && Model.Contacts.Any())
                         {
-                            @foreach (var contact in Model.Contacts)
+                            @foreach (var contact in Model.Contacts.Where(c => !string.IsNullOrEmpty(c.UserName) &&
+                                                    c.UserName != currentUserName))
                             {
                                 <a href="#"
                                     class="list-group-item list-group-item-action d-flex align-items-center p-3 conversation-link"
@@ -155,8 +168,9 @@
                         }
                         else
                         {
-                            <p class="text-center text-muted p-4" style="color: var(--text-secondary-color) !important;">You
-                                have no mutual followers to start a new chat.</p>
+                            <p class="text-center text-muted p-4" style="color: var(--text-secondary-color) !important;">
+                                You have no mutual followers to start a new chat.
+                            </p>
                         }
                     </div>
                 </div>
@@ -165,12 +179,7 @@
     </div>
 
     <div id="chat-content-area" class="chat-main">
-        <div class="d-flex align-items-center justify-content-center h-100 text-center">
-            <div>
-                <i class="bi bi-chat-dots" style="font-size: 5rem; color: var(--border-color);"></i>
-                <p class="mt-2 fs-5" style="color: var(--text-secondary-color);">Select a chat to start messaging</p>
-            </div>
-        </div>
+        <!-- Mesaj yoksa boş -->
     </div>
 </div>
 
@@ -180,19 +189,51 @@
             $(document).on('click', '.conversation-link', function (e) {
                 e.preventDefault();
                 var username = $(this).data('username');
-                var url = `/Message/Chat/${username}`;
-
+                if (!username || username === '') {
+                    console.error("Username is undefined, null, or empty.");
+                    $('#chat-content-area').html('<p class="text-danger text-center p-4" style="color: var(--error-color);">Invalid username. Please try again.</p>');
+                    return;
+                }
+                var url = `/Message/Chat/${encodeURIComponent(username)}`;
+                console.log("Loading chat for URL: " + url);
+                console.log("Clicked username: " + username);
                 $('.conversation-link').removeClass('active');
                 $(this).addClass('active');
 
                 $('#chat-content-area').html('<div class="d-flex justify-content-center align-items-center h-100"><div class="spinner-border" style="color: var(--primary-color);" role="status"><span class="visually-hidden">Loading...</span></div></div>');
 
-                $('#chat-content-area').load(url, function (response, status) {
-                    if (status == "error") {
-                        $('#chat-content-area').html('<p class="text-danger text-center p-4" style="color: var(--error-color);">Failed to load chat. Please try again.</p>');
+                $.ajax({
+                    type: "GET",
+                    url: url,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    beforeSend: function (xhr) {
+                        console.log("Sending GET request to: " + url);
+                    },
+                    success: function (data) {
+                        console.log("Chat loaded successfully for username: " + username);
+                        $('#chat-content-area').html(data);
+                        var chatBox = document.getElementById("chat-box");
+                        if (chatBox) {
+                            chatBox.scrollTop = chatBox.scrollHeight;
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Failed to load chat: " + xhr.status + " " + xhr.statusText);
+                        console.error("Response: ", xhr.responseText);
+                        $('#chat-content-area').html('<p class="text-danger text-center p-4" style="color: var(--error-color);">Failed to load chat: ' + (xhr.responseJSON?.message || error) + '</p>');
                     }
                 });
             });
+
+            var firstConversationLink = $('.conversation-link').first();
+            if (firstConversationLink.length > 0) {
+                console.log("Triggering first conversation link with username: " + firstConversationLink.data('username'));
+                firstConversationLink.trigger('click');
+            } else {
+                console.log("No conversation links found.");
+            }
         });
     </script>
 }

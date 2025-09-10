@@ -128,43 +128,59 @@
     }
 </style>
 
-
 <div class="card-header d-flex align-items-center p-3 border-bottom">
-    <img src="/img/@(Model.OtherUser.Image ?? "default-avatar.jpg")" alt="avatar" class="rounded-circle me-3"
-        style="width: 40px; height: 40px;">
-
-    <h5 class="mb-0">
-        <a href="/profile/@Model.OtherUser.UserName" class="text-dark text-decoration-none">
-            @Model.OtherUser.Name
-        </a>
-    </h5>
+    @if (Model.OtherUser != null)
+    {
+        <img src="/img/@(Model.OtherUser.Image ?? "default-avatar.jpg")" alt="avatar" class="rounded-circle me-3"
+            style="width: 40px; height: 40px;">
+        <h5 class="mb-0">
+            <a href="/profile/@Model.OtherUser.UserName" class="text-dark text-decoration-none">
+                @Model.OtherUser.Name
+            </a>
+        </h5>
+    }
+    else
+    {
+        <p class="text-danger">User not found.</p>
+    }
 </div>
 
 <div id="chat-box" class="p-4">
-    @foreach (var msg in Model.Messages)
+    @if (Model.Messages != null && Model.Messages.Any())
     {
-        var isCurrentUser = msg.SenderId == currentUserId;
-        var messageClass = isCurrentUser ? "d-flex flex-row-reverse" : "d-flex flex-row";
-        var bubbleClass = isCurrentUser ? "current-user" : "other-user";
+        @foreach (var msg in Model.Messages)
+        {
+            var isCurrentUser = msg.SenderId == currentUserId;
+            var messageClass = isCurrentUser ? "d-flex flex-row-reverse" : "d-flex flex-row";
+            var bubbleClass = isCurrentUser ? "current-user" : "other-user";
 
-        <div class="mb-3 @messageClass">
-            <div style="max-width: 70%;">
-                <p class="message-bubble @bubbleClass">
-                    @msg.Content
-                </p>
-                <small class="message-timestamp d-block @(isCurrentUser ? "text-end" : "text-start") px-1">
-                    @msg.SentAt.ToString("HH:mm")
-                </small>
+            <div class="mb-3 @messageClass">
+                <div style="max-width: 70%;">
+                    <p class="message-bubble @bubbleClass">
+                        @msg.Content
+                    </p>
+                    <small class="message-timestamp d-block @(isCurrentUser ? "text-end" : "text-start") px-1">
+                        @msg.SentAt.ToString("HH:mm")
+                    </small>
+                </div>
             </div>
-        </div>
+        }
+    }
+    else
+    {
+        <p class="text-muted">No messages found.</p>
     }
 </div>
 
 <div class="input-group">
-    <form asp-action="Chat" method="post" id="messageForm" autocomplete="off" class="w-100 d-flex">
+    <form asp-action="Chat" asp-controller="Message" method="post" id="messageForm" autocomplete="off"
+        class="w-100 d-flex">
         @Html.AntiForgeryToken()
-        <input type="hidden" asp-for="OtherUser.UserName" />
-        <input asp-for="NewMessageContent" class="form-control" style="color:var(--text-color); !important"
+        <input type="hidden" asp-for="OtherUser.UserName" id="otherUserName" />
+        <script>
+            console.log("OtherUser.UserName: ", $('#otherUserName').val());
+        </script>
+        <input asp-for="NewMessageContent" class="form-control" style="color: var(--text-color) !important"
             placeholder="Type a message..." autofocus />
         <button type="submit" class="btn btn-primary">
             <i class="bi bi-send-fill"></i>
@@ -182,19 +198,38 @@
         e.preventDefault();
         var form = $(this);
         var url = form.attr('action');
+        var username = form.find('input[name="OtherUser.UserName"]').val();
+        console.log("Form action URL: ", url);
+        console.log("Username from form: ", username);
+        if (!username) {
+            console.error("Form username is undefined or null.");
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Invalid username for message form.'
+            });
+            return;
+        }
 
         $.ajax({
             type: "POST",
             url: url,
             data: form.serialize(),
+            beforeSend: function (xhr) {
+                console.log("Sending POST request to: " + url);
+                console.log("Serialized data: ", form.serialize());
+            },
             success: function (data) {
                 $('#chat-content-area').html(data);
                 var chatBox = document.getElementById("chat-box");
                 if (chatBox) {
                     chatBox.scrollTop = chatBox.scrollHeight;
                 }
+                $('#NewMessageContent').val('');
             },
             error: function (xhr, status, error) {
+                console.error("Failed to send message: " + xhr.status + " " + xhr.statusText);
+                console.error("Response: " + xhr.responseText);
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',

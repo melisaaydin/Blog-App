@@ -12,9 +12,7 @@
     background-color: #7f143f !important;
 }
 
-.border-primary {
-    border-color: #7f143f !important;
-}
+.border-primary {}
 
 .bi-bell-fill {
     font-size: 22px;
@@ -22,17 +20,4 @@
 
 .notification-icon-large {
     font-size: 25px;
-}
-
-.btn-primary:hover,
-.btn-primary:focus,
-.btn-primary:active {
-    background-color: #6a1135;
-    border-color: #6a1135;
-    box-shadow: 0 0 0 0.25rem rgba(127, 20, 63, 0.5);
-}
-
-.btn-primary {
-    background-color: #7f143f;
-    border-color: #7f143f;
 }

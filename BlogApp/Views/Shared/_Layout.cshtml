@@ -7,19 +7,13 @@
     <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="~/css/site.css">
-
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@400;500;700;900&display=swap"
-        rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
     @await RenderSectionAsync("Head", required: false)
-
     <title>Mls Blog</title>
 </head>
+
 <style>
     :root {
         --primary-color: rgb(136, 0, 21);
@@ -33,12 +27,12 @@
         --navbar-background: #ffffff;
         --navbar-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         --border-color: #e2e8f0;
-        --succes-background: sucess;
+        --succes-background: success;
     }
 
     .dark-theme {
-        --primary-color: #740909;
-        --secondary-color: rgb(136, 0, 21);
+        --primary-color: #927492;
+        --secondary-color: #b591b5;
         --third-color: #d195a8;
         --text-color: rgb(200, 200, 200);
         --text-secondary-color: #e2e8f0;
@@ -59,12 +53,7 @@
         transition: background-color 0.3s ease;
     }
 
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
+    h1, h2, h3, h4, h5, h6 {
         font-family: 'Roboto', sans-serif;
         color: var(--text-color);
     }
@@ -212,6 +201,16 @@
         width: 60px;
     }
 
+    .theme-logo {
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        will-change: opacity, transform;
+    }
+
+    .theme-logo.loading {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
     .theme-switch input {
         display: none;
     }
@@ -282,10 +281,9 @@
         <nav class="navbar navbar-expand-lg">
             <div class="container">
                 <a href="/posts" class="navbar-brand">
-                    <img style="height: 40px;" src="/img/mlsblog.png" alt="Mls Blog Logo">
+                    <img style="height: 40px;" src="/img/mlsblog.png" data-light-logo="/img/mlsblog.png" data-dark-logo="/img/mlsblog-dark.png" alt="Mls Blog Logo" class="theme-logo">
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
-                    aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
@@ -308,6 +306,7 @@
                         }
                         <li class="nav-item"></li>
                         <a class="nav-link" asp-controller="Collection" asp-action="Index">Collections</a>
+                        <a class="nav-link" asp-controller="Tag" asp-action="Index">Tags</a>
                         </li>
                     </ul>
 
@@ -321,10 +320,8 @@
                         @if (User.Identity!.IsAuthenticated)
                         {
                             @await Component.InvokeAsync("Notifications")
-
                             <li class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"
-                                    aria-expanded="false">
+                                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                                     @User.Identity.Name
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
@@ -338,20 +335,23 @@
                                             <i class="bi bi-gear-fill me-2"></i> Edit Profile
                                         </a>
                                     </li>
-                                    <li><a href="/Message/Index"
-                                            class="dropdown-item d-flex justify-content-between align-items-center">
+                                    <li>
+                                        <a href="/Message/Index" class="dropdown-item d-flex justify-content-between align-items-center">
                                             <span><i class="bi bi-envelope-fill me-2"></i> Messages</span>
                                             @await Component.InvokeAsync("UnreadMessageCount")
-                                        </a></li>
+                                        </a>
+                                    </li>
                                     @if (User.IsInRole("Admin"))
                                     {
                                         <li>
                                             <hr class="dropdown-divider">
                                         </li>
-                                        <li><a class="dropdown-item" href="/Admin/UserList"><i
-                                                    class="bi bi-people-fill me-2"></i> Admin Panel</a></li>
+                                        <li>
+                                            <a class="dropdown-item" href="/Admin/UserList">
+                                                <i class="bi bi-people-fill me-2"></i> Admin Panel
+                                            </a>
+                                        </li>
                                     }
-
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
@@ -392,31 +392,64 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const themeSwitch = document.getElementById('checkbox');
-            const currentTheme = localStorage.getItem('theme');
+            const logo = document.querySelector('.theme-logo');
+            const lightLogo = logo ? logo.getAttribute('data-light-logo') : null;
+            const darkLogo = logo ? logo.getAttribute('data-dark-logo') : null;
 
-            if (currentTheme) {
-                document.body.classList.add(currentTheme);
-                if (currentTheme === 'dark-theme') {
-                    themeSwitch.checked = true;
+            // Önbelleği atlatmak için zaman damgası ekleme
+            function addCacheBuster(url) {
+                return url + '?t=' + new Date().getTime();
+            }
+
+            // Başlangıçta kaydedilmiş temayı yükle
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                document.body.classList.add(savedTheme);
+                themeSwitch.checked = savedTheme === 'dark-theme';
+                if (logo && lightLogo && darkLogo) {
+                    logo.src = addCacheBuster(savedTheme === 'dark-theme' ? darkLogo : lightLogo);
                 }
-            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                document.body.classList.add('dark-theme');
-                themeSwitch.checked = true;
+            } else {
+                // Eğer kaydedilmiş tema yoksa, varsayılan olarak açık tema
+                document.body.classList.add('light-theme');
+                localStorage.setItem('theme', 'light-theme');
+                if (logo && lightLogo) {
+                    logo.src = addCacheBuster(lightLogo);
+                }
             }
 
             themeSwitch.addEventListener('change', function () {
-                if (this.checked) {
-                    document.body.classList.add('dark-theme');
-                    localStorage.setItem('theme', 'dark-theme');
+                if (logo && lightLogo && darkLogo) {
+                    logo.classList.add('loading');
+                    setTimeout(() => {
+                        if (this.checked) {
+                            document.body.classList.add('dark-theme');
+                            document.body.classList.remove('light-theme');
+                            localStorage.setItem('theme', 'dark-theme');
+                            logo.src = addCacheBuster(darkLogo);
+                        } else {
+                            document.body.classList.remove('dark-theme');
+                            document.body.classList.add('light-theme');
+                            localStorage.setItem('theme', 'light-theme');
+                            logo.src = addCacheBuster(lightLogo);
+                        }
+                        logo.classList.remove('loading');
+                    }, 150);
                 } else {
-                    document.body.classList.remove('dark-theme');
-                    localStorage.setItem('theme', 'light-theme');
+                    if (this.checked) {
+                        document.body.classList.add('dark-theme');
+                        document.body.classList.remove('light-theme');
+                        localStorage.setItem('theme', 'dark-theme');
+                    } else {
+                        document.body.classList.remove('dark-theme');
+                        document.body.classList.add('light-theme');
+                        localStorage.setItem('theme', 'light-theme');
+                    }
                 }
             });
 
             const navbar = document.querySelector('.navbar');
             const scrollThreshold = 50;
-
             window.addEventListener('scroll', () => {
                 if (window.scrollY > scrollThreshold) {
                     navbar.classList.add('navbar-scrolled');
@@ -424,17 +457,14 @@
                     navbar.classList.remove('navbar-scrolled');
                 }
             });
-
             if (window.scrollY > scrollThreshold) {
                 navbar.classList.add('navbar-scrolled');
             }
 
             var notificationLink = document.getElementById('notificationDropdown');
-
             if (notificationLink) {
                 notificationLink.addEventListener('show.bs.dropdown', function () {
                     var badge = document.getElementById('notification-badge');
-
                     if (badge && !badge.classList.contains('d-none')) {
                         fetch('/Notifications/MarkAllAsRead', {
                             method: 'POST',
@@ -445,15 +475,15 @@
                             if (response.ok) return response.json();
                             return Promise.reject(response);
                         })
-                            .then(data => {
-                                if (data.success) {
-                                    badge.classList.add('d-none');
-                                    var unreadItems = document.querySelectorAll('.dropdown-menu a[style*="background-color"]');
-                                    unreadItems.forEach(item => {
-                                        item.style.backgroundColor = 'transparent';
-                                    });
-                                }
-                            }).catch(error => console.error('Error marking notifications as read:', error));
+                        .then(data => {
+                            if (data.success) {
+                                badge.classList.add('d-none');
+                                var unreadItems = document.querySelectorAll('.dropdown-menu a[style*="background-color"]');
+                                unreadItems.forEach(item => {
+                                    item.style.backgroundColor = 'transparent';
+                                });
+                            }
+                        }).catch(error => console.error('Bildirimler okunurken hata oluştu:', error));
                     }
                 });
             }
@@ -462,35 +492,26 @@
                 "positionClass": "toast-bottom-right"
             };
             @if (TempData["ToastMessage"] != null)
+            {
+                var message = TempData["ToastMessage"]?.ToString();
+                var type = TempData["ToastType"]?.ToString() ?? "info";
+                if (type == "success")
                 {
-                    var message = TempData["ToastMessage"]?.ToString();
-                    var type = TempData["ToastType"]?.ToString() ?? "info";
-
-                    if (type == "success")
-                    {
-                        <text>
-                            toastr.success("@Html.Raw(message)");
-                        </text>
+                    <text>toastr.success("@Html.Raw(message)");</text>
                 }
-                                                                                                                                                                                else if (type == "error")
-                    {
-                        <text>
-                            toastr.error("@Html.Raw(message)");
-                        </text>
+                else if (type == "error")
+                {
+                    <text>toastr.error("@Html.Raw(message)");</text>
                 }
-                                                                                                                                                                                else if (type == "warning")
-                    {
-                        <text>
-                            toastr.warning("@Html.Raw(message)");
-                        </text>
+                else if (type == "warning")
+                {
+                    <text>toastr.warning("@Html.Raw(message)");</text>
                 }
-                    else
-                    {
-                        <text>
-                            toastr.info("@Html.Raw(message)");
-                        </text>
+                else
+                {
+                    <text>toastr.info("@Html.Raw(message)");</text>
                 }
-                }
+            }
         });
     </script>
     @await RenderSectionAsync("Scripts", required: false)

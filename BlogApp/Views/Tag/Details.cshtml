@@ -1,8 +1,8 @@
-@model BlogApp.Entity.Collection
-
+@model BlogApp.Entity.Tag
+@using System.Linq
 @{
-    ViewData["Title"] = Model?.Title ?? "Collection Details";
-    ViewBag.MetaDescription = $"Read articles in the '{Model?.Title}' collection at MyBlog.";
+    ViewData["Title"] = Model?.Text ?? "Tag Details";
+    ViewBag.MetaDescription = Model != null ? $"Explore articles tagged with '{Model.Text}' at MyBlog." : "Tag Details";
 }
 
 <style>
@@ -13,15 +13,22 @@
         background-color: var(--background-color);
     }
 
-    h1, h2, h3, h4, h5, h6 {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
         font-family: 'Roboto', sans-serif;
         color: var(--text-color);
     }
+
     a {
         text-decoration: none;
         color: var(--primary-color);
     }
-    .collection-container {
+
+    .tag-container {
         background: var(--card-background);
         border-radius: 1.25rem;
         box-shadow: var(--card-shadow);
@@ -32,12 +39,12 @@
         border: 1px solid var(--border-color);
     }
 
-    .collection-container:hover {
+    .tag-container:hover {
         transform: translateY(-5px);
         box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
     }
 
-    .collection-title {
+    .tag-title {
         font-size: 2.75rem;
         font-weight: 800;
         color: var(--text-color);
@@ -45,14 +52,14 @@
         margin-bottom: 1.5rem;
     }
 
-    .collection-meta {
+    .tag-meta {
         font-size: 0.95rem;
         color: var(--text-secondary-color);
         margin-bottom: 2rem;
         font-weight: 500;
     }
 
-    .collection-meta span {
+    .tag-meta span {
         margin-right: 1rem;
     }
 
@@ -130,68 +137,77 @@
 </style>
 
 <div class="container">
-    <div class="collection-container">
-        <h2 class="collection-title">@Model.Title</h2>
-        <div class="collection-meta">
-            <span>Created by <a href="/profile/@Model.Creator.UserName">@(Model.Creator?.Name ?? "Unknown")</a></span> |
-            <span>@Model.Posts.Count Posts</span> |
-            <span>Created on @Model.CreatedAt.ToString("MMMM dd, yyyy")</span> |
-            <span>Status: @(Model.IsOpen ? "Open" : "Closed")</span>
+    @if (Model == null)
+    {
+        <div class="alert alert-danger">
+            Tag not found.
         </div>
-        <p>@(string.IsNullOrEmpty(Model.Description) ? "No description available." : Model.Description)</p>
+    }
+    else
+    {
+        <div class="tag-container">
+            <h2 class="tag-title">@Model.Text</h2>
+            <div class="tag-meta">
+                <span>@(Model.Posts?.Count ?? 0) Posts</span> |
+                <span>Created by <a href="/profile/@(Model.Creator?.UserName ?? "melisaaydin")">@(Model.Creator?.Name ??
+                                            "Melisa Aydın")</a></span>
+            </div>
 
-        @if (User.Identity.IsAuthenticated && User.FindFirstValue(ClaimTypes.NameIdentifier) == Model.CreatorId)
-        {
-            <form id="toggleStatusForm" action="/collections/toggle-status/@Model.Id" method="post" class="d-inline">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="id" value="@Model.Id" />
-                <button type="button" class="btn btn-primary" id="toggleButton">@(Model.IsOpen ? "Close Collection" : "Open Collection")</button>
-            </form>
-        }
+            @if (User.Identity.IsAuthenticated && (User.FindFirstValue(ClaimTypes.NameIdentifier) == Model.CreatorId ||
+                    User.IsInRole("Admin")))
+            {
+                <form id="deleteTagForm" action="/tags/delete/@Model.TagId" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.TagId" />
+                    <button type="button" class="btn btn-danger mb-3" id="deleteButton">Delete Tag</button>
+                </form>
+            }
 
-        @if (Model.Posts.Any())
-        {
-            <div class="post-grid">
-                @foreach (var post in Model.Posts)
-                {
-                    <div class="post-card">
-                        <img src="/img/@(post.Image ?? "default.jpg")" alt="@post.Title" />
-                        <div class="post-card-content">
-                            <h3><a href="/posts/details/@post.Url">@post.Title</a></h3>
-                            <p>@(string.IsNullOrEmpty(post.Description) ? "No description available." : post.Description)</p>
+            @if (Model.Posts?.Any() == true)
+            {
+                <div class="post-grid">
+                    @foreach (var post in Model.Posts)
+                    {
+                        <div class="post-card">
+                            <img src="/img/@(post.Image ?? "default.jpg")" alt="@post.Title" />
+                            <div class="post-card-content">
+                                <h3><a href="/posts/details/@post.Url">@post.Title</a></h3>
+                                <p>@(string.IsNullOrEmpty(post.Description) ? "No description available." : post.Description)</p>
+                            </div>
                         </div>
-                    </div>
-                }
-            </div>
-        }
-        else
-        {
-            <div class="alert alert-info">
-                No posts in this collection yet.
-            </div>
-        }
-    </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    No posts found for this tag.
+                </div>
+            }
+        </div>
+    }
 </div>
 
 @section Scripts {
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function () {
-            $('#toggleButton').on('click', function (e) {
+            $('#deleteButton').on('click', function (e) {
                 e.preventDefault();
                 Swal.fire({
                     title: 'Are you sure?',
-                    text: "You are about to " + (/@Model.IsOpen ? "close" : "open"/) + " this collection. This action cannot be undone!",
+                    text: "This tag will be deleted permanently. This action cannot be undone!",
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, proceed!',
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!',
                     cancelButtonText: 'No, cancel'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        $('#toggleStatusForm').submit();
+                        $('#deleteTagForm').submit();
                     }
                 });
             });

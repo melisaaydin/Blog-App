@@ -5,7 +5,7 @@
 namespace BlogApp.Migrations
 {
     /// <inheritdoc />
-    public partial class AddCollections : Migration
+    public partial class RemoveTagColor : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

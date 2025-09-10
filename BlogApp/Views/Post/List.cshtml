@@ -319,7 +319,7 @@
                             }
                             else
                             {
-                                <a href="/posts/edit/@item.Url" class="btn btn-sm btn-primary">Edit</a>
+                                <a href="/posts/edit/@Uri.EscapeDataString(item.Url)" class="btn btn-sm btn-primary">Edit</a>
                             }
                             <button type="button" class="btn btn-sm btn-danger delete-btn" data-bs-toggle="modal"
                                 data-bs-target="#deleteModal" data-post-id="@item.PostId"
@@ -357,7 +357,7 @@
         </div>
     }
 </div>
-
+@Html.AntiForgeryToken()
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
