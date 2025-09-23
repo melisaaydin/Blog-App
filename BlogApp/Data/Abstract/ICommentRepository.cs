@@ -6,5 +6,6 @@ namespace BlogApp.Data.Abstract
     {
         IQueryable<Comment> Comments { get; }
         Task CreateComment(Comment comment);
+        Task<Comment?> GetCommentById(int id);
     }
 }

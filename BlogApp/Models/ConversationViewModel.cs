@@ -1,8 +1,10 @@
+using BlogApp.Entity;
+
 namespace BlogApp.Models
 {
     public class ConversationViewModel
     {
-        public Entity.Message LastMessage { get; set; }
-        public Entity.User OtherUser { get; set; }
+        public Message? LastMessage { get; set; }
+        public User? OtherUser { get; set; }
     }
 }

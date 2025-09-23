@@ -1,3 +1,4 @@
+
 # Build klasörleri
 bin/
 obj/
@@ -45,3 +46,5 @@ publish/
 *.tmp
 *.bak
 *.swp
+
+
