@@ -1,4 +1,8 @@
+@{
+    Layout = "_Layout";
+}
 @model LoginViewModel
+
 <style>
     .login-card {
         max-width: 400px;
@@ -11,27 +15,37 @@
         margin-top: 100px;
     }
 
+    .pss {
+        text-decoration: none;
+        color: var(--third-color);
+        align-items: center;
+        text-align: center;
+        margin-left: 80px;
+        font-weight: 700;
+        justify-content: center;
+    }
+
     .login-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
     }
 
     .form-control {
-        border: 1px solid #d1d5db;
+        border: 1px solid var(--border-color);
         border-radius: 0.5rem;
         padding: 0.75rem 1rem;
         transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
 
     .form-control:focus {
-        border-color: #7f143f;
+        border-color: var(--primary-color);
         box-shadow: 0 0 0 0.2rem rgba(127, 20, 63, 0.25);
         outline: none;
     }
 
     .btn-primary {
-        background-color: #7f143f;
-        border-color: #7f143f;
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
         border-radius: 0.5rem;
         padding: 0.75rem;
         font-weight: 600;
@@ -42,8 +56,8 @@
     }
 
     .btn-primary:hover {
-        background-color: #9c194e;
-        border-color: #9c194e;
+        background-color: var(--third-color);
+        border-color: var(--third-color);
         transform: translateY(-2px);
     }
 
@@ -55,18 +69,13 @@
 
     .form-label {
         font-weight: 500;
-        color: #374151;
+        color: var(--text-color);
     }
 
-    .signup-link {
-        color: #7f143f;
-        font-weight: 500;
-        transition: color 0.3s ease;
-    }
-
-    .signup-link:hover {
-        color: #9c194e;
-
+    .login-link {
+        color: var(--primary-color);
+        font-weight: 700;
+        text-decoration: none;
     }
 </style>
 
@@ -88,10 +97,10 @@
             </div>
             <button type="submit" class="btn btn-primary">Login</button>
             <div class="mt-3">
-                <a asp-action="ForgotPassword">Forgot your password?</a>
+                <a asp-action="ForgotPassword" class="pss">Forgot your password?</a>
             </div>
             <p class="text-center text-sm text-gray-600 mt-6">
-                Don't have an account? <a href="/users/register" class="signup-link">Sign up</a>
+                Don't have an account? <a href="/users/register" class="login-link">Sign Up</a>
             </p>
         </form>
     </div>

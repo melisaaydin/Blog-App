@@ -15,7 +15,41 @@ namespace BlogApp.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "9.0.7");
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
+
+            modelBuilder.Entity("BlogApp.Entity.Collection", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatorId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsOpen")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
+
+                    b.ToTable("Collections");
+                });
 
             modelBuilder.Entity("BlogApp.Entity.Comment", b =>
                 {
@@ -202,16 +236,19 @@ namespace BlogApp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("Color")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("CreatorId")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Text")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Url")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("TagId");
+
+                    b.HasIndex("CreatorId");
 
                     b.ToTable("Tags");
                 });
@@ -414,6 +451,21 @@ namespace BlogApp.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("PostCollections", b =>
+                {
+                    b.Property<int>("PostId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CollectionId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("PostId", "CollectionId");
+
+                    b.HasIndex("CollectionId");
+
+                    b.ToTable("PostCollections", (string)null);
+                });
+
             modelBuilder.Entity("PostTag", b =>
                 {
                     b.Property<int>("PostId")
@@ -427,6 +479,17 @@ namespace BlogApp.Migrations
                     b.HasIndex("TagId");
 
                     b.ToTable("PostTag");
+                });
+
+            modelBuilder.Entity("BlogApp.Entity.Collection", b =>
+                {
+                    b.HasOne("BlogApp.Entity.User", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Creator");
                 });
 
             modelBuilder.Entity("BlogApp.Entity.Comment", b =>
@@ -533,6 +596,15 @@ namespace BlogApp.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("BlogApp.Entity.Tag", b =>
+                {
+                    b.HasOne("BlogApp.Entity.User", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatorId");
+
+                    b.Navigation("Creator");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -580,6 +652,21 @@ namespace BlogApp.Migrations
                     b.HasOne("BlogApp.Entity.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PostCollections", b =>
+                {
+                    b.HasOne("BlogApp.Entity.Collection", null)
+                        .WithMany()
+                        .HasForeignKey("CollectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BlogApp.Entity.Post", null)
+                        .WithMany()
+                        .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

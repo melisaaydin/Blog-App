@@ -23,5 +23,6 @@ namespace BlogApp.Entity
         public List<Comment> Comments { get; set; } = new List<Comment>();
         public List<Tag> Tags { get; set; } = new List<Tag>();
         public List<Like> Likes { get; set; } = new List<Like>();
+        public ICollection<Collection> Collections { get; set; } = new List<Collection>();
     }
 }

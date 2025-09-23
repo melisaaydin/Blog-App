@@ -18,25 +18,22 @@ namespace BlogApp.ViewComponents
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            if (!User.Identity.IsAuthenticated)
+            if (!User.Identity?.IsAuthenticated ?? true)
             {
                 return Content("");
             }
 
-            var userId = UserClaimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = UserClaimsPrincipal?.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Content("");
+            }
 
             var unreadCount = await _context.Messages
                 .Where(m => m.ReceiverId == userId && !m.IsRead)
                 .CountAsync();
 
-
-            if (unreadCount > 0)
-            {
-
-                return Content(unreadCount.ToString());
-            }
-
-            return Content("");
+            return Content(unreadCount.ToString());
         }
     }
 }

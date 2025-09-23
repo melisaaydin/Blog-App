@@ -1,6 +1,7 @@
 using BlogApp.Entity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 
 namespace BlogApp.Data.Concrete.EfCore
 {
@@ -16,14 +17,12 @@ namespace BlogApp.Data.Concrete.EfCore
 
             logger.LogInformation("Database seeding process started.");
 
-            // 1. Apply Migrations
             if (context.Database.GetPendingMigrations().Any())
             {
                 logger.LogInformation("Applying migrations...");
                 await context.Database.MigrateAsync();
             }
 
-            // 2. Create Roles
             string[] roleNames = { "Admin", "User" };
             foreach (var roleName in roleNames)
             {
@@ -33,7 +32,6 @@ namespace BlogApp.Data.Concrete.EfCore
                 }
             }
 
-            // 3. Find or Create Users
             User? adminUser = await userManager.FindByEmailAsync("melisaaydin@gmail.com");
             if (adminUser == null)
             {
@@ -68,20 +66,23 @@ namespace BlogApp.Data.Concrete.EfCore
                 }
             }
 
-            // 4. Create Tags
             if (!context.Tags.Any())
             {
-                context.Tags.AddRange(
-                    new Tag { Text = "Skin Care", Url = "skin-care", Color = TagColors.primary },
-                    new Tag { Text = "Beauty Routine", Url = "beauty-routine", Color = TagColors.secondary },
-                    new Tag { Text = "Healthy Skin", Url = "healthy-skin", Color = TagColors.warning },
-                    new Tag { Text = "Self-Care", Url = "self-care", Color = TagColors.danger },
-                    new Tag { Text = "Web Development", Url = "web-development", Color = TagColors.info }
-                );
-                await context.SaveChangesAsync();
+                if (adminUser != null)
+                {
+                    context.Tags.AddRange(
+                        new Tag { Text = "Skin Care", Url = Regex.Replace("Skin Care".ToLower(), @"[^a-z0-9]+", "-").Trim('-'), CreatorId = adminUser.Id },
+                        new Tag { Text = "Beauty Routine", Url = Regex.Replace("Beauty Routine".ToLower(), @"[^a-z0-9]+", "-").Trim('-'), CreatorId = adminUser.Id },
+                        new Tag { Text = "Healthy Skin", Url = Regex.Replace("Healthy Skin".ToLower(), @"[^a-z0-9]+", "-").Trim('-'), CreatorId = adminUser.Id },
+                        new Tag { Text = "Self-Care", Url = Regex.Replace("Self-Care".ToLower(), @"[^a-z0-9]+", "-").Trim('-'), CreatorId = adminUser.Id },
+                        new Tag { Text = "Web Development", Url = Regex.Replace("Web Development".ToLower(), @"[^a-z0-9]+", "-").Trim('-'), CreatorId = adminUser.Id },
+                        new Tag { Text = "Technology", Url = Regex.Replace("Technology".ToLower(), @"[^a-z0-9]+", "-").Trim('-'), CreatorId = adminUser.Id },
+                        new Tag { Text = "Lifestyle", Url = Regex.Replace("Lifestyle".ToLower(), @"[^a-z0-9]+", "-").Trim('-'), CreatorId = adminUser.Id }
+                    );
+                    await context.SaveChangesAsync();
+                }
             }
 
-            // 5. Create Posts
             if (!context.Posts.Any())
             {
                 if (adminUser != null && normalUser != null)

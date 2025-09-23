@@ -246,11 +246,14 @@ namespace BlogApp.Controllers
             }
 
             // Handle image upload
-            if (model.ImageFile != null)
+            if (model.ImageFile != null && model.ImageFile.Length > 0 && !string.IsNullOrEmpty(model.ImageFile.FileName))
             {
+                Console.WriteLine($"ImageFile: {model.ImageFile.FileName}, Length: {model.ImageFile.Length}");
                 var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
-                var extension = Path.GetExtension(model.ImageFile.FileName).ToLowerInvariant();
-                if (!allowedExtensions.Contains(extension))
+                var extension = Path.GetExtension(model.ImageFile.FileName)?.ToLowerInvariant();
+                Console.WriteLine($"Extension: {extension}");
+
+                if (string.IsNullOrEmpty(extension) || !allowedExtensions.Contains(extension))
                 {
                     ModelState.AddModelError("ImageFile", "Invalid image format.");
                     TempData["ToastMessage"] = "Invalid image format.";
@@ -258,23 +261,71 @@ namespace BlogApp.Controllers
                     return View(model);
                 }
 
-                if (user.Image != "default-avatar.jpg")
+                // Delete old photo
+                if (!string.IsNullOrEmpty(user.Image) && user.Image != "default-avatar.jpg")
                 {
-                    var oldImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", user.Image!);
+                    var oldImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", user.Image);
                     if (System.IO.File.Exists(oldImagePath))
                     {
-                        System.IO.File.Delete(oldImagePath);
+                        try
+                        {
+                            System.IO.File.Delete(oldImagePath);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error deleting old image: {ex.Message}");
+                        }
                     }
                 }
 
                 var randomFileName = $"{Guid.NewGuid()}{extension}";
-                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", randomFileName);
+                Console.WriteLine($"RandomFileName: {randomFileName}");
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img");
+                Console.WriteLine($"UploadsFolder: {uploadsFolder}");
 
-                using (var stream = new FileStream(path, FileMode.Create))
+                if (!Directory.Exists(uploadsFolder))
                 {
-                    await model.ImageFile.CopyToAsync(stream);
+                    try
+                    {
+                        Directory.CreateDirectory(uploadsFolder);
+                        Console.WriteLine($"File created: {uploadsFolder}");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error creating folder: {ex.Message}");
+                        ModelState.AddModelError("", "Could not create image upload folder.");
+                        TempData["ToastMessage"] = "Could not create image upload folder.";
+                        TempData["ToastType"] = "error";
+                        return View(model);
+                    }
                 }
-                user.Image = randomFileName;
+
+                var path = Path.Combine(uploadsFolder, randomFileName);
+                Console.WriteLine($"Path: {path}");
+
+                try
+                {
+                    using (var stream = new FileStream(path, FileMode.Create))
+                    {
+                        await model.ImageFile.CopyToAsync(stream);
+                    }
+                    user.Image = randomFileName;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"File write error: {ex.Message}");
+                    ModelState.AddModelError("ImageFile", "An error occurred while loading the image.");
+                    TempData["ToastMessage"] = "An error occurred while loading the image.";
+                    TempData["ToastType"] = "error";
+                    return View(model);
+                }
+            }
+            else
+            {
+                ModelState.AddModelError("ImageFile", "Please select a valid image file.");
+                TempData["ToastMessage"] = "Please select a valid image file.";
+                TempData["ToastType"] = "warning";
+                return View(model);
             }
 
             // Handle password change
