@@ -21,7 +21,13 @@ namespace BlogApp.Data.Concrete
             _context.Comments.Add(comment);
             await _context.SaveChangesAsync();
         }
-
+        public async Task<Comment?> GetCommentById(int id)
+        {
+            return await _context.Comments
+                .Include(c => c.User)
+                .Include(c => c.Replies)
+                .FirstOrDefaultAsync(c => c.CommentId == id);
+        }
 
     }
 }

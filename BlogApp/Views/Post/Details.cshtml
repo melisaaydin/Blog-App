@@ -1,96 +1,124 @@
 @model BlogApp.Entity.Post
+@using System.Security.Claims
 
 @{
     ViewData["Title"] = Model?.Title ?? "Post Details";
     ViewData["Description"] = Model?.Description ?? "Read the latest insights and updates at MyBlog.";
-    ViewData["CanonicalUrl"] = Model != null ? $"/post/details/{Model.Url}" : "/post";
+    ViewData["CanonicalUrl"] = Model != null ? $"/posts/details/{Model.Url}" : "/posts";
 }
 
 <style>
     body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        color: #1f2937;
+        font-family: 'Inter', sans-serif;
+        color: var(--text-color);
         line-height: 1.6;
+        background-color: var(--background-color);
     }
 
-    .post-container {
-        background: #ffffff;
-        border-radius: 1rem;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Roboto', sans-serif;
+        color: var(--text-color);
+    }
+
+    a {
+        text-decoration: none;
+        color: var(--primary-color);
+        transition: color 0.3s ease;
+    }
+
+    a:hover {
+        color: var(--secondary-color);
+    }
+
+    .post-container, .comment-section, .sidebar {
+        background: var(--card-background);
+        border-radius: 1.25rem;
+        box-shadow: var(--card-shadow);
         padding: 2.5rem;
-        margin-bottom: 2rem;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: 2.5rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+        border: 1px solid var(--border-color);
     }
 
+.comment-form{
+    border:none;
+     
+}
     .post-container:hover {
-        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+        transform: translateY(-5px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15); 
+        
     }
 
     .post-title {
-        font-size: 2.5rem;
+        font-size: 2.75rem;
         font-weight: 800;
-        color: #111827;
-        margin-bottom: 1rem;
-        line-height: 1.3;
+        color: var(--text-color);
+        line-height: 1.2;
+        margin-bottom: 1.5rem;
     }
 
     .tag-badge {
         display: inline-flex;
         align-items: center;
-        font-size: 0.875rem;
+        font-size: 0.85rem;
         font-weight: 600;
-        padding: 0.5rem 1.25rem;
-        border-radius: 2rem;
-        margin-right: 0.5rem;
+        padding: 0.4rem 1rem;
+        border-radius: 1.5rem;
+        margin-right: 0.75rem;
         margin-bottom: 0.75rem;
         text-decoration: none;
-        transition: all 0.2s ease;
+        transition: all 0.3s ease;
+        background-color: var(--tag-background);
+        border: 1px solid var(--tag-border); 
+        color: var(--tag-text);
     }
 
     .tag-badge:hover {
         transform: translateY(-2px);
-        opacity: 0.95;
+        background-color: var(--tag-hover-background);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
     }
 
     .post-image {
         width: 100%;
-        max-height: 400px;
+        max-height: 450px;
         object-fit: cover;
         border-radius: 1rem;
         margin-bottom: 2rem;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+        border: 1px solid var(--border-color);
     }
 
     .post-meta {
         display: flex;
         flex-wrap: wrap;
         gap: 1.5rem;
-        font-size: 0.875rem;
-        color: #6b7280;
+        font-size: 0.95rem;
+        color: var(--text-secondary-color);
         margin-bottom: 2rem;
         font-weight: 500;
     }
 
     .post-meta i {
-        margin-right: 0.5rem;
-        color: #7f143f;
+        margin-right: 0.6rem;
+        color: var(--primary-color);
+        font-size: 1.1rem;
     }
 
     .post-meta a {
-      
-        text-decoration: none;
         font-weight: 600;
-        transition: color 0.2s ease;
+        color: var(--text-secondary-color);
     }
 
     .post-meta a:hover {
-        color: #9c194e;
-        text-decoration: underline;
+        color: var(--primary-color);
     }
 
     .post-content {
-        font-size: 1.125rem;
+        font-size: 1.15rem;
         line-height: 1.8;
-        color: #374151;
+        color: var(--text-color);
         margin-bottom: 2.5rem;
     }
 
@@ -103,8 +131,8 @@
     .post-content h2,
     .post-content h3 {
         font-weight: 700;
-        color: #1f2937;
-        margin: 1.5rem 0 1rem;
+        color: var(--text-color);
+        margin: 2rem 0 1rem;
     }
 
     .post-content h2 {
@@ -112,38 +140,50 @@
     }
 
     .post-content h3 {
-        font-size: 1.25rem;
+        font-size: 1.4rem;
     }
 
     .comment-section {
-        background: #ffffff;
-        border-radius: 1rem;
-        padding: 2rem;
-        margin-top: 2.5rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        margin-top: 3rem;
+        box-shadow: var(--card-shadow);
+        border: 1px solid var(--border-color);
     }
 
     .comment-count {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #111827;
-        margin-bottom: 2rem;
+        font-size: 2.2rem;
+        margin-bottom: 1.8rem;
+        font-weight: 800;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid var(--border-color);
+        color: var(--text-color);
+    }
+
+    .comment-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .comment-wrapper {
+        position: relative;
+        padding: 1.2rem 0;
+        border-bottom: 1px solid var(--border-color);
+        transition: background-color 0.3s ease;
+    }
+
+    .comment-wrapper:last-child {
+        border-bottom: none;
+    }
+
+    .comment-wrapper:hover {
+        background-color: var(--hover-background); 
+        border-radius: 0.75rem;
     }
 
     .comment {
-        background: transparent;
         display: flex;
-        gap: 1.25rem;
-        padding: 1.25rem 0;
-        transition: background-color 0.2s ease;
-    }
-
-    .comment:hover {
-        border-radius: 0.5rem;
-    }
-
-    .comment:last-child {
-        border-bottom: none;
+        gap: 1.2rem;
+        padding: 0;
     }
 
     .comment-avatar {
@@ -151,183 +191,279 @@
         height: 48px;
         border-radius: 50%;
         object-fit: cover;
-        border: 2px solid #e5e7eb;
-    }
-
-    .comment-content {
-        flex: 1;
+        border: 2px solid var(--border-color);
+        flex-shrink: 0;
     }
 
     .comment-header {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        margin-bottom: 0.75rem;
+        margin-bottom: 0.4rem;
+        gap: 0.75rem;
+        justify-content: space-between;
     }
 
     .comment-author {
-        font-size: 1rem;
-        font-weight: 600;
-        color: #111827;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--text-color);
     }
 
     .comment-author a {
-        color: #7f143f;
-        text-decoration: none;
-        transition: color 0.2s ease;
+        color: var(--text-color);
     }
 
     .comment-author a:hover {
-        color: #9c194e;
-        text-decoration: underline;
+        color: var(--primary-color);
     }
 
     .comment-date {
-        font-size: 0.875rem;
-        color: #6b7280;
-        font-weight: 500;
+        font-size: 0.85rem;
+        color: var(--text-secondary-color);
+        font-weight: 400;
     }
 
     .comment-text {
-        font-size: 0.95rem;
-        color: #374151;
+        color: var(--text-secondary-color);
         line-height: 1.6;
+        margin-bottom: 0.8rem;
     }
 
-    .comment-form {
-        background: #ffffff;
-        border-radius: 1rem;
-        padding: 2.5rem;
-        margin-bottom: 2.5rem;
+    .reply-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.1rem;
+        font-size: 0.9rem;
+        padding: 0.3rem 0.8rem;
+        border: none;
+        background-color: transparent;
+        color: var(--text-secondary-color);
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border-radius: 0.5rem;
+    }
+
+    .reply-btn:hover {
+        color: var(--primary-color);
+        background-color: var(--hover-background);
+    }
+
+    .reply-btn i {
+        font-size: 1.1rem;
+    }
+
+    .reply-form {
+        margin-top: 1rem;
+        margin-left: 2rem;
+        border-left: 2px solid var(--border-color);
+        padding-left: 1.5rem;
+        position: relative;
+    }
+    .reply-form::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 2px;
+        height: 100%;
+        background-color: var(--border-color);
     }
 
     .form-label {
         font-weight: 600;
-        color: #111827;
-        font-size: 0.9rem;
-        margin-bottom: 0.75rem;
+        color: var(--text-color);
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+        display: block;
     }
 
     .form-control {
-        border: 1px solid #d1d5db;
+        border: 1px solid var(--border-color);
         border-radius: 0.75rem;
-        padding: 0.875rem 1.25rem;
+        padding: 0.75rem 1rem;
         font-size: 1rem;
-        transition: all 0.2s ease;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+        background-color: var(--card-background);
+        color: var(--text-color) ;
+    
     }
-
+.form-control::placeholder{
+    color:var(--text-color);
+}
     .form-control:focus {
-        border-color: #7f143f;
-        box-shadow: 0 0 0 4px rgba(127, 20, 63, 0.15);
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem var(--primary-color-shadow);
         outline: none;
+        color:var(--text-color);
+        background:transparent;
+       
     }
 
     .btn-primary {
-        background-color: #7f143f;
-        border-color: #7f143f;
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
         border-radius: 0.75rem;
-        padding: 0.875rem 2rem;
-        font-weight: 600;
-        font-size: 1rem;
+        padding: 0.7rem 1.6rem;
+        font-weight: 500;
+        font-size: 0.95rem;
         color: #ffffff;
-        transition: all 0.3s ease;
-        position: relative;
+        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
 
     .btn-primary:hover {
-        background-color: #9c194e;
-        border-color: #9c194e;
-        transform: translateY(-3px);
-        box-shadow: 0 4px 12px rgba(127, 20, 63, 0.3);
+        background-color: var(--secondary-color);
+        border-color: var(--secondary-color);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
     }
 
-    .btn-primary.loading::after {
+    .comment-wrapper.has-replies > .comment::after {
         content: '';
         position: absolute;
-        width: 24px;
-        height: 24px;
-        border: 3px solid #fff;
-        border-radius: 50%;
-        border-top-color: transparent;
-        animation: spin 0.8s linear infinite;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
+        bottom: 0;
+        width: 2px;
+        height: 80%;
+        left: 24px;
+        top: 80px;
+        background-color: var(--border-color);
+        z-index: 1;
+        transform: scaleY(0);
+        transform-origin: top;
+        transition: transform 0.5s ease-in-out;
+    }
+
+    .comment-wrapper.has-replies.show-replies > .comment::after {
+        transform: scaleY(1);
+    }
+
+    .comment-wrapper.is-reply {
+        padding-left: 4.5rem;
+        position: relative;
+    }
+
+    .comment-wrapper.is-reply > .comment::before {
+        content: '';
+        position: absolute;
+        top: 40px;
+        left: 25px;
+        width: 25px;
+        height: 2px;
+        background-color: var(--border-color);
+        z-index: 2;
+    }
+
+    .comment-wrapper:not(.is-reply)::before {
+        display: none;
+    }
+
+    .replies-container {
+        overflow: hidden;
+        max-height: 0;
+        transition: max-height 0.6s ease-in-out;
+    }
+
+    .replies-container.show {
+        max-height: 1000px;
+    }
+
+    .toggle-replies-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.2rem;
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
+        border: none;
+        color: var(--primary-color); 
+        background: transparent;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-left: 4.5rem;
+        margin-top: 0.5rem;
+        border-radius: 0.5rem;
+    }
+
+    .toggle-replies-btn:hover {
+        color: var(--secondary-color);
+        background-color: var(--hover-background);
+        transform: translateY(-2px);
+    }
+
+    .toggle-replies-btn i {
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .toggle-replies-btn.open i {
+        transform: rotate(180deg);
     }
 
     .alert {
-        padding: 1rem 1.5rem;
+        padding: 0.8rem 1.2rem;
         border-radius: 0.75rem;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
         font-size: 0.9rem;
         font-weight: 500;
         opacity: 0;
-        transition: opacity 0.3s ease;
+        transition: opacity 0.3s ease, background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
     }
-
     .alert.show {
         opacity: 1;
     }
-
     .alert-success {
-        background-color: #d1fae5;
-        color: #065f46;
+        background-color: var(--success-background);
+        color: var(--success-color);
+        border: 1px solid var(--success-border);
     }
-
     .alert-danger {
-        background-color: #fee2e2;
-        color: #991b1b;
+        background-color: var(--error-background);
+        color: var(--error-color);
+        border: 1px solid var(--error-border);
+    }
+    .alert-info {
+        background-color: var(--info-background);
+        color: var(--info-color);
+        border: 1px solid var(--info-border);
     }
 
-    .sidebar {
-        position: sticky;
-        top: 2rem;
-        padding: 2rem;
-        background: #ffffff;
-        border-radius: 1rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    :root {
+        --success-background: #d1fae5;
+        --success-color: #065f46;
+        --success-border: #a7f3d0;
+        --error-background: #fee2e2;
+        --error-color: #991b1b;
+        --error-border: #fecaca;
+        --info-background: #e0f2fe;
+        --info-color: #0E7490;
+        --info-border: #90cdf4;
+        --tag-background: #7f143f;
+        --tag-text: #faf7f7ff;
+        --tag-border: #7f143f;
+        --tag-hover-background: #f7f6f7ff;
+        --hover-background: #fbfbfc;
+        --primary-color-shadow: rgba(127, 20, 63, 0.25);
     }
 
-    @@keyframes spin {
-        to {
-            transform: translate(-50%, -50%) rotate(360deg);
-        }
-    }
-
-    @@media (max-width: 991px) {
-        .post-title {
-            font-size: 2rem;
-        }
-
-        .post-image {
-            max-height: 300px;
-        }
-
-        .sidebar {
-            margin-top: 2rem;
-        }
-    }
-
-    @@media (max-width: 767px) {
-
-        .post-container,
-        .comment-form,
-        .comment-section,
-        .sidebar {
-            padding: 1.5rem;
-        }
-
-        .post-title {
-            font-size: 1.75rem;
-        }
-
-        .post-content {
-            font-size: 1rem;
-        }
+    .dark-theme {
+        --success-background: #103b29;
+        --success-color: #81c784;
+        --success-border: #2e7d32;
+        --error-background: #3e0b0b;
+        --error-color: #ef9a9a;
+        --error-border: #c62828;
+        --info-background: #1a237e;
+        --info-color: #9fa8da;
+        --info-border: #5c6bc0;
+        --tag-background: #927492;
+        --tag-text: #fae9e9ff;
+        --tag-border: #927492;
+        --tag-hover-background: #fae9e9ff;
+        --hover-background: #334155; 
+        --primary-color-shadow: rgba(248, 187, 208, 0.25);
     }
 </style>
 
-<div class="container my-5">
+<div class="container my-5" style="padding-top: 0px; !important">
     <div class="row">
         <div class="col-lg-8">
             @if (Model == null)
@@ -343,9 +479,7 @@
                         {
                             foreach (var tag in Model.Tags)
                             {
-                                var colorClass = tag.Color.HasValue ? tag.Color.Value.ToString().ToLower() : "primary";
-                                <a href="/posts/tag/@tag.Url" class="tag-badge bg-@colorClass bg-opacity-10 text-@colorClass"
-                                    aria-label="Tag: @tag.Text">@tag.Text</a>
+                                <a href="/posts/tag/@tag.Url" class="tag-badge" aria-label="Tag: @tag.Text"><i class="bi bi-tag-fill me-1"></i>@tag.Text</a>
                             }
                         }
                         else
@@ -353,69 +487,49 @@
                             <p class="text-muted">No tags available for this post.</p>
                         }
                     </div>
-                    <img src="/img/@(Model.Image ?? "default.jpg")" class="post-image" alt="@(Model.Title ?? "Post Image")"
-                        loading="lazy" />
+                    <img src="/img/@(Model.Image ?? "https://placehold.co/1000x450/e0e0e0/ffffff?text=No+Image")" class="post-image" alt="@(Model.Title ?? "Post Image")" loading="lazy" />
                     <div class="post-meta">
                         <span><i class="bi bi-calendar"></i> @(Model.PublishedOn.ToString("MMMM dd, yyyy"))</span>
-                        <span><i class="bi bi-person-circle"></i> <a
-                                href="/profile/@(Model.User?.UserName ?? "unknown")">@(Model.User?.Name ??
-                                                            "Anonymous")</a></span>
+                        <span><i class="bi bi-person-circle"></i> <a href="/profile/@(Model.User?.UserName ?? "unknown")">@(Model.User?.Name ?? "Anonymous")</a></span>
                         <span><i class="bi bi-eye-fill"></i> @Model.ViewCount Views</span>
-                          @if(User.Identity?.IsAuthenticated == true)
-    {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var isLikedByCurrentUser = Model.Likes.Any(l => l.UserId == userId);
-        
-        <span class="like-section ms-3">
-            <button id="likeBtn" class="btn btn-link text-danger p-0" data-post-id="@Model.PostId">
-                <i class="bi @(isLikedByCurrentUser ? "bi-heart-fill" : "bi-heart")"></i>
-            </button>
-            <span id="likeCount" class="ms-1">@Model.Likes.Count</span>
-        </span>
-    }  else
-    {
-         <span class="like-section ms-3">
-            <i class="bi bi-heart"></i>
-            <span id="likeCount" class="ms-1">@Model.Likes.Count</span>
-        </span>
-    }
-                    </div>
-                    <hr class="my-4">
-                    <div class="post-content">@Html.Raw(Model.Content ?? "")</div>
-                </div>
-                <div class="comment-section">
-                    <h4 class="comment-count"><span id="commentCount">@(Model.Comments?.Count() ?? 0)</span> Comments</h4>
-                    <div id="comments">
-                        @foreach (var comment in Model.Comments ?? Enumerable.Empty<Comment>())
+                        @if (User.Identity?.IsAuthenticated == true)
                         {
-                            <div class="comment">
-                                <img src="/img/@(comment.User?.Image ?? "default-avatar.jpg")" class="comment-avatar"
-                                    alt="@(comment.User?.Name ?? "Anonymous")'s avatar" loading="lazy" />
-                                <div class="comment-content">
-                                    <div class="comment-header">
-                                        <h6 class="comment-author">
-                                            <a href="/profile/@(comment.User?.UserName ?? "unknown")">@(comment.User?.Name ??
-                                                                                        "Anonymous")</a>
-                                        </h6>
-                                        <small class="comment-date">@comment.PublishedOn.ToString("MMMM dd, yyyy HH:mm")</small>
-                                    </div>
-                                    <p class="comment-text">@(comment.Text ?? "")</p>
-                                </div>
-                            </div>
+                            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                            var isLikedByCurrentUser = Model.Likes.Any(l => l.UserId == userId);
+
+                            <span class="like-section ms-3">
+                                <button id="likeBtn" class="btn btn-link text-danger p-0" data-post-id="@Model.PostId">
+                                    <i class="bi @(isLikedByCurrentUser ? "bi-heart-fill" : "bi-heart")"></i>
+                                </button>
+                                <span id="likeCount" class="ms-1">@Model.Likes.Count</span>
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="like-section ms-3">
+                                <i class="bi bi-heart"></i>
+                                <span id="likeCount" class="ms-1">@Model.Likes.Count</span>
+                            </span>
                         }
                     </div>
+                    <hr class="my-4" style="border-color: var(--border-color);">
+                    <div class="post-content">@Html.Raw(Model.Content ?? "")</div>
+                </div>
+
+                <div class="comment-section">
+                    <h4 class="comment-count"><span id="commentCount">@(Model.Comments?.Count() ?? 0)</span> Comments</h4>
+
                     @if (User.Identity?.IsAuthenticated == true)
                     {
                         <div class="comment-form">
-                            <h4 class="mb-4">Add a Comment</h4>
+                            <h4 class="mb-2">Add a Comment</h4>
                             <div id="commentAlert" class="alert" style="display: none;"></div>
-                            <form id="commentForm" action="/Post/AddComment" method="post">
+                            <form id="commentForm" action="/Posts/AddComment" method="post">
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" id="PostId" name="PostId" value="@(Model.PostId)" />
                                 <div class="mb-4">
                                     <label for="Text" class="form-label">Your Comment</label>
-                                    <textarea name="Text" id="Text" rows="5" class="form-control"
-                                placeholder="Write your comment here..." required></textarea>
+                                    <textarea name="Text" id="Text" rows="4" class="form-control" placeholder="Write your comment here..." required></textarea>
                                     <span class="text-danger" id="commentError"></span>
                                 </div>
                                 <div class="mb-3">
@@ -426,9 +540,84 @@
                     }
                     else
                     {
-                        <p class="text-muted">Please <a href="/users/login" class="text-primary fw-bold">log in</a> to post a
-                            comment.</p>
+                        <p class="text-muted">Please <a href="/users/login" class="text-primary fw-bold" style="color: var(--primary-color);">log in</a> to post a comment or reply.</p>
                     }
+
+                    <div id="comments" class="comment-list">
+                        @foreach (var comment in Model.Comments?.Where(c => c.ParentCommentId == null) ?? Enumerable.Empty<BlogApp.Entity.Comment>())
+                        {
+                            var replies = Model.Comments?.Where(c => c.ParentCommentId == comment.CommentId).ToList();
+                            var replyCount = replies?.Count() ?? 0;
+                            var hasReplies = replyCount > 0;
+
+                            <div class="comment-wrapper @(hasReplies ? "has-replies" : "")" id="comment-wrapper-@(comment.CommentId)">
+                                <div class="comment">
+                                    <img src="/img/@(comment.User?.Image ?? "https://placehold.co/48x48/e0e0e0/ffffff?text=User")" class="comment-avatar"
+                                         alt="@(comment.User?.Name ?? "Anonymous")'s avatar" loading="lazy" />
+                                    <div class="comment-content">
+                                        <div class="comment-header">
+                                            <div>
+                                                <h6 class="comment-author">
+                                                <a href="/profile/@(comment.User?.UserName ?? "unknown")">@(comment.User?.Name ?? "Anonymous")</a>
+                                            </h6>
+                                            </div>
+                                            <div>
+                                          <small class="comment-date">@comment.PublishedOn.ToString("MMMM dd, yyyy HH:mm")</small>
+                                            </div>
+                                        </div>
+                                        <p class="comment-text">@(comment.Text ?? "")</p>
+                                        @if (User.Identity?.IsAuthenticated == true)
+                                        {
+                                            <a href="javascript:void(0);" class="reply-btn" data-comment-id="@comment.CommentId">
+                                                <span><i class="bi bi-reply"></i> Reply</span>
+                                            </a>
+                                            <div class="reply-form" id="reply-form-@comment.CommentId" style="display: none;">
+                                                <form id="replyForm-@comment.CommentId" action="/Post/AddReply" method="post">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="PostId" value="@Model.PostId" />
+                                                    <input type="hidden" name="ParentCommentId" value="@comment.CommentId" />
+                                                    <div class="mb-3">
+                                                        <label for="ReplyText-@comment.CommentId" class="form-label">Your Reply</label>
+                                                        <textarea name="Text" id="ReplyText-@comment.CommentId" rows="3" class="form-control"
+                                                                  placeholder="Write your reply here..." required></textarea>
+                                                        <span class="text-danger" id="replyError-@comment.CommentId"></span>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-primary" id="btnSubmitReply-@comment.CommentId">Submit Reply</button>
+                                                </form>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+
+                                @if (hasReplies)
+                                {
+                                    <button class="toggle-replies-btn" data-comment-id="@comment.CommentId">
+                                        <i class="bi bi-chevron-down"></i> @replyCount Replies
+                                    </button>
+                                    <div class="replies-container" id="replies-container-@(comment.CommentId)">
+                                        @foreach (var reply in replies)
+                                        {
+                                            <div class="comment-wrapper is-reply">
+                                                <div class="comment">
+                                                    <img src="/img/@(reply.User?.Image ?? "https://placehold.co/48x48/e0e0e0/ffffff?text=User")" class="comment-avatar"
+                                                         alt="@(reply.User?.Name ?? "Anonymous")'s avatar" loading="lazy" />
+                                                    <div class="comment-content">
+                                                        <div class="comment-header">
+                                                            <h6 class="comment-author">
+                                                                <a href="/profile/@(reply.User?.UserName ?? "unknown")">@(reply.User?.Name ?? "Anonymous")</a>
+                                                            </h6>
+                                                            <small class="comment-date">@reply.PublishedOn.ToString("MMMM dd, yyyy HH:mm")</small>
+                                                        </div>
+                                                        <p class="comment-text">@(reply.Text ?? "")</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
                 </div>
             }
         </div>
@@ -436,13 +625,16 @@
             <div class="sidebar">
                 <vc:tags-menu></vc:tags-menu>
             </div>
+            <div class="sidebar mt-4">
+                <vc:new-posts></vc:new-posts>
+            </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script>
         $(document).ready(function () {
             $("#commentForm").on("submit", function (e) {
@@ -452,10 +644,100 @@
                 const text = $("#Text").val().trim();
                 const $button = $("#btnSubmitComment");
                 const $alert = $("#commentAlert");
+                const $errorSpan = $("#commentError");
 
                 if (!text) {
-                    $alert.removeClass("alert-success").addClass("alert-danger show")
-                        .text("Comment cannot be empty.").show();
+                    $errorSpan.text("Comment cannot be empty.").show();
+                    return;
+                }
+
+                $button.addClass("loading").prop("disabled", true).text("Submitting...");
+                $.ajax({
+                    type: "POST",
+                    url: "/Posts/AddComment",
+                    data: $(this).serialize(),
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.success) {
+                            const date = new Date(response.publishedOn);
+                            const newCommentHtml = `
+                                <div class="comment-wrapper" id="comment-wrapper-${response.commentId}">
+                                    <div class="comment">
+                                        <img src="/img/${response.avatar || 'https://placehold.co/48x48/e0e0e0/ffffff?text=User'}" class="comment-avatar" alt="${response.name}'s avatar" loading="lazy" />
+                                        <div class="comment-content">
+                                            <div class="comment-header">
+                                                <h6 class="comment-author">
+                                                    <a href="/profile/${response.username}">${response.name}</a>
+                                                </h6>
+                                                <small class="comment-date">${date.toLocaleString("en-US", {
+                                                    year: "numeric",
+                                                    month: "long",
+                                                    day: "numeric",
+                                                    hour: "2-digit",
+                                                    minute: "2-digit"
+                                                })}</small>
+                                            </div>
+                                            <p class="comment-text">${response.text}</p>
+                                            <a href="javascript:void(0);" class="reply-btn" data-comment-id="${response.commentId}">
+                                                <i class="bi bi-reply"></i> Reply
+                                            </a>
+                                            <div class="reply-form" id="reply-form-${response.commentId}" style="display: none;">
+                                                <form id="replyForm-${response.commentId}" action="/Posts/AddReply" method="post">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="PostId" value="@Model.PostId" />
+                                                    <input type="hidden" name="ParentCommentId" value="${response.commentId}" />
+                                                    <div class="mb-3">
+                                                        <label for="ReplyText-${response.commentId}" class="form-label">Your Reply</label>
+                                                        <textarea name="Text" id="ReplyText-${response.commentId}" rows="3" class="form-control"
+                                                                  placeholder="Write your reply here..." required></textarea>
+                                                        <span class="text-danger" id="replyError-${response.commentId}"></span>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-primary" id="btnSubmitReply-${response.commentId}">Submit Reply</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            $("#comments").prepend(newCommentHtml);
+                            $("#Text").val("");
+                            $alert.removeClass("alert-danger").addClass("alert-success show")
+                                .text("Comment added successfully!").show().delay(3000).fadeOut();
+                            $("#commentCount").text(parseInt($("#commentCount").text()) + 1);
+                        } else {
+                            $alert.removeClass("alert-success").addClass("alert-danger show")
+                                .text(response.message || "An error occurred.").show();
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        $alert.removeClass("alert-success").addClass("alert-danger show")
+                            .text("An error occurred while adding the comment: " + (xhr.responseJSON?.message || error)).show();
+                    },
+                    complete: function () {
+                        $button.removeClass("loading").prop("disabled", false).text("Submit Comment");
+                        $errorSpan.hide();
+                    }
+                });
+            });
+
+            $(document).on("click", ".reply-btn", function () {
+                const commentId = $(this).data("comment-id");
+                const $replyForm = $("#reply-form-" + commentId);
+                $replyForm.toggle();
+            });
+
+            $(document).on("submit", "[id^='replyForm-']", function (e) {
+                e.preventDefault();
+
+                const form = $(this);
+                const commentId = form.attr("id").split("-")[1];
+                const $button = form.find("[id^='btnSubmitReply-']");
+                const $errorSpan = $("#replyError-" + commentId);
+
+                const text = form.find("[name='Text']").val().trim();
+
+                if (!text) {
+                    $errorSpan.text("Reply cannot be empty.").show();
                     return;
                 }
 
@@ -463,96 +745,125 @@
 
                 $.ajax({
                     type: "POST",
-                    url: "@Url.Action("AddComment", "Post")",
-                    data: {
-                        PostId: postId,
-                        Text: text,
-                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
-                    },
+                    url: "/Posts/AddReply",
+                    data: form.serialize(),
                     dataType: "json",
                     success: function (response) {
-                        if (response.error) {
-                            $alert.removeClass("alert-success").addClass("alert-danger show")
-                                .text(response.error).show();
-                        } else {
+                        if (response.success) {
                             const date = new Date(response.publishedOn);
-                            $("#comments").append(`
-                                            <div class="comment">
-                                                <img src="/img/${response.avatar || "default-avatar.jpg"}" 
-                                                     class="comment-avatar" 
-                                                     alt="${response.username}'s avatar" 
-                                                     loading="lazy" />
-                                                <div class="comment-content">
-                                                    <div class="comment-header">
-                                                        <h6 class="comment-author">
-                                                            <a href="/profile/${response.username}">${response.username}</a>
-                                                        </h6>
-                                                        <small class="comment-date">${date.toLocaleString("en-US", {
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit"
-                            })}</small>
-                                                    </div>
-                                                    <p class="comment-text">${response.text}</p>
-                                                </div>
+                            const newReplyHtml = `
+                                <div class="comment-wrapper is-reply">
+                                    <div class="comment">
+                                        <img src="/img/${response.avatar || 'https://placehold.co/48x48/e0e0e0/ffffff?text=User'}" class="comment-avatar" alt="${response.name}'s avatar" loading="lazy" />
+                                        <div class="comment-content">
+                                            <div class="comment-header">
+                                                <h6 class="comment-author">
+                                                    <a href="/profile/${response.username}">${response.name}</a>
+                                                </h6>
+                                                <small class="comment-date">${date.toLocaleString("en-US", {
+                                                    year: "numeric",
+                                                    month: "long",
+                                                    day: "numeric",
+                                                    hour: "2-digit",
+                                                    minute: "2-digit"
+                                                })}</small>
                                             </div>
-                                        `);
-                            $("#Text").val("");
+                                            <p class="comment-text">${response.text}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+
+                            let $repliesContainer = $(`#replies-container-${commentId}`);
+                            if ($repliesContainer.length === 0) {
+                                const parentWrapper = $(`#comment-wrapper-${commentId}`);
+                                parentWrapper.addClass('has-replies');
+
+                                const replyButton = `<button class="toggle-replies-btn" data-comment-id="${commentId}">
+                                                        <i class="bi bi-chevron-down"></i> 1 Reply
+                                                     </button>`;
+                                const repliesContainer = `<div class="replies-container show" id="replies-container-${commentId}"></div>`;
+                                parentWrapper.append(replyButton).append(repliesContainer);
+                                $repliesContainer = $(`#replies-container-${commentId}`);
+                            } else {
+                                const newCount = parseInt($(`#comment-wrapper-${commentId} .toggle-replies-btn`).text().match(/\d+/)[0]) + 1;
+                                $(`#comment-wrapper-${commentId} .toggle-replies-btn`).html(`<i class="bi bi-chevron-down"></i> ${newCount} Replies`);
+                                $repliesContainer.addClass('show');
+                            }
+
+                            $repliesContainer.append(newReplyHtml);
+
+                            form.find("[name='Text']").val("");
+                            $(`#reply-form-${commentId}`).hide();
+
                             $("#commentAlert").removeClass("alert-danger").addClass("alert-success show")
-                                .text("Comment added successfully!").show().delay(3000).fadeOut();
-                            const commentCount = parseInt($("#commentCount").text()) + 1;
-                            $("#commentCount").text(commentCount);
+                                .text("Reply added successfully!").show().delay(3000).fadeOut();
+                            $("#commentCount").text(parseInt($("#commentCount").text()) + 1);
+                        } else {
+                            $("#commentAlert").removeClass("alert-success").addClass("alert-danger show")
+                                .text(response.message || "An error occurred.").show();
                         }
                     },
                     error: function (xhr, status, error) {
-                        $alert.removeClass("alert-success").addClass("alert-danger show")
-                            .text("An error occurred while adding the comment: " + (xhr.responseJSON?.error || error)).show();
+                        $("#commentAlert").removeClass("alert-success").addClass("alert-danger show")
+                            .text("An error occurred while adding the reply: " + (xhr.responseJSON?.message || error)).show();
                     },
                     complete: function () {
-                        $button.removeClass("loading").prop("disabled", false).text("Submit Comment");
+                        $button.removeClass("loading").prop("disabled", false).text("Submit Reply");
+                        $errorSpan.hide();
                     }
                 });
             });
 
-            $("#Text").on("input", function () {
-                $("#commentAlert").removeClass("show").hide();
+            $(document).on('click', '.toggle-replies-btn', function() {
+                const commentId = $(this).data('comment-id');
+                const $repliesContainer = $(`#replies-container-${commentId}`);
+                const $parentWrapper = $(`#comment-wrapper-${commentId}`);
+                const $icon = $(this).find('i');
+
+                $repliesContainer.toggleClass('show');
+                $parentWrapper.toggleClass('show-replies');
+                $(this).toggleClass('open');
+            });
+
+            $('#likeBtn').on('click', function () {
+                const button = $(this);
+                const postId = button.data('post-id');
+                const token = $('input[name="__RequestVerificationToken"]').val();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/Posts/ToggleLike',
+                    data: {
+                        postId: postId,
+                        __RequestVerificationToken: token
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            $('#likeCount').text(response.likeCount);
+                            const icon = button.find('i');
+                            if (response.isLiked) {
+                                icon.removeClass('bi-heart').addClass('bi-heart-fill');
+                            } else {
+                                icon.removeClass('bi-heart-fill').addClass('bi-heart');
+                            }
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.message || 'An error occurred.'
+                            });
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'An unexpected error occurred. Please try again.'
+                        });
+                    }
+                });
             });
         });
     </script>
-    <script>
-    $(document).ready(function() {
-        $('#likeBtn').on('click', function() {
-            const button = $(this);
-            const postId = button.data('post-id');
-            const token = $('input[name="__RequestVerificationToken"]').val();
-
-            $.ajax({
-                type: 'POST',
-                url: '/Post/ToggleLike',
-                data: {
-                    postId: postId,
-                    __RequestVerificationToken: token
-                },
-                success: function(response) {
-                    if (response.success) {
-                        $('#likeCount').text(response.likeCount);
-                        const icon = button.find('i');
-                        if (response.isLiked) {
-                            icon.removeClass('bi-heart').addClass('bi-heart-fill');
-                        } else {
-                            icon.removeClass('bi-heart-fill').addClass('bi-heart');
-                        }
-                    } else {
-                        alert(response.message || 'An error occurred.');
-                    }
-                },
-                error: function() {
-                    alert('An unexpected error occurred. Please try again.');
-                }
-            });
-        });
-    });
-</script>
 }

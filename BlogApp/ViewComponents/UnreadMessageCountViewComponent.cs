@@ -1,9 +1,9 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using BlogApp.Data.Concrete.EfCore;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace BlogApp.ViewComponents
 {
@@ -18,7 +18,12 @@ namespace BlogApp.ViewComponents
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!User.Identity?.IsAuthenticated ?? true)
+            {
+                return Content("");
+            }
+
+            var userId = UserClaimsPrincipal?.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))
             {
                 return Content("");
@@ -26,11 +31,9 @@ namespace BlogApp.ViewComponents
 
             var unreadCount = await _context.Messages
                 .Where(m => m.ReceiverId == userId && !m.IsRead)
-                .Select(m => m.ConversationId)
-                .Distinct()
                 .CountAsync();
 
-            return View(unreadCount);
+            return Content(unreadCount.ToString());
         }
     }
 }
